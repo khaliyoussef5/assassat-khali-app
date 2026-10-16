@@ -1,3 +1,4 @@
+import {suspensionPoints} from './ak-suspensions.mjs';
 /* ASSASSAT KHALI — Armstrong full-room technical plan.
    Pure SVG rendering only. All geometry, quantities and purchase rules
    come from calcArmstrongFull() and must not be recalculated here. */
@@ -12,7 +13,7 @@ const text=(x,y,t,size=13,fill=C.ink,extra='')=>'<text x="'+F(x)+'" y="'+F(y)+'"
 const roundRect=(x,y,w,h,r,fill,stroke='none',width=1)=>'<rect x="'+F(x)+'" y="'+F(y)+'" width="'+F(w)+'" height="'+F(h)+'" rx="'+r+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+width+'"/>';
 const dimTick=(a,b,vertical=false)=>vertical?line(a-5,b,a+5,b,C.amber,1.6):line(a,b-5,a,b+5,C.amber,1.6);
 const clamp=(v,a,b)=>Math.min(Math.max(v,a),b);
-export function armstrongFullPlanSvg(p){
+export function armstrongFullPlanSvg(p,{showHangers=true}={}){
  if(p.type!=='armstrong-full')throw Error('Armstrong full diagram requires matching plan');
  const W=1000,H=620,parts=[];
  const maxW=690,maxH=275,aspect=p.L/p.W;
@@ -60,6 +61,13 @@ export function armstrongFullPlanSvg(p){
   parts.push('<line data-profile="'+piece.kind+'" data-cut="'+(piece.cut?'yes':'no')+'" x1="'+F(X(piece.x1))+'" y1="'+F(Y(piece.y1))+'" x2="'+F(X(piece.x2))+'" y2="'+F(Y(piece.y2))+'" stroke="'+clr+'" stroke-width="'+(piece.kind==='cross120'?3.7:2.9)+'" stroke-linecap="butt"/>');
  }
  for(const support of p.carrierPositions)parts.push('<line data-profile="porteur" x1="'+F(x)+'" y1="'+F(Y(support))+'" x2="'+F(right)+'" y2="'+F(Y(support))+'" stroke="'+C.porteur+'" stroke-width="4.5"/>');
+ // Hangers are small cyan/white rings over Porteur, distinguishable from Cross junctions.
+ if(showHangers){
+  for(const pt of suspensionPoints(p)){
+   parts.push('<circle data-hanger="yes" cx="'+F(X(pt.x))+'" cy="'+F(Y(pt.y))+'" r="5.5" fill="#0F766E" stroke="#FFFFFF" stroke-width="2.2"/>');
+   parts.push('<circle cx="'+F(X(pt.x))+'" cy="'+F(Y(pt.y))+'" r="1.6" fill="#FFFFFF"/>');
+  }
+ }
  parts.push(roundRect(x,y,gw,gh,0,'none','#274E53',2.8));
  // Length-edge dimensions: both left/right remain symmetric and explicitly labelled.
  const dimY=y-17;
@@ -95,6 +103,7 @@ export function armstrongFullPlanSvg(p){
  swatch(59,C.porteur,'Porteur',p.porteur);
  swatch(324,C.cross120,'Cross 1.20',p.cross120);
  swatch(631,C.cross060,'Cross 0.60',p.cross060);
+ if(showHangers){parts.push('<circle cx="904" cy="556" r="6" fill="#0F766E" stroke="white" stroke-width="2"/>'+text(891,562,'علاقات × '+p.hangers,12,C.ink,'font-weight="700" text-anchor="end" direction="ltr"'));}
  parts.push(line(56,575,946,575,'#D7E4DE',1));
  parts.push(text(59,594,'Cross 0.60: '+p.cross060+' مقطع فالرسم  |  '+p.cross060Stock+' بروفيل محسوب للشراء  |  '+p.cross060HalfCount+' مقاطع أقل من 30cm محسوبة أنصاف',12,C.sub,'font-weight="700" direction="ltr"'));
  parts.push('</svg>');return parts.join('');
