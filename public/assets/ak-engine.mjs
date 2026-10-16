@@ -21,6 +21,60 @@ export function fullArmstrongOptions(L,W){
               candidates.find(p=>p.nL!==first.nL||p.nW!==first.nW);
  return [{nL:first.nL,nW:first.nW},...(second?[{nL:second.nL,nW:second.nW}]:[])];
 }
+/** Geometry is the single source for both counted and drawn tees (metres). */
+export function buildArmstrongGrid(L,W,lengthCuts,widthCuts){
+ const positions=cuts=>{let x=0;return [0,...cuts.map(v=>{x+=v;return round(x,6)})]};
+ const xLines=positions(lengthCuts),yLines=positions(widthCuts);
+ const innerY=yLines.slice(1,-1);
+ if(!innerY.length)throw Error('العرض صغير على شبكة Porteur القياسية. خاص توزيع خاص للحائط؛ ما يمكنش نحسبوه تلقائياً.');
+ const mains=[];
+ // Choose the first inner line, then 1.20m, and shorten the last bay to 0.60m if required.
+ for(let i=0;i<innerY.length;i+=2)mains.push(innerY[i]);
+ const last=innerY.at(-1);
+ if(W-mains.at(-1)>.6+EPS && last-mains.at(-1)>.0001)mains.push(last);
+ const transverse=[];
+ const add=(kind,x1,y1,x2,y2,placement)=>{
+   const len=round(Math.hypot(x2-x1,y2-y1),6),stock=kind==='cross120'?1.2:.6;
+   if(len<.0001||len>stock+EPS)throw Error('توزيع الشبكة غير صالح: قطعة Cross أكبر من طولها القياسي.');
+   transverse.push({kind,x1:round(x1,6),y1:round(y1,6),x2:round(x2,6),y2:round(y2,6),length:len,cut:len<stock-EPS,placement});
+ };
+ // Cross-tees transverse between supports at every interior longitudinal cell boundary.
+ const supports=[0,...mains,W];
+ for(const x of xLines.slice(1,-1)){
+   for(let i=0;i<supports.length-1;i++){
+     const y0=supports[i],y1=supports[i+1],gap=y1-y0;
+     if(gap>1.2+EPS)throw Error('تباعد Porteur أكثر من 1.20m.');
+     if(gap<.0001)continue;
+     if(gap>.6+EPS){
+       if(i===0||i===supports.length-2)throw Error('آخر Porteur بعيد أكثر من 60cm على الحائط.');
+       add('cross120',x,y0,x,y1,'between-porteurs');
+     }else add('cross060',x,y0,x,y1,i===0||i===supports.length-2?'to-wall':'between-porteurs');
+   }
+ }
+ // One row of longitudinal 0.60 tees bisects every 1.20m gap between Porteurs.
+ // The end pieces are cut to the actual tile border dimension.
+ for(let i=0;i<mains.length-1;i++){
+   const gap=mains[i+1]-mains[i];
+   if(gap>1.2+EPS)throw Error('تباعد Porteur أكثر من 1.20m.');
+   if(gap>.6+EPS){
+     const y=round((mains[i]+mains[i+1])/2,6);
+     for(let j=0;j<xLines.length-1;j++)add('cross060',xLines[j],y,xLines[j+1],y,'infill');
+   }
+ }
+ const c120=transverse.filter(v=>v.kind==='cross120');
+ const c060=transverse.filter(v=>v.kind==='cross060');
+ return {
+  xLines,yLines,carrierPositions:mains,carrierCount:mains.length,
+  crossSegments:transverse,cross120:c120.length,cross060:c060.length,
+  cross120Cut:c120.filter(v=>v.cut).length,cross060Cut:c060.filter(v=>v.cut).length,
+  cross120Full:c120.filter(v=>!v.cut).length,cross060Full:c060.filter(v=>!v.cut).length,
+  rowIntersections:xLines.length-2,
+  wall060:c060.filter(v=>v.placement==='to-wall').length,
+  infill060:c060.filter(v=>v.placement==='infill').length,
+  bay120:mains.slice(1).filter((p,i)=>Math.abs(p-mains[i]-1.2)<EPS).length,
+  bay060:mains.slice(1).filter((p,i)=>Math.abs(p-mains[i]-.6)<EPS).length
+ };
+}
 export function calcArmstrongFull(d){const {L,W}=validateRoom(d.L,d.W);const drop=positive(d.drop,'النزول'),cut=positive(d.cut,'طول قص Tige');
  if(drop<5||drop>120||cut>100)throw Error('النزول بين 5 و120cm، وقص Tige بين 1 و100cm.');
  const nL=Number(d.nL),nW=Number(d.nW);
@@ -33,18 +87,16 @@ export function calcArmstrongFull(d){const {L,W}=validateRoom(d.L,d.W);const dro
  const widthCuts=[edgeW>EPS?edgeW:0,...Array(nW).fill(.6),edgeW>EPS?edgeW:0].filter(x=>x>EPS);
  // Conservative material upper bound: one new tile per cell; reuse of offcuts is not credited.
  const tiles=rowsL*rowsW,area=L*W;
- // Supports use lengthwise Porteur at internal 1.2m grid positions; wall perimeter rests on Cornière.
- const mains=[];let cursor=edgeW>EPS?edgeW:.6;while(cursor<W-.05){mains.push(round(cursor,5));cursor+=1.2;}
- if(!mains.length)mains.push(round(W/2,5));
- const carrierCount=mains.length,porteur=carrierCount*ceil(L/3.6);
- const rowIntersections=rowsL+1;const lateralBays=carrierCount+1;
- const cross120=rowsL>0?rowIntersections*Math.max(0,carrierCount-1):0;
- const cross060=rowIntersections*2+carrierCount*rowsL;
+ // Count exactly the Cross segments that the SVG draws.
+ const grid=buildArmstrongGrid(L,W,boundaryCuts,widthCuts);
+ const {carrierCount,carrierPositions:mains,cross120,cross060,rowIntersections}=grid;
+ const porteur=carrierCount*ceil(L/3.6);
  const hangersPerCarrier=ceil(L/1);const hangers=carrierCount*hangersPerCarrier;
  const rodPieces=Math.floor((100+EPS)/cut);if(rodPieces<1)throw Error('طول قص Tige أكثر من متر.');
  const rods=ceil(hangers/rodPieces),perimeter=2*(L+W);
- return {type:'armstrong-full',L,W,drop,cut,nL,nW,edgeL:round(edgeL,5),edgeW:round(edgeW,5),partsL,partsW,wholeTiles,edgePieces,tiles,area,porteur,cross120,cross060,carrierCount,carrierPositions:mains,hangers,rods,rodPieces,angle:ceil(perimeter/3),wallFix:ceil(perimeter/.5),lengthCuts:boundaryCuts,widthCuts,perimeter,rowIntersections,lateralBays,
- note:'عدد Cross تقديري مبدئي، وخاص التأكد من تصميم نظام T المعتمد وارتكاز البروفيلات المقطوعة قبل الشراء. عدد البلاكات متحفظ وما كيستغلش القصّات المتبقية.'};
+ return {type:'armstrong-full',L,W,drop,cut,nL,nW,edgeL:round(edgeL,5),edgeW:round(edgeW,5),partsL,partsW,wholeTiles,edgePieces,tiles,area,porteur,cross120,cross060,carrierCount,carrierPositions:mains,hangers,rods,rodPieces,angle:ceil(perimeter/3),wallFix:ceil(perimeter/.5),lengthCuts:boundaryCuts,widthCuts,perimeter,rowIntersections,lateralBays:carrierCount+1,
+ ...grid,
+ note:'المخطط والأعداد متطابقة: Porteur مع الطول، Cross 1.20 بين Porteurs على مسافة 1.20، وCross 0.60 في فراغات 0.60 وفي القواطع نحو الحيطان، مع قصّ الأطراف. القطع المقطوعة محسوبة كل قطعة مستقلة بلا استغلال البقايا؛ يجب التحقق من الوصلات والتحميل ونوع النظام والقصّات قبل الشراء.'};
 }
 export function calcBA13Ceiling(d){const {L,W}=validateRoom(d.L,d.W);const type=d.mode==='hidden'?'hidden':'plain';const drop=positive(d.drop,'النزول');if(drop<6||drop>100)throw Error('النزول خاصو يكون بين 6 و100cm.');
  const first=.15,spacing=.50,span=Math.min(L,W),distribution=Math.max(L,W);
@@ -90,8 +142,8 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  if(p.type==='armstrong-full'){
  add('بلاكات Armstrong 60×60 (قبل تحسين القصّات)',p.tiles,'بلاكة',.05,'كامل + مقطوع؛ تقدير متحفظ');
  add('Porteur T 3.60m',p.porteur,'قطعة',.1,'مع اتجاه طول الغرفة');
- add('Cross 1.20m (تقديري)',p.cross120,'قطعة',.1,'حسب توزيع الشبكة');
- add('Cross 0.60m (تقديري)',p.cross060,'قطعة',.1,'بعض القطع تحتاج القص');
+ add('Cross 1.20m',p.cross120,'قطعة',.1,`${p.cross120Full} كاملة — بين Porteurs 1.20m`);
+ add('Cross 0.60m',p.cross060,'قطعة',.1,`${p.cross060Full} كاملة + ${p.cross060Cut} مقصوصة — الحيطان والفراغات`);
  add('Cornière محيطية 3m',p.angle,'قطعة',.1,'على الحائط فقط');
  add('Cheville laiton',p.hangers,'قطعة',.1);add('Coulisseau',p.hangers,'قطعة',.1);
  add('Tige 1m',p.rods,'قطعة',.1,`${p.rodPieces} قطع من كل Tige`);add('Cheville à frapper',p.wallFix,'قطعة',.15,'تقدير كل 50cm');
