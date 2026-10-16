@@ -66,7 +66,7 @@ function createModel(){let d=dims();if(app==='armstrong-full'){const o=chosen===
  if(app==='ba13-ceiling')return calcBA13Ceiling(d);
  return calcWall({...d,rockwool:d.rockwool==='1'});
 }
-function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['Porteur',p.porteur],['Cross 1.20',p.cross120],['Cross 0.60',p.cross060],['بلاكات كاملة',p.wholeTiles],['بلاكات مقطوعة',p.edgePieces]]:
+function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['Porteur',p.porteur],['Cross 1.20',p.cross120],['Cross 0.60 (راكبة)',p.cross060],['Cross 0.60 (بروفيلات)',p.cross060Stock],['بلاكات كاملة',p.wholeTiles],['بلاكات مقطوعة',p.edgePieces]]:
  app==='ba13-ceiling'?[['مساحة السقف',fmt(p.area)+'m²'],['عدد خطوط Fourrure',p.positions.length],['ألواح BA13 النظري',p.boards]]:
  [['صافي المساحة',fmt(p.netArea)+'m²'],['ألواح BA13 النظري',p.boards],['Montants',p.studs]];
  $('summary').innerHTML=parts.map(([a,b])=>metric(a,b)).join('');
@@ -98,7 +98,7 @@ const svgH=(p)=>{
     '<line x1="82" y1="479" x2="121" y2="479" stroke="'+C.porteur+'" stroke-width="4.5"/><text x="135" y="484" fill="#254653">Porteur T × '+p.porteur+'</text>'+
     '<line x1="330" y1="479" x2="368" y2="479" stroke="'+C.cross120+'" stroke-width="4"/><text x="381" y="484" fill="#254653">Cross 1.20 × '+p.cross120+'</text>'+
     '<line x1="618" y1="479" x2="658" y2="479" stroke="'+C.cross060+'" stroke-width="4"/><text x="671" y="484" fill="#254653">Cross 0.60 × '+p.cross060+'</text>'+
-    '<text x="82" y="509" fill="#415f62" font-size="13">كل قاطع قصير محسوب قطعة كاملة • مقصوصة: 1.20 × '+p.cross120Cut+' و 0.60 × '+p.cross060Cut+'</text></g>');
+    '<text x="82" y="509" fill="#415f62" font-size="13">Cross 0.60: '+p.cross060HalfCount+' قطع أقل من 30cm = أنصاف | المجموع '+p.cross060Stock+' بروفيل قبل الاحتياط</text></g>');
  }else if(p.type==='ba13-ceiling'){
   const dirL=p.L>=p.W;
   if(p.mode==='hidden'){const inset=Math.min(.1,p.L/4,p.W/4);let [px,py]=g(inset,inset),[qx,qy]=g(p.L-inset,p.W-inset);A.push(rect(px,py,qx-px,qy-py,'none','#df9d4e',4));}
