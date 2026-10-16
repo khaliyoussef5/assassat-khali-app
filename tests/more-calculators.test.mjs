@@ -7,6 +7,7 @@ const root=fileURLToPath(new URL('../public/',import.meta.url));
 test('Full Armstrong 8x4: symmetric cut tiles, no BA13',()=>{
  const options=fullArmstrongOptions(8,4);assert.ok(options.length>=2);const a=calcArmstrongFull({L:8,W:4,drop:30,cut:30,...options[0]});
  assert.equal(a.wholeTiles,60);assert.ok(Math.abs(a.edgeL-.4)<1e-7);assert.ok(Math.abs(a.edgeW-.5)<1e-7);
+ assert.deepEqual(options[1],{nL:12,nW:6}); // prefer 40/20cm cuts over 10cm
  assert.equal(a.area,32);assert.equal(a.tiles,98);assert.equal(a.angle,8);assert.equal(a.wallFix,48);assert.equal(a.rods,Math.ceil(a.hangers/3));
  assert.ok(materials(a).some(r=>r.name.includes('Armstrong')));
 });
