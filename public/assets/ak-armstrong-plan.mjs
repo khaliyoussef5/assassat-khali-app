@@ -101,9 +101,9 @@ export function armstrongFullPlanSvg(p,{showHangers=true}={}){
    parts.push(text(x+40,561,label+'  '+qty,13,C.ink,'font-weight="700" direction="ltr"'));
  };
  swatch(59,C.porteur,'Porteur',p.porteur);
- swatch(324,C.cross120,'Cross 1.20',p.cross120);
- swatch(631,C.cross060,'Cross 0.60',p.cross060);
- if(showHangers){parts.push('<circle cx="904" cy="556" r="6" fill="#0F766E" stroke="white" stroke-width="2"/>'+text(891,562,'علاقات × '+p.hangers,12,C.ink,'font-weight="700" text-anchor="end" direction="ltr"'));}
+ swatch(280,C.cross120,'Cross 1.20',p.cross120);
+ swatch(525,C.cross060,'Cross 0.60',p.cross060);
+ if(showHangers){parts.push('<circle cx="790" cy="556" r="6" fill="#0F766E" stroke="white" stroke-width="2"/>'+text(809,562,'علاقات × '+p.hangers,12,C.ink,'font-weight="700" direction="ltr"'));}
  parts.push(line(56,575,946,575,'#D7E4DE',1));
  parts.push(text(59,594,'Cross 0.60: '+p.cross060+' مقطع فالرسم  |  '+p.cross060Stock+' بروفيل محسوب للشراء  |  '+p.cross060HalfCount+' مقاطع أقل من 30cm محسوبة أنصاف',12,C.sub,'font-weight="700" direction="ltr"'));
  parts.push('</svg>');return parts.join('');
