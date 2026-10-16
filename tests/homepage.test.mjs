@@ -1,0 +1,19 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const home=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+test('Homepage presents four calculator categories',()=>{
+ assert.match(home,/Armstrong مع بوردور BA13/);
+ assert.match(home,/Armstrong بلا بوردور/);
+ assert.match(home,/أسقف الجبص بورد BA13/);
+ assert.match(home,/الحوائط والعزل/);
+});
+test('Only available calculator links to a working relative path',()=>{
+ assert.match(home,/href="calculators\/armstrong\/"/);
+ assert.doesNotMatch(home,/href="#coming/);
+});
+test('Core calculator is preserved as separate page',()=>{
+ const c=readFileSync(new URL('../public/calculators/armstrong/index.html',import.meta.url),'utf8');
+ assert.match(c,/ak-download-pdf/);
+ assert.match(c,/الخيار 3 — تعديل يدوي/);
+});
