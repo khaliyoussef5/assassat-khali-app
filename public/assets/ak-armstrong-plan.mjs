@@ -33,7 +33,7 @@ export function armstrongFullPlanSvg(p){
  parts.push(text(54,50,'AK',17,'#EAC18A','font-weight="700" text-anchor="middle" direction="ltr"'));
  parts.push(text(94,37,'ASSASSAT KHALI',17,'#F4F8F6','font-weight="700"'));
  parts.push(text(94,60,'OUTIL TECHNIQUE / PLAN',10,'#A9CBC6','font-weight="700" letter-spacing="1.4"'));
- parts.push(text(965,38,'مخطط توزيع البروفيلات',20,'#FFFFFF','font-weight="700" text-anchor="end" direction="rtl"'));
+ parts.push(text(965,38,'مخطط توزيع البروفيلات',20,'#FFFFFF','font-weight="700" text-anchor="end" direction="ltr"'));
  parts.push(text(965,62,'ARMSTRONG 60 × 60 — SANS BORDURE',11,'#B2D2C9','font-weight="700" text-anchor="end" direction="ltr"'));
  // Project metrics line; separate from actual four edge labels.
  parts.push(roundRect(35,98,930,43,12,'#F2F7F4','#DDE8E2'));
@@ -84,8 +84,8 @@ export function armstrongFullPlanSvg(p){
  }
  // Small dimension tags stay visible even on extreme aspect ratios via footer labels.
  parts.push(text(58,174,'PLAN / VUE EN PLAFOND',11,C.sub,'font-weight="700" letter-spacing=".6"'));
- parts.push(text(58,499,'باقي الطول: '+cm(p.edgeL)+' × 2',13,C.ink,'font-weight="700" direction="rtl"'));
- parts.push(text(940,499,'باقي العرض: '+cm(p.edgeW)+' × 2',13,C.ink,'font-weight="700" text-anchor="end" direction="rtl"'));
+ parts.push(text(58,499,'باقي الطول: '+cm(p.edgeL)+' × 2',13,C.ink,'font-weight="700" direction="ltr"'));
+ parts.push(text(940,499,'باقي العرض: '+cm(p.edgeW)+' × 2',13,C.ink,'font-weight="700" text-anchor="end" direction="ltr"'));
  // Meaningful color legend plus computed installed-vs-purchased quantities.
  parts.push(roundRect(35,530,930,79,15,'#F2F7F4','#DCE7E2'));
  const swatch=(x,clr,label,qty)=>{
