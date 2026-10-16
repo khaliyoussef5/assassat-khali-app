@@ -102,7 +102,8 @@ test('Cross 0.60 and 1.20 are counted as whole pieces, whether drawn cut or whol
    assert.equal(p[key],parts.length);
    assert.equal(p[key+'Full']+p[key+'Cut'],parts.length);
    assert.ok(parts.every(v=>v.length>0&&v.length<=len+1e-6));
-   assert.equal(materials(p).find(v=>v.name==='Cross '+(len===.6?'0.60m':'1.20m')).qty,parts.length);
+   const purchaseRow=materials(p).find(v=>v.name==='Cross '+(len===.6?'0.60m':'1.20m'));
+   assert.equal(purchaseRow.qty,len===.6?p.cross060Stock:parts.length);
   }
  }
 });
@@ -111,4 +112,35 @@ test('Diagram preserves solid color for cut and full tee stocks',()=>{
  assert.match(js,/data-profile/);
  assert.match(js,/stroke-linecap="butt"/);
  assert.doesNotMatch(js,/stroke-dasharray="5 3"/);
+});
+
+test('Cut Cross 0.60 smaller than 30cm is half a stock bar; installed count and color remain unchanged',()=>{
+ const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:6});
+ assert.equal(p.cross060,68);  // total installed segments drawn
+ assert.equal(p.cross060HalfCount,26); // 13 at each 20cm wall edge
+ assert.equal(p.cross060RegularCount,42);
+ assert.equal(p.cross060StockEquivalent,55);
+ assert.equal(p.cross060Stock,55);
+ assert.equal(materials(p).find(r=>r.name==='Cross 0.60m').qty,55);
+ assert.equal(materials(p).find(r=>r.name==='Cross 1.20m').qty,p.cross120);
+});
+test('Half Cross bars pool globally and round up when odd',()=>{
+ const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:13,nW:5});
+ const half=p.crossSegments.filter(s=>s.kind==='cross060'&&s.length<.30);
+ assert.equal(p.cross060HalfCount,half.length);
+ assert.equal(p.cross060Stock,Math.ceil(p.cross060RegularCount+half.length/2));
+ assert.ok(p.cross060Stock<=p.cross060);
+});
+test('Cross 0.60 at exactly 30cm is a whole piece, never a half',()=>{
+ const p=calcArmstrongFull({L:8,W:4.2,drop:30,cut:30,nL:12,nW:6});
+ assert.ok(Math.abs(p.edgeW-.30)<1e-8);
+ assert.equal(p.cross060HalfCount,0);
+ assert.equal(p.cross060Stock,p.cross060);
+});
+test('Stock rule never changes the diagram coordinates or color for short tees',()=>{
+ const js=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
+ assert.match(js,/data-profile/);
+ assert.match(js,/p\.cross060HalfCount/);
+ assert.match(js,/p\.cross060Stock/);
+ assert.match(js,/cross060:'#7c3aed'/);
 });
