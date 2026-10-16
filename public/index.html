@@ -101,7 +101,161 @@ footer .shell { display:flex; justify-content:space-between; gap:12px; flex-wrap
  footer .shell { display:block }
 }
 @media (prefers-reduced-motion:reduce) { * {scroll-behavior:auto!important;transition:none!important} }
+
+/* 2026 Industrial Premium refresh — UI/UX Pro Max principles: B2B clarity,
+   semantic tokens, spacious hierarchy, focus, consistent cards, mobile first. */
+:root{
+  --ink:#172a31; --muted:#566e74; --soft:#f5f7f5; --white:#fff;
+  --teal:#146b62; --deep:#10252c; --line:#dce5e2;
+  --gold:#efb167; --radius:24px;
+  --surface:#ffffff; --paper:#f5f7f5; --stroke:#dce5e2;
+  --forest:#0d6358; --night:#11282f; --orange:#e99a55;
+  --shadow-card:0 2px 4px rgba(7,29,34,.018),0 20px 42px rgba(7,29,34,.025);
+}
+html{scroll-padding-top:110px}
+body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans Arabic","Manrope",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;overflow-x:hidden}
+.shell{max-width:1216px;padding-inline:32px}
+.top{background:rgba(253,254,253,.96);border-color:rgba(215,228,224,.85);box-shadow:0 2px 24px rgba(15,36,42,.035);position:sticky;top:0;z-index:50;backdrop-filter:blur(16px)}
+.top .shell{min-height:84px}
+.logo{width:48px;height:48px;border-radius:14px;background:#0d3033;box-shadow:0 8px 17px rgba(0,49,48,.16)}
+.logo svg{width:28px;height:28px}
+.brand{gap:14px}
+.brand strong{font-family:"Manrope","IBM Plex Sans Arabic",sans-serif;font-size:16px;color:#132c32;font-weight:800;letter-spacing:.4px}
+.brand small{letter-spacing:2.5px;color:#738d8b;font-size:10px}
+.nav{gap:28px;color:#4b6669}
+.nav a{transition:color .18s ease}
+.nav .navlink{background:var(--night);color:#fff;border:1px solid #274044;border-radius:11px;padding:10px 16px;min-height:44px;display:inline-flex;align-items:center}
+.nav .navlink:hover{background:var(--forest);color:#fff}
+.hero{border-radius:28px;min-height:409px;grid-template-columns:1.13fr .87fr;
+  margin-top:30px;isolation:isolate;box-shadow:0 22px 60px rgba(17,39,44,.12);
+  background:radial-gradient(ellipse at 85% 100%,rgba(24,91,85,.6),transparent 45%),
+  linear-gradient(118deg,#10292f 0%,#14353a 52%,#0a2027 100%)}
+.hero:before{width:630px;height:630px;left:-260px;top:-405px;border:1px solid rgba(255,255,255,.095)}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(13,44,49,.07) 60%,rgba(12,34,40,.45) 100%);}
+.hero-copy{padding:59px 50px 54px;max-width:685px}
+.eyebrow{font-size:11px;font-family:"Manrope","IBM Plex Sans Arabic",sans-serif;letter-spacing:1.75px;color:#a6d5d0}
+.eyebrow:before{background:#e9a55e;width:24px}
+h1{font-size:clamp(33px,4vw,52px);line-height:1.4;letter-spacing:-.9px;margin:14px 0 19px;font-weight:850;text-wrap:balance}
+.hero p{color:#cadfdd;font-size:16px;line-height:2;max-width:515px;margin:0 0 25px}
+.primary{min-height:52px;border-radius:12px;background:#eab26c;color:#15313a;
+  box-shadow:0 7px 20px rgba(235,176,99,.16);
+  font-family:"IBM Plex Sans Arabic",sans-serif;font-size:14px;font-weight:850;
+  padding:12px 21px;transition:background .2s ease,box-shadow .2s ease}
+.primary:hover{background:#f6c48a;box-shadow:0 8px 24px rgba(235,176,99,.25);transform:none}
+.primary:active{background:#d79a53}
+.primary svg{stroke-width:2.4}
+.hero-proof{margin-top:21px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;direction:rtl;color:#b1d1ce}
+.hero-proof .proof-pill{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:0}
+.hero-proof .proof-pill svg{width:14px;height:14px;stroke:#e6b474}
+.hero-proof .proof-dot{width:3px;height:3px;border-radius:50%;background:#6f9e99}
+.hero-art{background:transparent;isolation:isolate;padding:24px 18px 24px 0;place-items:center}
+.hero-art:before{content:"";position:absolute;inset:22px 0 22px 5px;
+  background-image:linear-gradient(rgba(151,197,186,.1) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(151,197,186,.1) 1px,transparent 1px);
+  background-size:28px 28px;opacity:.5;mask-image:linear-gradient(to right,transparent,black 25%,black 80%,transparent)}
+.hero-art svg{position:relative;z-index:1;width:390px;max-width:100%;filter:drop-shadow(0 19px 21px #06182065);transform:rotate(-1deg)}
+.hero-art:after{position:absolute;content:"PLAN / 60 × 60";color:#b5d6d1;font:700 10px "Manrope",sans-serif;letter-spacing:2px;bottom:24px;left:27px;opacity:.8}
+.kicker{margin:23px 0 0;padding:10px 15px;border:1px solid #e0e8e5;display:inline-flex;background:#fff;
+ border-radius:11px;color:#657a7c;font-size:12px;box-shadow:0 2px 10px rgba(6,25,30,.025)}
+.kicker strong{color:#0e5f55;font-weight:800}
+.section{padding-top:54px}
+.headline{margin-bottom:25px}
+.section h2,.process h2{font-size:clamp(25px,3vw,32px);font-weight:850;letter-spacing:-.5px;color:#18313a;margin-bottom:9px}
+.section .description{font-size:15px;color:#587078;line-height:1.9}
+.meta{background:#e9f0ed;color:#476760;padding:8px 14px;font-size:12px;border:1px solid #d8e4e0}
+.catalog{gap:20px}
+.product{border-radius:22px;padding:28px 29px;min-height:252px;box-shadow:var(--shadow-card);
+  border:1px solid #dbe5e2;transition:box-shadow .2s ease,border-color .2s ease;
+  overflow:hidden}
+.product:before{content:"";position:absolute;left:0;top:0;width:100%;height:3px;background:transparent}
+.product.live{border:1px solid #bfdbd4;background:linear-gradient(145deg,#ffffff 60%,#edf6f2 100%);box-shadow:0 12px 44px rgba(14,92,77,.072)}
+.product.live:before{background:linear-gradient(90deg,#167b68,#b5dfd2)}
+.product.live:hover{box-shadow:0 16px 42px rgba(14,92,77,.11);transform:none;border-color:#7fbbb0}
+.product.planned{background:linear-gradient(145deg,#fff 70%,#f5f7f6 100%);opacity:1}
+.product.planned .tile-icon{background:#f1f5f4;color:#748f90}
+.product-top{margin-bottom:19px}
+.tile-icon{width:57px;height:57px;border-radius:15px;background:#e6f1ed;border:1px solid #d3e9e0;color:#12675b}
+.tile-icon svg{width:28px;height:28px;stroke-width:1.6}
+.status{font-size:11px;background:#f0f3f2;color:#637d80;border:1px solid #e2eae8;padding:5px 13px}
+.status.ready{background:#e5f5ec;color:#115e48;border-color:#c7e5d2}
+.product h3{font-size:20px;line-height:1.6;letter-spacing:-.2px;font-weight:850;color:#1c353c;margin-bottom:8px}
+.product p{font-size:14px;color:#587178;line-height:1.85;margin-bottom:21px;max-width:500px}
+.open{background:#143940;color:#fff;min-height:42px;border-radius:10px;padding:8px 14px;font-size:13px;gap:11px;
+ transition:background .2s ease, box-shadow .2s ease}
+.open:hover{background:#0c6e61;box-shadow:0 5px 13px rgba(21,103,93,.12)}
+.open svg{width:17px;height:17px}
+.future{font-size:12px;color:#768b8a;background:#f0f4f3;display:inline-flex;align-items:center;min-height:30px;
+  border-radius:8px;padding:4px 10px;align-self:start;letter-spacing:0}
+.process{background:#142f35;color:#f3f8f7;border-color:#2d4e50;box-shadow:0 16px 32px rgba(16,42,47,.07);
+  border-radius:23px;padding:32px 37px;margin:34px 0 52px}
+.process h2{color:#fff}
+.process .description{color:#b5d1cb}
+.process .headline{margin-bottom:24px}
+.process .steps{gap:22px}
+.step{border-inline-start:1px solid #39565a;padding-inline-start:16px;gap:7px}
+.step:first-child{border-inline-start:0;padding-inline-start:0}
+.num{color:#eab26c;font-size:11px;font-family:"Manrope","IBM Plex Sans Arabic",sans-serif}
+.step strong{font-size:15px;color:#f5f8f7}
+.step p{font-size:12px;color:#b8ceca;line-height:1.9}
+footer{background:#edf1ef;color:#587077;border-top:1px solid #dce5e2;padding:24px 0 28px}
+footer .shell{align-items:center}
+a:focus-visible{outline:3px solid #f4af60;outline-offset:4px}
+@media(max-width:800px){
+ .hero{grid-template-columns:1fr;min-height:0}
+ .hero-copy{max-width:none;padding:43px 36px 8px}
+ .hero-art{min-height:250px;padding:0 24px 22px}
+ .hero-art:before{inset:0 24px}
+ .hero-art svg{width:340px}
+ .hero-art:after{bottom:12px;left:25px}
+ .product{min-height:247px;padding:24px}
+ .process .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .step:nth-child(3){border-inline-start:0;padding-inline-start:0}
+}
+@media(max-width:560px){
+ .shell{padding-inline:17px}
+ .top .shell{min-height:72px}
+ .brand strong{font-size:13px}
+ .brand small{font-size:8px;letter-spacing:1.3px}
+ .logo{width:42px;height:42px}
+ .nav{gap:8px}
+ .nav .navlink{font-size:11px;min-height:44px;padding:9px 12px}
+ .hero{margin-top:18px;border-radius:21px}
+ .hero-copy{padding:32px 24px 4px}
+ .eyebrow{font-size:9px;letter-spacing:1px}
+ h1{font-size:clamp(28px,8vw,38px);line-height:1.45;margin:17px 0 14px}
+ .hero p{font-size:14px;line-height:1.9;margin-bottom:19px}
+ .primary{width:100%;padding:11px 13px;font-size:13px;min-height:48px}
+ .hero-proof{gap:9px;justify-content:center;margin-top:13px}
+ .hero-proof .proof-pill{font-size:10px}
+ .hero-art{min-height:190px;padding:0 18px 14px}
+ .hero-art svg{width:290px}
+ .hero-art:after{display:none}
+ .kicker{margin-top:16px;padding:10px 12px;font-size:11px}
+ .section{padding-top:37px}
+ .headline{margin-bottom:20px}
+ .section h2,.process h2{font-size:24px}
+ .section .description{font-size:13px}
+ .catalog{grid-template-columns:1fr;gap:14px}
+ .product{min-height:224px;padding:23px 22px}
+ .product h3{font-size:19px}
+ .product p{font-size:13px}
+ .process{padding:24px 20px;margin-top:26px;margin-bottom:33px}
+ .process .steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 15px}
+ .step{padding-inline-start:10px}
+ .step:nth-child(3){padding-inline-start:0}
+ .step strong{font-size:13px}
+ .step p{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+ .product,.open,.primary{transition:none!important}
+ .hero-art svg{transform:none}
+}
+
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 <header class="top">
@@ -122,6 +276,11 @@ footer .shell { display:flex; justify-content:space-between; gap:12px; flex-wrap
    <h1 id="hero-heading">من القياس للمخطط<br>حتى للائحة السلعة.</h1>
    <p>أدوات حساب تقنية منظمة للحرفيين وأوراش البناء. دخل المقاسات، راجع الاقتراحات، شوف المخطط، ومن بعد حمّل المواد ديالك فملف PDF.</p>
    <a class="primary" href="calculators/armstrong/">ابدأ بحاسبة Armstrong <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+   <div class="hero-proof" aria-label="خصائص التطبيق">
+    <span class="proof-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>مخططات تقنية</span><i class="proof-dot" aria-hidden="true"></i>
+    <span class="proof-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>PDF مع السلعة</span><i class="proof-dot" aria-hidden="true"></i>
+    <span class="proof-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>بلا تعقيدات</span>
+   </div>
   </div>
   <div class="hero-art" aria-hidden="true">
    <svg viewBox="0 0 360 265" xmlns="http://www.w3.org/2000/svg">
