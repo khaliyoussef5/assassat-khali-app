@@ -25,3 +25,15 @@ h2{font-size:20px;margin:0;font-weight:800;line-height:1.5}.panelheader p{font-s
  .plan:has(svg[data-diagram="armstrong-full"]){overflow-x:auto;overscroll-behavior-x:contain;scrollbar-color:#8eaaa3 #e4eeea;scrollbar-width:thin}
  .plan svg[data-diagram="armstrong-full"]{min-width:760px;max-width:none;height:auto}
 }
+
+
+/* Optional suspension overlay: control does not recalculate or clear materials. */
+.ak-hanger-toggle{display:flex;align-items:center;gap:11px;width:max-content;max-width:100%;cursor:pointer;border:1px solid #b9dbd0;background:#edf7f2;border-radius:12px;padding:11px 14px;margin:-2px 0 14px;min-height:56px;color:#194d4a;transition:background .15s}
+.ak-hanger-toggle:hover{background:#e2f3e9}
+.ak-hanger-toggle:focus-within{outline:3px solid #e9ae6c;outline-offset:2px}
+.ak-hanger-toggle input{width:20px;height:20px;margin:0;accent-color:#0f766e;cursor:pointer;flex:none}
+.ak-hanger-icon{color:#0f766e;background:#fff;border:2px solid #0f766e;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:9px;line-height:1;flex:none}
+.ak-hanger-toggle strong,.ak-hanger-toggle small{display:block}
+.ak-hanger-toggle strong{font-size:13px;font-weight:800}
+.ak-hanger-toggle small{color:#577976;font-size:11px;line-height:1.5}
+@media(max-width:560px){.ak-hanger-toggle{width:100%;padding:10px;gap:8px}}
