@@ -2,7 +2,7 @@ import {calcArmstrongFull,calcBA13Ceiling,calcWall,fullArmstrongOptions,material
 import {armstrongFullPlanSvg} from './ak-armstrong-plan.mjs';
 import {drawArmstrongPrintPage} from './ak-pdf-print.mjs';
 const $=id=>document.getElementById(id),fmt=x=>Number(x).toLocaleString('fr-FR',{maximumFractionDigits:2}),escapeText=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const app=document.body.dataset.calculator;let approved=false,plan=null,chosen=0,options=[];
+const app=document.body.dataset.calculator;let approved=false,plan=null,chosen=0,options=[],showHangers=true;
 const names={'armstrong-full':'Armstrong بلا بوردور','ba13-ceiling':'سقف الجبص بورد BA13','walls':'الحوائط والعزل'};
 const fields={
  'armstrong-full':[
@@ -30,6 +30,10 @@ function coreMarkup(){return `
 <p class="footer">ASSASSAT KHALI — حساب تقريبي وليس مخطط تنفيذ معتمد. راجع المواصفات التقنية ديال المصنع.</p>
 </main>`;}
 document.body.insertAdjacentHTML('afterbegin',coreMarkup());
+if(app==='armstrong-full'){
+ $('summary').insertAdjacentHTML('afterend','<label class="ak-hanger-toggle" for="show-hangers"><input type="checkbox" id="show-hangers" checked><span class="ak-hanger-icon" aria-hidden="true">●</span><span><strong>إظهار العلاقات فالمخطط</strong><small>نقط التعليق على Porteur، تقريباً كل 1m</small></span></label>');
+ $('show-hangers').addEventListener('change',event=>{showHangers=event.target.checked;if(plan)$('plan').innerHTML=svgH(plan);});
+}
 for(const [id,label,val] of fields[app])$('fields').insertAdjacentHTML('beforeend',`<div class="formfield"><label for="in-${id}">${label}</label><input id="in-${id}" type="number" inputmode="decimal" step="0.01" min="0" value="${val}"></div>`);
 const field=(id)=>Number($('in-'+id)?.value), raw=id=>$('in-'+id)?.value;
 const metric=(lab,val)=>`<div class="metric"><small>${lab}</small><strong>${escapeText(val)}</strong></div>`;
@@ -74,7 +78,7 @@ function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',
  $('summary').innerHTML=parts.map(([a,b])=>metric(a,b)).join('');
 }
 const svgH=(p)=>{
- if(p.type==='armstrong-full')return armstrongFullPlanSvg(p);
+ if(p.type==='armstrong-full')return armstrongFullPlanSvg(p,{showHangers});
  const W=900,H=540, sx=80,sy=72, ww=730,hh=385,fmt2=n=>round(n,2),A=[];
  let ratio=p.type==='wall'?p.L/p.H:p.L/p.W;
  let boxW=ww,boxH=hh;if(ratio>ww/hh)boxH=ww/ratio;else boxW=hh*ratio;
@@ -130,7 +134,7 @@ async function createPdf(p){const rows=materials(p),W=1240,H=1754;
  const note='الكميات تقديرية وتحتاج مراجعة التوزيع، الوصلات ونظام التثبيت بالموقع.';text(g,note,1127,noteY+86,21,'#866325',500);text(g,'اعتمد المقاسات النهائية قبل شراء السلعة.',1127,noteY+124,21,'#866325',500);
  // Page 2 is now a real, print-layout plan drawn from geometry, not a resized SVG screenshot.
  if(isArmPrint){
-   drawArmstrongPrintPage(z,p,planCanvas.width,planCanvas.height);
+   drawArmstrongPrintPage(z,p,planCanvas.width,planCanvas.height,{showHangers});
  } else {
    base(z,'المخطط التقني',2);
    box(z,76,218,1088,112,'#e8f4ed');
