@@ -1,3 +1,4 @@
+import {suspensionPoints} from './ak-suspensions.mjs';
 /* ASSASSAT KHALI — print-only technical drawing for PDF page 2.
    No screenshot of the page/SVG. Draw all actual tee segments directly
    to a high-resolution landscape A4 canvas. Calculation source is p. */
@@ -10,7 +11,7 @@ function label(ctx,s,x,y,size=16,color=COLORS.ink,align='left',weight='600',dire
 function segment(ctx,x1,y1,x2,y2,color,width=1){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();}
 function roundbox(ctx,x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}}
 function spanNote(ctx,x,y,val){roundbox(ctx,x-45,y-14,90,29,8,'#fff7e8','#eed2a6');label(ctx,centimeter(val),x,y,15,COLORS.amber,'center','700');}
-export function drawArmstrongPrintPage(ctx,p,width=3508,height=2480){
+export function drawArmstrongPrintPage(ctx,p,width=3508,height=2480,{showHangers=true}={}){
  if(p.type!=='armstrong-full')throw Error('Armstrong-only technical PDF layout');
  if(!Number.isFinite(width)||!Number.isFinite(height)||width<800||height<565)throw Error('Invalid print canvas');
  ctx.save();ctx.setTransform(width/1200,0,0,height/848,0,0);
@@ -52,6 +53,17 @@ export function drawArmstrongPrintPage(ctx,p,width=3508,height=2480){
   segment(ctx,X(tee.x1),Y(tee.y1),X(tee.x2),Y(tee.y2),color,tee.kind==='cross120'?3.8:3);
  }
  for(const yy of p.carrierPositions)segment(ctx,x,Y(yy),x+rw,Y(yy),COLORS.porteur,4.8);
+ // The same suspension locations as the web SVG, drawn at print resolution.
+ if(showHangers){
+  const hangers=suspensionPoints(p);
+  for(const spot of hangers){
+   ctx.beginPath();ctx.arc(X(spot.x),Y(spot.y),5.2,0,2*Math.PI);
+   ctx.fillStyle='#0f766e';ctx.fill();
+   ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();
+   ctx.beginPath();ctx.arc(X(spot.x),Y(spot.y),1.5,0,2*Math.PI);
+   ctx.fillStyle='#fff';ctx.fill();
+  }
+ }
  ctx.restore();
  ctx.strokeStyle='#244c51';ctx.lineWidth=2;ctx.strokeRect(x,y,rw,rh);
  // Leader dimensions at both longitudinal edges; labels don't disappear when cuts are tiny.
@@ -82,6 +94,11 @@ export function drawArmstrongPrintPage(ctx,p,width=3508,height=2480){
  legend(85,COLORS.porteur,'Porteur T',p.porteur);
  legend(394,COLORS.cross120,'Cross 1.20m',p.cross120);
  legend(756,COLORS.cross060,'Cross 0.60m',p.cross060);
+ if(showHangers){
+  ctx.beginPath();ctx.arc(958,734,5.5,0,2*Math.PI);ctx.fillStyle='#0f766e';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  label(ctx,'علاقات',977,734,14,COLORS.ink,'left','700','rtl');
+  label(ctx,String(p.hangers),977,757,16,'#0f766e','left','800');
+ }
  label(ctx,'Cross 0.60: '+p.cross060+' مقاطع فالمخطط / '+p.cross060Stock+' بروفيل للشراء (قبل الاحتياط)',68,804,15,COLORS.sub,'left','600');
  label(ctx,'مقاطع أقل من 30cm: '+p.cross060HalfCount+' (كل جوج أنصاف = بروفيل واحد)',68,827,13,COLORS.sub,'left','600');
  ctx.restore();
