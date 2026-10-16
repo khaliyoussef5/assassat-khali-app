@@ -11,7 +11,16 @@ export function tilesOptions(span){const max=Math.floor((span-EPS)/.6),arr=[];
  if(Math.abs(span/.6-Math.round(span/.6))<EPS){arr.unshift({full:Math.round(span/.6),edge:0,score:-1})}
  return [...new Map(arr.map(x=>[x.full,x])).values()].sort((a,b)=>a.score-b.score||b.full-a.full);
 }
-export function fullArmstrongOptions(L,W){const a=tilesOptions(L),b=tilesOptions(W);if(!a.length||!b.length)throw Error('الغرفة صغيرة بزاف لتوزيع 60×60.');const first={nL:a[0].full,nW:b[0].full};const second={nL:(a[1]||a[0]).full,nW:(b[1]||b[0]).full};return [first,...(first.nL!==second.nL||first.nW!==second.nW?[second]:[])];}
+export function fullArmstrongOptions(L,W){
+ const a=tilesOptions(L),b=tilesOptions(W);if(!a.length||!b.length)throw Error('الغرفة صغيرة بزاف لتوزيع 60×60.');
+ const candidates=a.flatMap(x=>b.map(y=>({nL:x.full,nW:y.full,score:x.score+y.score})));
+ candidates.sort((x,y)=>x.score-y.score||y.nL+y.nW-x.nL-x.nW);
+ const first=candidates[0];
+ // Alternative is the next best whole-grid combination; avoid changing both dimensions at once unnecessarily.
+ const second=candidates.find(p=>(p.nL!==first.nL||p.nW!==first.nW)&&(p.nL===first.nL||p.nW===first.nW)) ||
+              candidates.find(p=>p.nL!==first.nL||p.nW!==first.nW);
+ return [{nL:first.nL,nW:first.nW},...(second?[{nL:second.nL,nW:second.nW}]:[])];
+}
 export function calcArmstrongFull(d){const {L,W}=validateRoom(d.L,d.W);const drop=positive(d.drop,'النزول'),cut=positive(d.cut,'طول قص Tige');
  if(drop<5||drop>120||cut>100)throw Error('النزول بين 5 و120cm، وقص Tige بين 1 و100cm.');
  const nL=Number(d.nL),nW=Number(d.nW);
