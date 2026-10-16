@@ -1,4 +1,5 @@
 import {calcArmstrongFull,calcBA13Ceiling,calcWall,fullArmstrongOptions,materials,round} from './ak-engine.mjs';
+import {armstrongFullPlanSvg} from './ak-armstrong-plan.mjs';
 const $=id=>document.getElementById(id),fmt=x=>Number(x).toLocaleString('fr-FR',{maximumFractionDigits:2}),escapeText=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const app=document.body.dataset.calculator;let approved=false,plan=null,chosen=0,options=[];
 const names={'armstrong-full':'Armstrong بلا بوردور','ba13-ceiling':'سقف الجبص بورد BA13','walls':'الحوائط والعزل'};
@@ -72,6 +73,7 @@ function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',
  $('summary').innerHTML=parts.map(([a,b])=>metric(a,b)).join('');
 }
 const svgH=(p)=>{
+ if(p.type==='armstrong-full')return armstrongFullPlanSvg(p);
  const W=900,H=540, sx=80,sy=72, ww=730,hh=385,fmt2=n=>round(n,2),A=[];
  let ratio=p.type==='wall'?p.L/p.H:p.L/p.W;
  let boxW=ww,boxH=hh;if(ratio>ww/hh)boxH=ww/ratio;else boxW=hh*ratio;
@@ -82,24 +84,7 @@ const svgH=(p)=>{
  A.push(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="مخطط ${names[app]}"><rect width="900" height="540" rx="16" fill="#f9fcfa"/>`);
  A.push(`<text x="450" y="40" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="#244a51">${escapeText(names[app])} — ASSASSAT KHALI</text>`);
  A.push(rect(x,y,boxW,boxH,'#f0f7f3','#244f56',2));
- if(p.type==='armstrong-full'){
-  const C={porteur:'#2563a6',cross120:'#d97706',cross060:'#7c3aed'};
-  for(let v of p.xLines.slice(1,-1)){const [xx]=g(v,0);A.push(line(xx,y,xx,y+boxH,'#cfddd8',1));}
-  for(let v of p.yLines.slice(1,-1)){const [,yy]=g(0,v);A.push(line(x,yy,x+boxW,yy,'#cfddd8',1));}
-  // Every tee is drawn in the solid color of its stock type, even when cut shorter.
-  for(const v of p.crossSegments){
-    const [x1,y1]=g(v.x1,v.y1),[x2,y2]=g(v.x2,v.y2);
-    A.push('<line data-profile="'+v.kind+'" data-cut="'+(v.cut?'yes':'no')+'" x1="'+fmt2(x1)+'" y1="'+fmt2(y1)+'" x2="'+fmt2(x2)+'" y2="'+fmt2(y2)+'" stroke="'+C[v.kind]+'" stroke-width="'+(v.kind==='cross120'?3.4:2.8)+'" stroke-linecap="butt"/>');
-  }
-  for(const v of p.carrierPositions){const [,yy]=g(0,v);
-    A.push('<line data-profile="porteur" x1="'+fmt2(x)+'" y1="'+fmt2(yy)+'" x2="'+fmt2(x+boxW)+'" y2="'+fmt2(yy)+'" stroke="'+C.porteur+'" stroke-width="4.4"/>');
-  }
-  A.push('<g font-family="Arial,Tahoma,sans-serif" font-size="15" font-weight="700" direction="ltr">'+
-    '<line x1="82" y1="479" x2="121" y2="479" stroke="'+C.porteur+'" stroke-width="4.5"/><text x="135" y="484" fill="#254653">Porteur T × '+p.porteur+'</text>'+
-    '<line x1="330" y1="479" x2="368" y2="479" stroke="'+C.cross120+'" stroke-width="4"/><text x="381" y="484" fill="#254653">Cross 1.20 × '+p.cross120+'</text>'+
-    '<line x1="618" y1="479" x2="658" y2="479" stroke="'+C.cross060+'" stroke-width="4"/><text x="671" y="484" fill="#254653">Cross 0.60 × '+p.cross060+'</text>'+
-    '<text x="82" y="509" fill="#415f62" font-size="13">Cross 0.60: '+p.cross060HalfCount+' قطع أقل من 30cm = أنصاف | المجموع '+p.cross060Stock+' بروفيل قبل الاحتياط</text></g>');
- }else if(p.type==='ba13-ceiling'){
+ if(p.type==='ba13-ceiling'){
   const dirL=p.L>=p.W;
   if(p.mode==='hidden'){const inset=Math.min(.1,p.L/4,p.W/4);let [px,py]=g(inset,inset),[qx,qy]=g(p.L-inset,p.W-inset);A.push(rect(px,py,qx-px,qy-py,'none','#df9d4e',4));}
   for(const v of p.positions){if(dirL){const [px,py]=g(v,0);A.push(line(px,y,px,y+boxH,'#397f9c',2.3));}else {const [px,py]=g(0,v);A.push(line(x,py,x+boxW,py,'#397f9c',2.3));}}
