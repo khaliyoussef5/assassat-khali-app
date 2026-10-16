@@ -17,3 +17,11 @@ h2{font-size:20px;margin:0;font-weight:800;line-height:1.5}.panelheader p{font-s
 @media(max-width:800px){.inputs{grid-template-columns:repeat(2,minmax(0,1fr))}.stepguide{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-mark{display:none}}
 @media(max-width:560px){.wrap{padding:16px 14px 35px}.topin{padding:0 13px;min-height:65px}.identity{font-size:11px}.hero{padding:25px 21px;border-radius:17px;margin-bottom:14px}.stepguide{gap:7px}.stepguide span{font-size:10px;padding:9px;white-space:normal;min-height:43px}.panel{padding:20px 15px;margin:13px 0}.panelheader{gap:9px}.panelheader h2{font-size:18px}.options{grid-template-columns:repeat(2,minmax(0,1fr))}.choice{padding:11px;min-height:122px}.choice:last-child:nth-child(odd){grid-column:1 / -1;min-height:100px}.choice strong{font-size:18px}.custom{grid-template-columns:1fr 1fr;padding:10px}.summary{gap:7px}.metric{min-width:calc(50% - 7px);padding:10px}.metric strong{font-size:18px}.actions .primary{width:100%}.hero p{font-size:12px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+
+/* Dimensioned Armstrong technical plan: preserve legibility on narrow screens. */
+.plan svg[data-diagram="armstrong-full"]{width:100%;height:auto;display:block;max-height:none;border-radius:12px}
+@media(max-width:800px){
+ .plan:has(svg[data-diagram="armstrong-full"]){overflow-x:auto;overscroll-behavior-x:contain;scrollbar-color:#8eaaa3 #e4eeea;scrollbar-width:thin}
+ .plan svg[data-diagram="armstrong-full"]{min-width:760px;max-width:none;height:auto}
+}
