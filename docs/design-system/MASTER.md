@@ -8,7 +8,9 @@ Relevant dataset matches: **B2B Service**, **Construction/Architecture**, **Mini
 The project-specific tokens below are *our design decisions*, not direct output of the skill CLI.
 
 ## Design thesis
-Premium Industrial: credible, precise construction-tech utility rather than marketing decoration.
+Homepage: Premium Industrial navigation/catalogue (already accepted).
+
+**Calculator pages: Original Armstrong + BA13 visual style is the approved reference.** It takes precedence over the homepage styling for the interiors of all calculator tools. Keep its light grey backdrop, teal gradient header, white rounded panels, green outlined selected options, understated tables, compact system typography and the sequence dimensions → suggestions → plan → materials.
 Product is a calculation tool with technical diagrams and quantified output.
 Strong geometry, sober materials, a single warm highlight to guide the eye.
 Content order stays: **dimensions → suggestions → plan → materials → PDF**.
@@ -48,3 +50,13 @@ Content order stays: **dimensions → suggestions → plan → materials → PDF
 - Work in feature branch; Cloudflare preview for review.
 - Never merge visual-only work without explicit approval.
 - After approval merge to `main`, and Google Sites automatically gets update.
+
+## Calculator visual language — explicit reference (2026-10-16)
+- Reference source (unchanged): `public/calculators/armstrong/index.html`.
+- Reusable stylesheet: `public/assets/ak-classic.css` (applied after `ak-tools.css`).
+- Approved colors: background `#f3f6f7`, text `#142c35`, header `#112c36 → #174a51`, option accent `#178c79`, primary button `#166e65`, pale selected option `#eaf8f3`.
+- Panel style: white, border `#e0e7e7`, radius 18px, shadow `0 9px 28px #112c3610`.
+- No extra decorative navigation or stage guide on calculator pages: leave focus on inputs, options and technical drawing.
+- Reuse classic styling for `armstrong-full`, `ba13-ceiling`, and `walls`. Keep the original reference calculator untouched.
+- Technical diagram colors, hanger visibility, numbers and PDF rules are separately approved and must **not** be changed by UI skin edits.
+- Homepage retains previously accepted premium palette until its own review; keep home styling and calculator styling distinct.
