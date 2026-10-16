@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {calcArmstrongFull,fullArmstrongOptions,calcBA13Ceiling,calcWall,materials} from '../public/assets/ak-engine.mjs';
+import {armstrongFullPlanSvg} from '../public/assets/ak-armstrong-plan.mjs';
 const root=fileURLToPath(new URL('../public/',import.meta.url));
 test('Full Armstrong 8x4: symmetric cut tiles, no BA13',()=>{
  const options=fullArmstrongOptions(8,4);assert.ok(options.length>=2);const a=calcArmstrongFull({L:8,W:4,drop:30,cut:30,...options[0]});
@@ -107,11 +108,14 @@ test('Cross 0.60 and 1.20 are counted as whole pieces, whether drawn cut or whol
   }
  }
 });
-test('Diagram preserves solid color for cut and full tee stocks',()=>{
- const js=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
- assert.match(js,/data-profile/);
- assert.match(js,/stroke-linecap="butt"/);
- assert.doesNotMatch(js,/stroke-dasharray="5 3"/);
+test('Diagram preserves stock colors for cut and full tees',()=>{
+ const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:6});
+ const svg=armstrongFullPlanSvg(p);
+ assert.match(svg,/data-profile="cross120"/);
+ assert.match(svg,/data-profile="cross060"/);
+ assert.match(svg,/data-profile="porteur"/);
+ assert.match(svg,/stroke-linecap="butt"/);
+ assert.doesNotMatch(svg,/stroke-dasharray="5 3"/);
 });
 
 test('Cut Cross 0.60 smaller than 30cm is half a stock bar; installed count and color remain unchanged',()=>{
@@ -138,9 +142,40 @@ test('Cross 0.60 at exactly 30cm is a whole piece, never a half',()=>{
  assert.equal(p.cross060Stock,p.cross060);
 });
 test('Stock rule never changes the diagram coordinates or color for short tees',()=>{
+ const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:6});
+ const svg=armstrongFullPlanSvg(p);
+ assert.match(svg,/data-profile="cross060"/);
+ assert.match(svg,/stroke="#7C3AED"/);
+ assert.match(svg,new RegExp(p.cross060HalfCount+' مقاطع أقل من 30cm'));
+ assert.match(svg,new RegExp(p.cross060Stock+' بروفيل'));
+});
+
+test('Premium Armstrong plan labels BOTH length sides and BOTH width sides in centimeters',()=>{
+ const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:6});
+ const svg=armstrongFullPlanSvg(p);
+ for(const side of ['length-start','length-end','width-start','width-end']){
+  assert.match(svg,new RegExp('data-side="'+side+'"'));
+ }
+ assert.match(svg,/40 cm/g);
+ assert.match(svg,/20 cm/g);
+ assert.match(svg,/باقي الطول/);
+ assert.match(svg,/باقي العرض/);
+ assert.match(svg,/viewBox="0 0 1000 620"/);
+ assert.equal((svg.match(/data-profile="cross120"/g)||[]).length,p.cross120);
+ assert.equal((svg.match(/data-profile="cross060"/g)||[]).length,p.cross060);
+ assert.equal((svg.match(/data-profile="porteur"/g)||[]).length,p.carrierCount);
+});
+test('Armstrong plan displays zero remainder clearly when tiles fit wall-to-wall',()=>{
+ const p=calcArmstrongFull({L:7.2,W:3.6,drop:30,cut:30,nL:12,nW:6});
+ const svg=armstrongFullPlanSvg(p);
+ assert.match(svg,/باقي الطول: 0 cm/);
+ assert.match(svg,/باقي العرض: 0 cm/);
+ assert.equal((svg.match(/data-profile="cross120"/g)||[]).length,p.cross120);
+ assert.equal((svg.match(/data-profile="cross060"/g)||[]).length,p.cross060);
+});
+test('Armstrong plan is pure rendering and integrated into calculator/PDF flow',()=>{
  const js=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
- assert.match(js,/data-profile/);
- assert.match(js,/p\.cross060HalfCount/);
- assert.match(js,/p\.cross060Stock/);
- assert.match(js,/cross060:'#7c3aed'/);
+ assert.match(js,/import \{armstrongFullPlanSvg\}/);
+ assert.match(js,/if\(p\.type==='armstrong-full'\)return armstrongFullPlanSvg\(p\)/);
+ assert.match(js,/const svg=svgH\(p\)/);
 });
