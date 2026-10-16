@@ -176,6 +176,6 @@ test('Armstrong plan displays zero remainder clearly when tiles fit wall-to-wall
 test('Armstrong plan is pure rendering and integrated into calculator/PDF flow',()=>{
  const js=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
  assert.match(js,/import \{armstrongFullPlanSvg\}/);
- assert.match(js,/if\(p\.type==='armstrong-full'\)return armstrongFullPlanSvg\(p\)/);
+ assert.match(js,/if\(p\.type==='armstrong-full'\)return armstrongFullPlanSvg\(p,\{showHangers\}\)/);
  assert.match(js,/const svg=svgH\(p\)/);
 });
