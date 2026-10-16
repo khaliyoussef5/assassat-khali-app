@@ -46,19 +46,19 @@ test('Three independent routes are present and do not replace current Armstrong 
 });
 
 
-test('8x4 full Armstrong: counted tee segments match layout and stock types',()=>{
+test('8x4: no extra Porteur at a 1.10m wall remainder and every segment counts as a full tee',()=>{
  const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:5});
- assert.deepEqual(p.carrierPositions,[.5,1.7,2.9,3.5]);
- assert.equal(p.porteur,12);
- assert.equal(p.cross120,26); // 13 rows x 2 bays of 1.20
- assert.equal(p.cross060,67); // 13 rows x (2 wall cuts+1 bay 0.60) + 14 x 2 infill
- assert.equal(p.cross060Full,37);assert.equal(p.cross060Cut,30);
- assert.equal(p.wall060,26);assert.equal(p.infill060,28);
+ assert.deepEqual(p.carrierPositions,[.5,1.7,2.9]);
+ assert.equal(p.porteur,9);
+ assert.equal(p.cross120,39); // 13 rows × 2 standard 1.20 + 1 cut 1.10 to wall
+ assert.equal(p.cross120Cut,13);assert.equal(p.cross120Full,26);
+ assert.equal(p.cross060,55); // 13 × 0.50 wall plus 14 × 3 infill
+ assert.equal(p.cross060Cut,19);assert.equal(p.cross060Full,36);
+ assert.equal(p.wall060,13);assert.equal(p.infill060,42);
  assert.equal(p.crossSegments.length,p.cross120+p.cross060);
- assert.equal(p.crossSegments.filter(v=>v.kind==='cross120').length,p.cross120);
- assert.equal(p.crossSegments.filter(v=>v.kind==='cross060').length,p.cross060);
- assert.ok(p.crossSegments.every(v=>v.length<=(v.kind==='cross120'?1.2:.6)+1e-7));
- assert.ok(p.crossSegments.filter(v=>v.kind==='cross120').every(v=>!v.cut&&Math.abs(v.length-1.2)<1e-7));
+ assert.ok(p.crossSegments.every(v=>v.length>0&&v.length<=(v.kind==='cross120'?1.2:.6)+1e-7));
+ assert.equal(materials(p).find(v=>v.name==='Cross 1.20m').qty,39);
+ assert.equal(materials(p).find(v=>v.name==='Cross 0.60m').qty,55);
 });
 test('8x4 alternative: 40/20cm full Armstrong border cuts update the grid',()=>{
  const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:6});
@@ -76,8 +76,39 @@ test('Main runners remain within 0.60m of wall and 1.20m of each other',()=>{
  for(const [L,W] of [[8,4],[5.8,2.7],[6,4.2],[3,3],[2.5,1.4]]){
  const o=fullArmstrongOptions(L,W)[0],p=calcArmstrongFull({L,W,drop:30,cut:30,...o});
  assert.ok(p.carrierPositions[0]<=.6+1e-8);
- assert.ok(W-p.carrierPositions.at(-1)<=.6+1e-8);
+ assert.ok(W-p.carrierPositions.at(-1)<=1.2+1e-8);
  for(let i=1;i<p.carrierPositions.length;i++)assert.ok(p.carrierPositions[i]-p.carrierPositions[i-1]<=1.2+1e-8);
  assert.ok(p.crossSegments.every(v=>v.length>0&&v.length<=(v.kind==='cross120'?1.2:.6)+1e-7));
  }
+});
+
+test('A 1.00m final wall bay is one Cross 1.20, no extra Porteur',()=>{
+ const p=calcArmstrongFull({L:8,W:1.4,drop:30,cut:30,nL:12,nW:1});
+ assert.deepEqual(p.carrierPositions,[.4]);
+ assert.equal(p.porteur,3);
+ const edge=p.crossSegments.filter(v=>v.placement==='to-wall'&&v.kind==='cross120');
+ assert.equal(edge.length,13);
+ assert.ok(edge.every(v=>v.cut&&Math.abs(v.length-1)<1e-7));
+ assert.equal(p.cross120Cut,13);
+ const infill=p.crossSegments.filter(v=>v.placement==='infill');
+ assert.equal(infill.length,p.lengthCuts.length);
+ assert.ok(infill.every(v=>Math.abs(v.y1-1)<1e-7));
+});
+test('Cross 0.60 and 1.20 are counted as whole pieces, whether drawn cut or whole',()=>{
+ for(const [L,W] of [[8,4],[8,1.4],[5.8,2.7],[3,3],[2.5,1.4]]){
+  const o=fullArmstrongOptions(L,W)[0],p=calcArmstrongFull({L,W,drop:30,cut:30,...o});
+  for(const [key,len] of [['cross060',.6],['cross120',1.2]]){
+   const parts=p.crossSegments.filter(s=>s.kind===key);
+   assert.equal(p[key],parts.length);
+   assert.equal(p[key+'Full']+p[key+'Cut'],parts.length);
+   assert.ok(parts.every(v=>v.length>0&&v.length<=len+1e-6));
+   assert.equal(materials(p).find(v=>v.name==='Cross '+(len===.6?'0.60m':'1.20m')).qty,parts.length);
+  }
+ }
+});
+test('Diagram preserves solid color for cut and full tee stocks',()=>{
+ const js=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
+ assert.match(js,/data-profile/);
+ assert.match(js,/stroke-linecap="butt"/);
+ assert.doesNotMatch(js,/stroke-dasharray="5 3"/);
 });
