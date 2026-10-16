@@ -44,3 +44,40 @@ test('Three independent routes are present and do not replace current Armstrong 
   const html=readFileSync(root+`calculators/${p}/index.html`,'utf8');assert.match(html,new RegExp(`data-calculator="${p}"`));
  }
 });
+
+
+test('8x4 full Armstrong: counted tee segments match layout and stock types',()=>{
+ const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:5});
+ assert.deepEqual(p.carrierPositions,[.5,1.7,2.9,3.5]);
+ assert.equal(p.porteur,12);
+ assert.equal(p.cross120,26); // 13 rows x 2 bays of 1.20
+ assert.equal(p.cross060,67); // 13 rows x (2 wall cuts+1 bay 0.60) + 14 x 2 infill
+ assert.equal(p.cross060Full,37);assert.equal(p.cross060Cut,30);
+ assert.equal(p.wall060,26);assert.equal(p.infill060,28);
+ assert.equal(p.crossSegments.length,p.cross120+p.cross060);
+ assert.equal(p.crossSegments.filter(v=>v.kind==='cross120').length,p.cross120);
+ assert.equal(p.crossSegments.filter(v=>v.kind==='cross060').length,p.cross060);
+ assert.ok(p.crossSegments.every(v=>v.length<=(v.kind==='cross120'?1.2:.6)+1e-7));
+ assert.ok(p.crossSegments.filter(v=>v.kind==='cross120').every(v=>!v.cut&&Math.abs(v.length-1.2)<1e-7));
+});
+test('8x4 alternative: 40/20cm full Armstrong border cuts update the grid',()=>{
+ const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:6});
+ assert.deepEqual(p.carrierPositions,[.2,1.4,2.6,3.8]);
+ assert.equal(p.cross120,39);assert.equal(p.cross060,68);assert.equal(p.cross060Cut,32);
+});
+test('7.2x3.6 full modules need no cut pieces',()=>{
+ const p=calcArmstrongFull({L:7.2,W:3.6,drop:30,cut:30,nL:12,nW:6});
+ assert.deepEqual(p.carrierPositions,[.6,1.8,3]);
+ assert.equal(p.cross120,22);assert.equal(p.cross060,46);
+ assert.equal(p.cross060Cut,0);assert.equal(p.rowIntersections,11);
+ assert.ok(p.crossSegments.every(v=>!v.cut));
+});
+test('Main runners remain within 0.60m of wall and 1.20m of each other',()=>{
+ for(const [L,W] of [[8,4],[5.8,2.7],[6,4.2],[3,3],[2.5,1.4]]){
+ const o=fullArmstrongOptions(L,W)[0],p=calcArmstrongFull({L,W,drop:30,cut:30,...o});
+ assert.ok(p.carrierPositions[0]<=.6+1e-8);
+ assert.ok(W-p.carrierPositions.at(-1)<=.6+1e-8);
+ for(let i=1;i<p.carrierPositions.length;i++)assert.ok(p.carrierPositions[i]-p.carrierPositions[i-1]<=1.2+1e-8);
+ assert.ok(p.crossSegments.every(v=>v.length>0&&v.length<=(v.kind==='cross120'?1.2:.6)+1e-7));
+ }
+});
