@@ -28,10 +28,10 @@ export function buildArmstrongGrid(L,W,lengthCuts,widthCuts){
  const innerY=yLines.slice(1,-1);
  if(!innerY.length)throw Error('العرض صغير على شبكة Porteur القياسية. خاص توزيع خاص للحائط؛ ما يمكنش نحسبوه تلقائياً.');
  const mains=[];
- // Choose the first inner line, then 1.20m, and shorten the last bay to 0.60m if required.
+ // Porteur follows the longitudinal direction on every second internal 60cm line.
+ // Keep the last edge bay as one Cross 0.60 or one Cross 1.20, without an extra Porteur.
+ // A shortened tee drawn at the wall still counts as one complete standard stock piece.
  for(let i=0;i<innerY.length;i+=2)mains.push(innerY[i]);
- const last=innerY.at(-1);
- if(W-mains.at(-1)>.6+EPS && last-mains.at(-1)>.0001)mains.push(last);
  const transverse=[];
  const add=(kind,x1,y1,x2,y2,placement)=>{
    const len=round(Math.hypot(x2-x1,y2-y1),6),stock=kind==='cross120'?1.2:.6;
@@ -45,20 +45,21 @@ export function buildArmstrongGrid(L,W,lengthCuts,widthCuts){
      const y0=supports[i],y1=supports[i+1],gap=y1-y0;
      if(gap>1.2+EPS)throw Error('تباعد Porteur أكثر من 1.20m.');
      if(gap<.0001)continue;
-     if(gap>.6+EPS){
-       if(i===0||i===supports.length-2)throw Error('آخر Porteur بعيد أكثر من 60cm على الحائط.');
-       add('cross120',x,y0,x,y1,'between-porteurs');
-     }else add('cross060',x,y0,x,y1,i===0||i===supports.length-2?'to-wall':'between-porteurs');
+     const placement=(i===0||i===supports.length-2)?'to-wall':'between-porteurs';
+     if(gap>.6+EPS)add('cross120',x,y0,x,y1,placement);
+     else add('cross060',x,y0,x,y1,placement);
    }
  }
- // One row of longitudinal 0.60 tees bisects every 1.20m gap between Porteurs.
- // The end pieces are cut to the actual tile border dimension.
- for(let i=0;i<mains.length-1;i++){
-   const gap=mains[i+1]-mains[i];
-   if(gap>1.2+EPS)throw Error('تباعد Porteur أكثر من 1.20m.');
+ // Split any bay over 60cm, including the final shortened bay to the wall.
+ // Place Cross 0.60 exactly on the existing tile-grid line (not at an arbitrary midpoint).
+ for(let i=0;i<supports.length-1;i++){
+   const low=supports[i],high=supports[i+1],gap=high-low;
+   if(gap>1.2+EPS)throw Error('تباعد الدعم أكثر من 1.20m.');
    if(gap>.6+EPS){
-     const y=round((mains[i]+mains[i+1])/2,6);
-     for(let j=0;j<xLines.length-1;j++)add('cross060',xLines[j],y,xLines[j+1],y,'infill');
+     const between=yLines.filter(v=>v>low+EPS&&v<high-EPS);
+     if(between.length!==1)throw Error('توزيع الشبكة لا يتطابق مع فواصل بلاكات 60cm.');
+     const middle=between[0];
+     for(let j=0;j<xLines.length-1;j++)add('cross060',xLines[j],middle,xLines[j+1],middle,'infill');
    }
  }
  const c120=transverse.filter(v=>v.kind==='cross120');
@@ -96,7 +97,7 @@ export function calcArmstrongFull(d){const {L,W}=validateRoom(d.L,d.W);const dro
  const rods=ceil(hangers/rodPieces),perimeter=2*(L+W);
  return {type:'armstrong-full',L,W,drop,cut,nL,nW,edgeL:round(edgeL,5),edgeW:round(edgeW,5),partsL,partsW,wholeTiles,edgePieces,tiles,area,porteur,cross120,cross060,carrierCount,carrierPositions:mains,hangers,rods,rodPieces,angle:ceil(perimeter/3),wallFix:ceil(perimeter/.5),lengthCuts:boundaryCuts,widthCuts,perimeter,rowIntersections,lateralBays:carrierCount+1,
  ...grid,
- note:'المخطط والأعداد متطابقة: Porteur مع الطول، Cross 1.20 بين Porteurs على مسافة 1.20، وCross 0.60 في فراغات 0.60 وفي القواطع نحو الحيطان، مع قصّ الأطراف. القطع المقطوعة محسوبة كل قطعة مستقلة بلا استغلال البقايا؛ يجب التحقق من الوصلات والتحميل ونوع النظام والقصّات قبل الشراء.'};
+ note:'كل قطعة Cross قصيرة فالرسم محسوبة كاملة فالشراء حسب النوع: أقل من 0.60m = Cross 0.60، وأكثر من 0.60m حتى 1.20m = Cross 1.20. ما كنزيدوش Porteur إضافي غير للفراغ الأخير. Cross 1.20 المقطوعة باتجاه الحائط وارتكازها على Cornière خاصهم تحقق من نظام المصنع قبل التنفيذ.'};
 }
 export function calcBA13Ceiling(d){const {L,W}=validateRoom(d.L,d.W);const type=d.mode==='hidden'?'hidden':'plain';const drop=positive(d.drop,'النزول');if(drop<6||drop>100)throw Error('النزول خاصو يكون بين 6 و100cm.');
  const first=.15,spacing=.50,span=Math.min(L,W),distribution=Math.max(L,W);
@@ -142,8 +143,8 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  if(p.type==='armstrong-full'){
  add('بلاكات Armstrong 60×60 (قبل تحسين القصّات)',p.tiles,'بلاكة',.05,'كامل + مقطوع؛ تقدير متحفظ');
  add('Porteur T 3.60m',p.porteur,'قطعة',.1,'مع اتجاه طول الغرفة');
- add('Cross 1.20m',p.cross120,'قطعة',.1,`${p.cross120Full} كاملة — بين Porteurs 1.20m`);
- add('Cross 0.60m',p.cross060,'قطعة',.1,`${p.cross060Full} كاملة + ${p.cross060Cut} مقصوصة — الحيطان والفراغات`);
+ add('Cross 1.20m',p.cross120,'قطعة',.1,`${p.cross120Full} بدون قص + ${p.cross120Cut} قصيرة ومقصوصة، وكل وحدة محسوبة بروفيل 1.20 كامل`);
+ add('Cross 0.60m',p.cross060,'قطعة',.1,`${p.cross060Full} بدون قص + ${p.cross060Cut} قصيرة ومقصوصة، وكل وحدة محسوبة بروفيل 0.60 كامل`);
  add('Cornière محيطية 3m',p.angle,'قطعة',.1,'على الحائط فقط');
  add('Cheville laiton',p.hangers,'قطعة',.1);add('Coulisseau',p.hangers,'قطعة',.1);
  add('Tige 1m',p.rods,'قطعة',.1,`${p.rodPieces} قطع من كل Tige`);add('Cheville à frapper',p.wallFix,'قطعة',.15,'تقدير كل 50cm');
