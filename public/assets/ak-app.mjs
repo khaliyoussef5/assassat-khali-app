@@ -13,9 +13,9 @@ const fields={
  ['L','طول الحائط (m)',5],['H','ارتفاع الحائط (m)',2.8],['doorW','عرض الباب (m)',.9],['doorH','ارتفاع الباب (m)',2.1],['windowW','عرض الشباك (m)',0],['windowH','ارتفاع الشباك (m)',0]
  ]};
 const headlines={
- 'armstrong-full':{desc:'Armstrong على المساحة كاملة، بلا BA13. اختر توزيع البلاكات المقطوعة على حواف الغرفة.',icon:'▦'},
- 'ba13-ceiling':{desc:'سقف عادي أو إنارة مخفية، مع توزيع Fourrure والألواح واللوازم التقديرية.',icon:'▤'},
- 'walls':{desc:'Cloison وDoublage والعزل، مع حساب Rails وMontants وBA13 حسب الفتحات.',icon:'▥'}
+ 'armstrong-full':{desc:'Armstrong على المساحة كاملة، بلا BA13. اختر توزيع البلاكات المقطوعة على حواف الغرفة.',icon:'<svg viewBox="0 0 46 46" fill="none" aria-hidden="true"><rect x="4" y="7" width="38" height="30" rx="3" stroke-width="2"/><path d="M16.7 7v30M29.3 7v30M4 17h38M4 27h38" stroke-width="1.5"/><path d="M4 37l5 5h28l5-5" stroke="#6BBDAF" stroke-width="1.5"/></svg>'},
+ 'ba13-ceiling':{desc:'سقف عادي أو إنارة مخفية، مع توزيع Fourrure والألواح واللوازم التقديرية.',icon:'<svg viewBox="0 0 46 46" fill="none" aria-hidden="true"><rect x="5" y="8" width="36" height="28" rx="3" stroke-width="2"/><path d="M5 17h36M14 8v28M32 8v28M5 27h36" stroke-width="1.5"/></svg>'},
+ 'walls':{desc:'Cloison وDoublage والعزل، مع حساب Rails وMontants وBA13 حسب الفتحات.',icon:'<svg viewBox="0 0 46 46" fill="none" aria-hidden="true"><rect x="7" y="5" width="32" height="36" rx="2" stroke-width="2"/><path d="M18 5v36M29 5v36M7 18h32M7 29h32" stroke-width="1.5"/></svg>'}
 };
 if(!headlines[app])throw Error('Unknown calculator');
 function coreMarkup(){return `
@@ -25,7 +25,7 @@ function coreMarkup(){return `
 <div class="stepguide" aria-label="خطوات الحاسبة"><span><b>01</b> القياسات</span><span><b>02</b> الاختيارات</span><span><b>03</b> المخطط</span><span><b>04</b> السلعة وPDF</span></div>
 <section class="panel"><div class="panelheader"><span class="step">01</span><div><h2>قياسات المشروع</h2><p>دخل المقاسات الحقيقية قبل مراجعة المخطط.</p></div></div><div class="inputs" id="fields"></div><div class="hint"><b>مهم:</b> الكميات تقديرية للحصر المبدئي؛ خاص مراجعة النظام المعتمد والوصلات والتثبيت قبل الشراء والتنفيذ.</div></section>
 <section class="panel"><div class="panelheader"><span class="step">02</span><div><h2 id="option-title">نوع التوزيع والاختيارات</h2><p id="option-subtitle">راجع الاختيارات أو بدّل القياسات.</p></div></div><div id="options"></div><div id="custom" class="custom" hidden></div></section>
-<section class="panel"><div class="panelheader"><span class="step">03</span><div><h2>المخطط التفاعلي</h2><p>رسم تقريبي متناسب مع المقاسات والتوزيع المختار.</p></div></div><div class="summary" id="summary"></div><div class="plan" id="plan" role="img" aria-label="مخطط توزيع تقني"></div><div id="error" class="error" role="alert" hidden></div><div class="actions"><button type="button" id="approve" class="primary">اعتمد المخطط وحسب السلعة</button><button type="button" id="svg-download" class="secondary">تحميل المخطط SVG</button></div></section>
+<section class="panel"><div class="panelheader"><span class="step">03</span><div><h2>المخطط التفاعلي</h2><p>رسم تقريبي متناسب مع المقاسات والتوزيع المختار.</p></div></div><div class="plan" id="plan" role="img" aria-label="مخطط توزيع تقني"></div><div class="summary" id="summary"></div><div id="error" class="error" role="alert" hidden></div><div class="actions"><button type="button" id="approve" class="primary">اعتمد المخطط وحسب السلعة</button><button type="button" id="svg-download" class="secondary">تحميل المخطط SVG</button></div></section>
 <section class="panel"><div class="panelheader"><span class="step">04</span><div><h2>لائحة السلعة</h2><p>كتبان من بعد ما تعتمد المخطط المختار.</p></div></div><div id="locked" class="locked">راجع المخطط أولاً، ومن بعد ضغط على «اعتمد المخطط وحسب السلعة».</div><div id="result" class="result" hidden><div class="bom" id="bom"></div><div class="actions"><button type="button" id="pdf-download" class="primary">تحميل لائحة السلعة + المخطط PDF</button><button type="button" id="csv-download" class="secondary">تحميل CSV</button><button type="button" id="print" class="secondary">طباعة</button></div><div id="note" class="smallprint"></div></div></section>
 <p class="footer">ASSASSAT KHALI — حساب تقريبي وليس مخطط تنفيذ معتمد. راجع المواصفات التقنية ديال المصنع.</p>
 </main>`;}
