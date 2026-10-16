@@ -86,10 +86,10 @@ const svgH=(p)=>{
   const C={porteur:'#2563a6',cross120:'#d97706',cross060:'#7c3aed'};
   for(let v of p.xLines.slice(1,-1)){const [xx]=g(v,0);A.push(line(xx,y,xx,y+boxH,'#cfddd8',1));}
   for(let v of p.yLines.slice(1,-1)){const [,yy]=g(0,v);A.push(line(x,yy,x+boxW,yy,'#cfddd8',1));}
-  // Color-coded actual tee pieces; cut pieces are dashed.
+  // Every tee is drawn in the solid color of its stock type, even when cut shorter.
   for(const v of p.crossSegments){
     const [x1,y1]=g(v.x1,v.y1),[x2,y2]=g(v.x2,v.y2);
-    A.push('<line data-profile="'+v.kind+'" data-cut="'+(v.cut?'yes':'no')+'" x1="'+fmt2(x1)+'" y1="'+fmt2(y1)+'" x2="'+fmt2(x2)+'" y2="'+fmt2(y2)+'" stroke="'+C[v.kind]+'" stroke-width="'+(v.kind==='cross120'?3.4:2.8)+'" '+(v.cut?'stroke-dasharray="5 3"':'')+' stroke-linecap="butt"/>');
+    A.push('<line data-profile="'+v.kind+'" data-cut="'+(v.cut?'yes':'no')+'" x1="'+fmt2(x1)+'" y1="'+fmt2(y1)+'" x2="'+fmt2(x2)+'" y2="'+fmt2(y2)+'" stroke="'+C[v.kind]+'" stroke-width="'+(v.kind==='cross120'?3.4:2.8)+'" stroke-linecap="butt"/>');
   }
   for(const v of p.carrierPositions){const [,yy]=g(0,v);
     A.push('<line data-profile="porteur" x1="'+fmt2(x)+'" y1="'+fmt2(yy)+'" x2="'+fmt2(x+boxW)+'" y2="'+fmt2(yy)+'" stroke="'+C.porteur+'" stroke-width="4.4"/>');
@@ -98,7 +98,7 @@ const svgH=(p)=>{
     '<line x1="82" y1="479" x2="121" y2="479" stroke="'+C.porteur+'" stroke-width="4.5"/><text x="135" y="484" fill="#254653">Porteur T × '+p.porteur+'</text>'+
     '<line x1="330" y1="479" x2="368" y2="479" stroke="'+C.cross120+'" stroke-width="4"/><text x="381" y="484" fill="#254653">Cross 1.20 × '+p.cross120+'</text>'+
     '<line x1="618" y1="479" x2="658" y2="479" stroke="'+C.cross060+'" stroke-width="4"/><text x="671" y="484" fill="#254653">Cross 0.60 × '+p.cross060+'</text>'+
-    '<line x1="82" y1="509" x2="121" y2="509" stroke="'+C.cross060+'" stroke-width="3.5" stroke-dasharray="5 4"/><text x="135" y="514" fill="#415f62" font-size="13">Dashed = cut profile / قطع مقصوصة ('+p.cross060Cut+')</text></g>');
+    '<text x="82" y="509" fill="#415f62" font-size="13">كل قاطع قصير محسوب قطعة كاملة • مقصوصة: 1.20 × '+p.cross120Cut+' و 0.60 × '+p.cross060Cut+'</text></g>');
  }else if(p.type==='ba13-ceiling'){
   const dirL=p.L>=p.W;
   if(p.mode==='hidden'){const inset=Math.min(.1,p.L/4,p.W/4);let [px,py]=g(inset,inset),[qx,qy]=g(p.L-inset,p.W-inset);A.push(rect(px,py,qx-px,qy-py,'none','#df9d4e',4));}
