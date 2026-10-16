@@ -129,7 +129,7 @@ async function createPdf(p){const rows=materials(p),W=1240,H=1754;
  const note='الكميات تقديرية وتحتاج مراجعة التوزيع، الوصلات ونظام التثبيت بالموقع.';text(g,note,1127,noteY+86,21,'#866325',500);text(g,'اعتمد المقاسات النهائية قبل شراء السلعة.',1127,noteY+124,21,'#866325',500);
  base(z,'المخطط التقني',2);box(z,76,218,1088,112,'#e8f4ed');text(z,`القياسات: ${fmt(p.L)} × ${fmt(p.type==='wall'?p.H:p.W)} m`,1124,269,30,'#23535b',800);text(z,`${names[app]} — رسم توضيحي`,1124,309,23,'#58777d',600);
  box(z,76,353,1088,830,'#f5f9f7');const svg=svgH(p),img=new Image();await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(Error('تعذر تحميل صورة المخطط'));img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)});
- z.drawImage(img,80,420,1080,650);box(z,76,1235,1088,210,'#f3f8f5');text(z,'ملاحظات المخطط',1127,1290,30,'#21474c',800);
+ if(p.type==='armstrong-full') z.drawImage(img,96,420,1048,650); else z.drawImage(img,80,420,1080,650);box(z,76,1235,1088,210,'#f3f8f5');text(z,'ملاحظات المخطط',1127,1290,30,'#21474c',800);
  const words=p.note.match(/.{1,73}(?:\s|$)/g)||[p.note];words.slice(0,3).forEach((line,i)=>text(z,line.trim(),1127,1330+i*40,21,'#527174',500));
  box(z,76,1490,1088,100,'#fff4e5');text(z,'المخطط توضيحي وليس مخططاً إنشائياً معتمداً.',1124,1548,23,'#8b6227',700);
  function jpeg(c){const raw=atob(c.toDataURL('image/jpeg',.94).split(',')[1]);return Uint8Array.from(raw,x=>x.charCodeAt(0))}
