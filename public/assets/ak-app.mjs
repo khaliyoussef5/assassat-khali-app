@@ -1,5 +1,6 @@
 import {calcArmstrongFull,calcBA13Ceiling,calcWall,fullArmstrongOptions,materials,round} from './ak-engine.mjs';
 import {armstrongFullPlanSvg} from './ak-armstrong-plan.mjs';
+import {drawArmstrongPrintPage} from './ak-pdf-print.mjs';
 const $=id=>document.getElementById(id),fmt=x=>Number(x).toLocaleString('fr-FR',{maximumFractionDigits:2}),escapeText=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const app=document.body.dataset.calculator;let approved=false,plan=null,chosen=0,options=[];
 const names={'armstrong-full':'Armstrong بلا بوردور','ba13-ceiling':'سقف الجبص بورد BA13','walls':'الحوائط والعزل'};
@@ -116,7 +117,7 @@ $('pdf-download').addEventListener('click',async()=>{if(!approved||!plan)return;
 for(const el of $('fields').querySelectorAll('input,select'))el.addEventListener('input',()=>{if(app==='armstrong-full')chosen=0;refresh()});
 async function createPdf(p){const rows=materials(p),W=1240,H=1754;
  const page=document.createElement('canvas');page.width=W;page.height=H;const g=page.getContext('2d');if(!g)throw Error('المتصفح لا يدعم canvas');
- const planCanvas=document.createElement('canvas');planCanvas.width=W;planCanvas.height=H;const z=planCanvas.getContext('2d');if(!z)throw Error('المتصفح لا يدعم canvas');
+ const isArmPrint=p.type==='armstrong-full';const planCanvas=document.createElement('canvas');planCanvas.width=isArmPrint?3508:W;planCanvas.height=isArmPrint?2480:H;const z=planCanvas.getContext('2d');if(!z)throw Error('المتصفح لا يدعم canvas');
  function base(ctx,title,num){ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);ctx.fillStyle='#14333a';ctx.fillRect(0,0,W,190);ctx.fillStyle='#0f8977';ctx.fillRect(0,185,W,6);text(ctx,'ASSASSAT KHALI',78,82,35,'#cee9dd',800,'left');text(ctx,title,1163,108,42,'#fff',800);text(ctx,names[app],1163,156,22,'#bedad5',500);
  ctx.fillStyle='#dce7e3';ctx.fillRect(76,H-104,1090,2);text(ctx,'ASSASSAT KHALI · OUTIL TECHNIQUE',76,H-62,21,'#70858a',700,'left');text(ctx,`${num} / 2`,1163,H-62,24,'#70858a',600)}
  function text(ctx,v,x,y,size=25,color='#243f47',weight=500,align='right'){ctx.font=`${weight} ${size}px Tahoma,Arial,sans-serif`;ctx.textAlign=align;ctx.textBaseline='alphabetic';ctx.direction=align==='left'?'ltr':'rtl';ctx.fillStyle=color;ctx.fillText(String(v),x,y)}
@@ -127,15 +128,42 @@ async function createPdf(p){const rows=materials(p),W=1240,H=1754;
  const rowH=74;let off=439;rows.forEach((r,i)=>{const y=off+i*rowH;if(i%2===0){g.fillStyle='#f3f9f5';g.fillRect(76,y,1088,rowH)}g.fillStyle='#e2ebe8';g.fillRect(76,y+rowH-1,1088,1);text(g,r.name,1127,y+35,21,'#1c4148',700);if(r.why)text(g,r.why,1127,y+63,16,'#718489',400);text(g,`${fmt(r.qty)} ${r.unit}`,550,y+46,23,'#23545b',700);text(g,`${fmt(r.buy)} ${r.unit}`,266,y+46,24,'#167762',800);});
  const noteY=Math.min(off+rows.length*rowH+32,H-282);box(g,76,noteY,1088,155,'#fff4e4');text(g,'تنبيه مهم',1127,noteY+41,26,'#976822',800);
  const note='الكميات تقديرية وتحتاج مراجعة التوزيع، الوصلات ونظام التثبيت بالموقع.';text(g,note,1127,noteY+86,21,'#866325',500);text(g,'اعتمد المقاسات النهائية قبل شراء السلعة.',1127,noteY+124,21,'#866325',500);
- base(z,'المخطط التقني',2);box(z,76,218,1088,112,'#e8f4ed');text(z,`القياسات: ${fmt(p.L)} × ${fmt(p.type==='wall'?p.H:p.W)} m`,1124,269,30,'#23535b',800);text(z,`${names[app]} — رسم توضيحي`,1124,309,23,'#58777d',600);
- box(z,76,353,1088,830,'#f5f9f7');const svg=svgH(p),img=new Image();await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(Error('تعذر تحميل صورة المخطط'));img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)});
- if(p.type==='armstrong-full') z.drawImage(img,96,420,1048,650); else z.drawImage(img,80,420,1080,650);box(z,76,1235,1088,210,'#f3f8f5');text(z,'ملاحظات المخطط',1127,1290,30,'#21474c',800);
- const words=p.note.match(/.{1,73}(?:\s|$)/g)||[p.note];words.slice(0,3).forEach((line,i)=>text(z,line.trim(),1127,1330+i*40,21,'#527174',500));
- box(z,76,1490,1088,100,'#fff4e5');text(z,'المخطط توضيحي وليس مخططاً إنشائياً معتمداً.',1124,1548,23,'#8b6227',700);
+ // Page 2 is now a real, print-layout plan drawn from geometry, not a resized SVG screenshot.
+ if(isArmPrint){
+   drawArmstrongPrintPage(z,p,planCanvas.width,planCanvas.height);
+ } else {
+   base(z,'المخطط التقني',2);
+   box(z,76,218,1088,112,'#e8f4ed');
+   text(z,'القياسات: '+fmt(p.L)+' × '+fmt(p.type==='wall'?p.H:p.W)+' m',1124,269,30,'#23535b',800);
+   text(z,names[app]+' — رسم توضيحي',1124,309,23,'#58777d',600);
+   box(z,76,353,1088,830,'#f5f9f7');
+   const svg=svgH(p),img=new Image();
+   await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(Error('تعذر تحميل صورة المخطط'));img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)});
+   z.drawImage(img,80,420,1080,650);
+   box(z,76,1235,1088,210,'#f3f8f5');
+   text(z,'ملاحظات المخطط',1127,1290,30,'#21474c',800);
+   const words=p.note.match(/.{1,73}(?:\s|$)/g)||[p.note];
+   words.slice(0,3).forEach((line,i)=>text(z,line.trim(),1127,1330+i*40,21,'#527174',500));
+   box(z,76,1490,1088,100,'#fff4e5');
+   text(z,'المخطط توضيحي وليس مخططاً إنشائياً معتمداً.',1124,1548,23,'#8b6227',700);
+ }
  function jpeg(c){const raw=atob(c.toDataURL('image/jpeg',.94).split(',')[1]);return Uint8Array.from(raw,x=>x.charCodeAt(0))}
- const images=[jpeg(page),jpeg(planCanvas)],enc=new TextEncoder(),chunks=[];let len=0,offsets=[0];const put=v=>{const b=typeof v==='string'?enc.encode(v):v;chunks.push(b);len+=b.length};const object=(id,fn)=>{offsets[id]=len;put(`${id} 0 obj\n`);fn();put('\nendobj\n')};
- put('%PDF-1.4\n%AKPDF\n');object(1,()=>put('<< /Type /Catalog /Pages 2 0 R >>'));object(2,()=>put('<< /Type /Pages /Kids [3 0 R 6 0 R] /Count 2 >>'));
- images.forEach((b,i)=>{const id=3+i*3;object(id,()=>put(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 ${id+1} 0 R >> >> /Contents ${id+2} 0 R >>`));object(id+1,()=>{put(`<< /Type /XObject /Subtype /Image /Width ${W} /Height ${H} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${b.length} >>\nstream\n`);put(b);put('\nendstream')});const stream='q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n';object(id+2,()=>{put(`<< /Length ${enc.encode(stream).length} >>\nstream\n${stream}endstream`)});});
+ const images=[
+  {bytes:jpeg(page),w:W,h:H,pdfW:595.28,pdfH:841.89},
+  {bytes:jpeg(planCanvas),w:planCanvas.width,h:planCanvas.height,pdfW:isArmPrint?841.89:595.28,pdfH:isArmPrint?595.28:841.89}
+ ],enc=new TextEncoder(),chunks=[];let len=0,offsets=[0];
+ const put=v=>{const b=typeof v==='string'?enc.encode(v):v;chunks.push(b);len+=b.length};
+ const object=(id,fn)=>{offsets[id]=len;put(id+' 0 obj\n');fn();put('\nendobj\n')};
+ put('%PDF-1.4\n%AKPDF\n');
+ object(1,()=>put('<< /Type /Catalog /Pages 2 0 R >>'));
+ object(2,()=>put('<< /Type /Pages /Kids [3 0 R 6 0 R] /Count 2 >>'));
+ images.forEach((img,i)=>{
+  const id=3+i*3,b=img.bytes;
+  object(id,()=>put('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+img.pdfW+' '+img.pdfH+'] /Resources << /XObject << /Im0 '+(id+1)+' 0 R >> >> /Contents '+(id+2)+' 0 R >>'));
+  object(id+1,()=>{put('<< /Type /XObject /Subtype /Image /Width '+img.w+' /Height '+img.h+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+b.length+' >>\nstream\n');put(b);put('\nendstream')});
+  const stream='q\n'+img.pdfW+' 0 0 '+img.pdfH+' 0 0 cm\n/Im0 Do\nQ\n';
+  object(id+2,()=>{put('<< /Length '+enc.encode(stream).length+' >>\nstream\n'+stream+'endstream')});
+ });
  const xref=len;put('xref\n0 9\n0000000000 65535 f \n');for(let i=1;i<=8;i++)put(String(offsets[i]).padStart(10,'0')+' 00000 n \n');put(`trailer\n<< /Size 9 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);return new Blob(chunks,{type:'application/pdf'});
 }
 refresh();
