@@ -64,10 +64,18 @@ export function buildArmstrongGrid(L,W,lengthCuts,widthCuts){
  }
  const c120=transverse.filter(v=>v.kind==='cross120');
  const c060=transverse.filter(v=>v.kind==='cross060');
+ // Trade rule: any installed Cross 0.60 strictly under 30cm consumes half a
+ // 60cm stock bar; two such cuts share one bar. At exactly 30cm, count a full
+ // bar, as requested. The installed geometry and color stay unchanged.
+ const cross060HalfCount=c060.filter(v=>v.length<.30-EPS).length;
+ const cross060RegularCount=c060.length-cross060HalfCount;
+ const cross060StockEquivalent=cross060RegularCount+cross060HalfCount/2;
+ const cross060Stock=ceil(cross060StockEquivalent);
  return {
   xLines,yLines,carrierPositions:mains,carrierCount:mains.length,
   crossSegments:transverse,cross120:c120.length,cross060:c060.length,
   cross120Cut:c120.filter(v=>v.cut).length,cross060Cut:c060.filter(v=>v.cut).length,
+  cross060HalfCount,cross060RegularCount,cross060StockEquivalent,cross060Stock,
   cross120Full:c120.filter(v=>!v.cut).length,cross060Full:c060.filter(v=>!v.cut).length,
   rowIntersections:xLines.length-2,
   wall060:c060.filter(v=>v.placement==='to-wall').length,
@@ -97,7 +105,7 @@ export function calcArmstrongFull(d){const {L,W}=validateRoom(d.L,d.W);const dro
  const rods=ceil(hangers/rodPieces),perimeter=2*(L+W);
  return {type:'armstrong-full',L,W,drop,cut,nL,nW,edgeL:round(edgeL,5),edgeW:round(edgeW,5),partsL,partsW,wholeTiles,edgePieces,tiles,area,porteur,cross120,cross060,carrierCount,carrierPositions:mains,hangers,rods,rodPieces,angle:ceil(perimeter/3),wallFix:ceil(perimeter/.5),lengthCuts:boundaryCuts,widthCuts,perimeter,rowIntersections,lateralBays:carrierCount+1,
  ...grid,
- note:'كل قطعة Cross قصيرة فالرسم محسوبة كاملة فالشراء حسب النوع: أقل من 0.60m = Cross 0.60، وأكثر من 0.60m حتى 1.20m = Cross 1.20. ما كنزيدوش Porteur إضافي غير للفراغ الأخير. Cross 1.20 المقطوعة باتجاه الحائط وارتكازها على Cornière خاصهم تحقق من نظام المصنع قبل التنفيذ.'};
+ note:'كل Cross 0.60 أقل من 30cm محسوبة نصف بروفيل (كل جوج = واحد)؛ 30cm بالضبط أو أكثر محسوبة قطعة كاملة. Cross 1.20 المقطوعة محسوبة قطعة كاملة. ما كنزيدوش Porteur إضافي غير للفراغ الأخير. Cross 1.20 المقطوعة باتجاه الحائط وارتكازها على Cornière خاصهم تحقق من نظام المصنع قبل التنفيذ.'};
 }
 export function calcBA13Ceiling(d){const {L,W}=validateRoom(d.L,d.W);const type=d.mode==='hidden'?'hidden':'plain';const drop=positive(d.drop,'النزول');if(drop<6||drop>100)throw Error('النزول خاصو يكون بين 6 و100cm.');
  const first=.15,spacing=.50,span=Math.min(L,W),distribution=Math.max(L,W);
@@ -144,7 +152,7 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  add('بلاكات Armstrong 60×60 (قبل تحسين القصّات)',p.tiles,'بلاكة',.05,'كامل + مقطوع؛ تقدير متحفظ');
  add('Porteur T 3.60m',p.porteur,'قطعة',.1,'مع اتجاه طول الغرفة');
  add('Cross 1.20m',p.cross120,'قطعة',.1,`${p.cross120Full} بدون قص + ${p.cross120Cut} قصيرة ومقصوصة، وكل وحدة محسوبة بروفيل 1.20 كامل`);
- add('Cross 0.60m',p.cross060,'قطعة',.1,`${p.cross060Full} بدون قص + ${p.cross060Cut} قصيرة ومقصوصة، وكل وحدة محسوبة بروفيل 0.60 كامل`);
+ add('Cross 0.60m',p.cross060Stock,'بروفيل',.1,`${p.cross060} قطعة فالمخطط: ${p.cross060RegularCount} محسوبة كاملة + ${p.cross060HalfCount} أقل من 30cm محسوبة نصف بروفيل (كل جوج = واحد). المجموع: ${p.cross060StockEquivalent} بروفيل مكافئ، مدوّر للشراء إلى ${p.cross060Stock}.`);
  add('Cornière محيطية 3m',p.angle,'قطعة',.1,'على الحائط فقط');
  add('Cheville laiton',p.hangers,'قطعة',.1);add('Coulisseau',p.hangers,'قطعة',.1);
  add('Tige 1m',p.rods,'قطعة',.1,`${p.rodPieces} قطع من كل Tige`);add('Cheville à frapper',p.wallFix,'قطعة',.15,'تقدير كل 50cm');
