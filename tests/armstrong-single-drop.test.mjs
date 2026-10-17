@@ -31,7 +31,7 @@ test('Borderless Armstrong: the one drop field is rendered with distribution and
  assert.match(modern,/id="option-drop" class="option-drop"/);
  assert.match(modern,/id="in-drop" type="number"/);
  assert.match(modern,/if\(app==='armstrong-full'\)out\.drop=field\('drop'\)/);
- assert.match(modern,/option-drop'\)\.hidden=false/);
+ assert.match(modern,/document\.getElementById\('option-drop'\)\.remove\(\)/);
  assert.match(modern,/in-drop'\)\.addEventListener\('input',\(\)=>\{refresh\(\)\}/);
  assert.match(html,/ak-classic\.css/);
 });
