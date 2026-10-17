@@ -50,5 +50,5 @@ test('Manual choice, SVG and two-page PDF remain available',()=>{
   assert.match(html,/ak-svg-container/);
   assert.match(html,/async function pdfReport/);
   assert.match(html,/const pagePlan=document\.createElement\('canvas'\)/);
-  assert.match(html,/grid-template-areas:"dimensions dimensions" "suggestions suggestions" "plan plan"/);
+  assert.match(html,/grid-template-areas:"dimensions dimensions" "suggestions suggestions" "results rules"/);
 });
