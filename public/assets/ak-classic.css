@@ -107,3 +107,10 @@ h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.25;margin:7px 0}
  .top,.hero,.stepguide,.actions,.hint,.footer,.ak-hanger-toggle{display:none!important}
  .panel{box-shadow:none;break-inside:avoid}
 }
+
+/* BA13 schematic: keep line spacing and annotations readable on mobile. */
+.plan svg[data-diagram="ba13-ceiling"]{display:block;width:100%;max-height:none;height:auto;border-radius:10px}
+@media(max-width:800px){
+ .plan:has(svg[data-diagram="ba13-ceiling"]){overflow-x:auto;scrollbar-width:thin;overscroll-behavior-x:contain}
+ .plan svg[data-diagram="ba13-ceiling"]{min-width:760px;max-width:none}
+}
