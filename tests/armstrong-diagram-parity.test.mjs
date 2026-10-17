@@ -18,7 +18,7 @@ test('Interactive borderless diagram matches BA13 diagram framing and profile pa
  const opt=fullArmstrongOptions(8,4)[0];
  const p=calcArmstrongFull({L:8,W:4,drop:30,...opt});
  const svg=armstrongFullPlanSvg(p);
- for(const text of ['viewBox="0 0 1100 610"','fill="#f5f9f8"','fill="#E0F1EB"','fill="#E6C69E"','stroke="#1F5D9F"','stroke="#D59428"','stroke="#219A7C"','fill="#233A44"','x="344" y="535" width="410" height="43"']){
+ for(const text of ['viewBox="0 0 1100 610"','fill="#f5f9f8"','fill="#E0F1EB"','stroke="#1F5D9F"','stroke="#D59428"','stroke="#219A7C"','fill="#233A44"','x="344" y="535" width="410" height="43"']){
   assert.ok(svg.includes(text),text+' must match BA13 drawing visual system');
  }
  assert.match(ba13,/viewBox="0 0 1100 610"/);
@@ -28,6 +28,11 @@ test('Interactive borderless diagram matches BA13 diagram framing and profile pa
  assert.match(css,/\.ak-full-flow \.plan svg\[data-diagram="armstrong-full"\]\{display:block;width:100%;max-width:100%;min-width:0;height:auto\}/);
  assert.match(modern,/class="ak-full-legend"/);
  assert.match(modern,/بلاكات مقطوعة/);
+ assert.match(modern,/background:#E0F1EB;height:12px;width:12px/);
+ assert.doesNotMatch(svg,/#E6C69E/i);
+ assert.match(svg,/<g fill="#E0F1EB" opacity="\.80">/);
+ assert.equal((svg.match(/fill="#E0F1EB"/g)||[]).length>=2,true);
+
  assert.doesNotMatch(modern,/Vue en plan — البروفيلات والمساحات مرسومين بالنسب الصحيحة/);
 });
 
@@ -41,7 +46,7 @@ test('Full-room Armstrong remains true to its distinct material geometry, no BA1
   assert.equal((svg.match(/data-hanger="yes"/g)||[]).length,p.hangers);
   assert.equal((armstrongFullPlanSvg(p,{showHangers:false}).match(/data-hanger="yes"/g)||[]).length,0);
   assert.match(svg,new RegExp('باقي الطول: '+p.edgeL*100));
-  assert.match(svg,/وليست BA13/);
+  assert.match(svg,/بلا BA13/);
   assert.equal(materials(p).find(r=>r.name==='Porteur T 3.60m').qty,p.porteur);
  }
 });
