@@ -9,7 +9,7 @@ export function wallPlanSvg(p){
  if(p.type!=='wall')throw Error('Wall-only technical SVG');
  const A=['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" data-diagram="wall" role="img" aria-label="مخطط حائط مع مواضع الأبواب والشبابيك"><rect width="1000" height="620" fill="#f9fcfa"/>'];
  A.push('<rect width="1000" height="86" fill="#15363e"/>',
- text(35,38,'ASSASSAT KHALI','#FFF'===null?20:20,'#FFFFFF','font-weight="800"'),text(35,64,'PLAN TECHNIQUE / CLOISON & DOUBLAGE',11,'#B6DAD1','letter-spacing="1.2"'),
+ text(35,38,'ASSASSAT KHALI',20,'#FFFFFF','font-weight="800"'),text(35,64,'PLAN TECHNIQUE / CLOISON & DOUBLAGE',11,'#B6DAD1','letter-spacing="1.2"'),
  text(965,43,p.kind==='doublage'?'Doublage BA13':p.insulated?'Cloison + Isolation':'Cloison BA13',20,'#FFFFFF','text-anchor="end" font-weight="800"'));
  A.push('<rect x="35" y="99" width="930" height="47" rx="11" fill="#edf5f1" stroke="#dce8e2"/>',
  text(56,129,'الطول '+F(p.L)+'m   •   الارتفاع '+F(p.H)+'m',15,C.ink,'font-weight="800"'),
