@@ -37,6 +37,7 @@ document.body.insertAdjacentHTML('afterbegin',coreMarkup());
 /* For borderless Armstrong only, preserve the approved order while leaving
  * development-only calculators' DOM and engines untouched. */
 if(app==='armstrong-full'){
+ document.body.classList.add('ak-full-flow');
  const panels=[...document.querySelectorAll('main.wrap > section.panel')];
  if(panels.length!==4)throw Error('Armstrong layout unavailable');
  const [dimensions,choices,drawing,result]=panels;
@@ -52,6 +53,7 @@ if(app==='armstrong-full'){
  result.querySelector('#csv-download').remove();
  result.querySelector('#print').remove();
  result.querySelector('#note').remove();
+ document.getElementById('option-drop').remove();
  const copy=document.createElement('button');
  copy.type='button';copy.id='copy-materials';copy.className='secondary';copy.textContent='نسخ القائمة';
  result.querySelector('#result .actions').append(copy);
