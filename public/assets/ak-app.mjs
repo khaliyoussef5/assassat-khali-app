@@ -47,6 +47,16 @@ if(app==='armstrong-full'){
  drawing.querySelector('.step').textContent='02';
  choices.querySelector('.step').textContent='03';
  drawing.querySelector('.panelheader p').remove();
+
+ drawing.querySelector('#plan').insertAdjacentHTML('afterend',[
+  '<div class="ak-full-legend" aria-label="ألوان بروفيلات المخطط">',
+  '<span><i style="background:#1F5D9F"></i>Porteur 3.60</span>',
+  '<span><i style="background:#D59428"></i>Cross 1.20</span>',
+  '<span><i style="background:#219A7C"></i>Cross 0.60</span>',
+  '<span><i style="background:#E6C69E;height:12px;width:12px"></i>بلاكات مقطوعة</span>',
+  '<span><i style="background:#233A44;height:10px;width:10px;border-radius:50%"></i>علاقة</span>',
+  '</div>'
+ ].join(''));
  const approve=document.getElementById('approve');
  choices.append(approve);approve.classList.add('ak-full-approve');
  document.getElementById('svg-download').remove();
