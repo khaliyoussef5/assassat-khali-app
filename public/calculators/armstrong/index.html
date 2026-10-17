@@ -81,16 +81,6 @@
   #ak-calculator .ak-tag{background:#eaf5f0;color:#237267;font-size:11px;font-weight:800;border-radius:50px;padding:6px 10px}
   #ak-calculator .ak-graphic{background:#f5f9f8;border:1px solid #e7eded;border-radius:14px;overflow:hidden;line-height:0}
   #ak-calculator .ak-graphic svg{width:100%;height:auto;display:block}
-  /* Keep the complete engineering SVG legible on narrow phones without
-     changing its geometry or the SVG image that the PDF renderer uses. */
-  #ak-calculator .ak-mobile-diagram-hint{display:none}
-  @media(max-width:700px){
-    #ak-calculator .ak-plan-panel{min-width:0}
-    #ak-calculator .ak-graphic{overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;touch-action:pan-x pan-y}
-    #ak-calculator .ak-graphic svg{width:800px;min-width:800px;max-width:none;height:auto}
-    #ak-calculator .ak-mobile-diagram-hint{display:block;text-align:center;font-size:11px;line-height:1.65;color:#607b80;margin:7px 0 0}
-  }
-  @media print{#ak-calculator .ak-graphic{overflow:visible!important}#ak-calculator .ak-graphic svg{width:100%!important;min-width:0!important;max-width:100%!important}#ak-calculator .ak-mobile-diagram-hint{display:none!important}}
   #ak-calculator .ak-legend{display:flex;flex-wrap:wrap;gap:13px;margin-top:13px;color:#536d74;font-size:11px}
   #ak-calculator .ak-legend i{display:inline-block;width:18px;height:5px;vertical-align:middle;margin-left:4px;border-radius:3px}
   #ak-calculator .ak-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
@@ -167,8 +157,7 @@
                 <div><div class="ak-label-row" style="margin:0"><div class="ak-step">2</div><div><div class="ak-plan-title">المخطط التفاعلي</div></div></div></div>
                 <span class="ak-tag" id="ak-plan-state">معاينة قبل الحساب</span>
               </div>
-              <div class="ak-graphic" id="ak-svg-container" aria-label="مخطط سقف Armstrong: حرك يمين ويسار في الهاتف لرؤية التفاصيل" role="region" tabindex="0"></div>
-              <p class="ak-mobile-diagram-hint">حرّك المخطط يمين ويسار باش تشوف التفاصيل بوضوح.</p>
+              <div class="ak-graphic" id="ak-svg-container" aria-label="رسم تخطيطي لسقف Armstrong"></div>
               <div class="ak-legend">
                 <span><i style="background:#205fa3"></i>Porteur 3.60</span>
                 <span><i style="background:#d89b3b"></i>Cross 1.20</span>
