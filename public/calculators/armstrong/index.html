@@ -127,19 +127,22 @@
     <div class="ak-columns">
       <section class="ak-left">
         <div class="ak-panel">
-          <div class="ak-label-row"><div class="ak-step">1</div><div><h2>المقاسات ديال الغرفة</h2><p class="ak-sub" style="margin:0">دخل القياسات بالمتر، والسنتيمتر للنزول.</p></div></div>
+          <div class="ak-label-row"><div class="ak-step">1</div><div><h2>المقاسات ديال الغرفة</h2><p class="ak-sub" style="margin:0">دخل الطول والعرض بالمتر، والنزول غادي تختارو فمرحلة التوزيع.</p></div></div>
           <div class="ak-input-grid">
             <label class="ak-field">الطول (m)<input id="ak-length" type="number" min="0.8" max="50" step="0.01" inputmode="decimal" value="8"></label>
             <label class="ak-field">العرض (m)<input id="ak-width" type="number" min="0.8" max="50" step="0.01" inputmode="decimal" value="4"></label>
-            <label class="ak-field">النزول (cm)<input id="ak-drop" type="number" min="5" max="100" step="1" inputmode="numeric" value="30"></label>
-            <label class="ak-field">طول Tige للقص (cm)<input id="ak-cut" type="number" min="5" max="100" step="0.1" inputmode="decimal" value="30"><span>قياس مبدئي، تأكد فالموقع</span></label>
           </div>
-          <p class="ak-warning">طول القص ماشي بالضرورة هو النزول النهائي. تحقق من المسافة الفعلية وعلو Porteur/Coulisseau قبل قطع Tiges.</p>
           <div id="ak-error" class="ak-error" role="alert" hidden></div>
         </div>
         <div class="ak-panel">
-          <div class="ak-label-row"><div class="ak-step">2</div><div><h2>اقتراح البوردور BA13</h2><p class="ak-sub" style="margin:0">دائماً بوردور متساوي من الجهتين المتقابلتين.</p></div></div>
+          <div class="ak-label-row"><div class="ak-step">2</div><div><h2>اقتراحات البوردور وتوزيع السقف</h2><p class="ak-sub" style="margin:0">دائماً بوردور متساوي من الجهتين المتقابلتين.</p></div></div>
           <div id="ak-options" class="ak-options" role="group" aria-label="اختيارات البوردور"></div>
+          <div class="ak-drop-setting">
+            <label class="ak-field" for="ak-drop">نزول السقف المستعار (cm)
+              <input id="ak-drop" type="number" min="5" max="100" step="1" inputmode="decimal" value="30">
+            </label>
+            <p class="ak-sub">حساب Tige كيستعمل النزول كطول قصّ تقديري؛ تأكد من القياس الفعلي مع Porteur وCoulisseau قبل القطع.</p>
+          </div>
           <div class="ak-custom" id="ak-custom" role="region" aria-label="إعدادات التوزيع اليدوي">
             <p class="ak-sub">حدد عدد بلاكات 60cm كاملة. عرض البوردور غادي يتحسب أوتوماتيكياً.</p>
             <div class="ak-input-grid">
@@ -218,8 +221,8 @@
   const nearly=(a,b)=>Math.abs(a-b)<0.00001;
   const val=id=>Number($(id).value);
   function getDimensions(){
-    const L=val('ak-length'), W=val('ak-width'), drop=val('ak-drop'), cut=val('ak-cut');
-    if(![L,W,drop,cut].every(Number.isFinite)||L<0.8||W<0.8||L>50||W>50||drop<5||drop>100||cut<5||cut>100){throw Error('القياسات خاصها تكون صحيحة: الطول والعرض من 0.8m حتى 50m، والنزول والقص من 5 حتى 100cm.');}
+    const L=val('ak-length'), W=val('ak-width'), drop=val('ak-drop'), cut=drop;
+    if(![L,W,drop].every(Number.isFinite)||L<0.8||W<0.8||L>50||W>50||drop<5||drop>100){throw Error('القياسات خاصها تكون صحيحة: الطول والعرض من 0.8m حتى 50m، والنزول من 5 حتى 100cm.');}
     if(L*W>600)throw Error('المساحة كبيرة بزاف لهاد النسخة (أقصى حد 600m²). قسمها لمناطق مستقلة.');
     return {L,W,drop,cut};
   }
@@ -253,7 +256,7 @@
     return choices;
   }
   function buildPlan(d,opt){
-    const {L,W,drop,cut}=d,nL=Number(opt.nL),nW=Number(opt.nW);
+    const {L,W,drop}=d,cut=drop,nL=Number(opt.nL),nW=Number(opt.nW);
     if(!Number.isInteger(nL)||!Number.isInteger(nW)||nL<1||nW<1)throw Error('عدد البلاكات خاصو يكون عدد صحيح وأكبر من صفر.');
     const bL=(L-nL*M)/2,bW=(W-nW*M)/2;
     if(bL<0.049999||bW<0.049999)throw Error('خاص يكون BA13 على الجهتين، على الأقل 5cm لكل جهة. نقص عدد البلاكات.');
@@ -394,7 +397,7 @@
       add('Cornière 3m للحائط',p.angle,p.angle+1,'الجدران فقط'),
       add('Cheville laiton',p.hangs,p.hangs+ceil(p.hangs*.10),'واحدة لكل علاقة'),
       add('Coulisseau',p.hangs,p.hangs+ceil(p.hangs*.10),'واحد لكل علاقة'),
-      add('Tige 1m',p.rods,p.rods+1,`${p.rodPieces} قطع لكل متر حسب طول القص`),
+      add('Tige 1m',p.rods,p.rods+1,`${p.rodPieces} قطع لكل متر بافتراض قصّ ${fmt(p.drop)}cm حسب النزول؛ راجع القياس فالورش`),
       add('Cheville à frapper',p.wallFix,ceil(p.wallFix*1.15/10)*10,'تباعد 50cm، مع احتياط'),
       add('ألواح BA13 1.20×2.80',p.boards,p.boards+1,'الحد الأدنى بالمساحة، تحقق من تقطيع الألواح'),
       add('Vis BA13 (تقدير أولي)',ceil(p.ba13Area*30/10)*10,ceil(p.ba13Area*30*1.10/10)*10,'يُراجع بعد تحديد هيكل BA13')
@@ -616,8 +619,7 @@
     }
   });
   ['ak-length','ak-width'].forEach(id=>$(id).addEventListener('input',()=>{state.selected='1';setApproval();update()}));
-  $('ak-drop').addEventListener('input',()=>{const v=$('ak-drop').value;$('ak-cut').value=v;setApproval();update()});
-  $('ak-cut').addEventListener('input',()=>{setApproval();update()});
+  $('ak-drop').addEventListener('input',()=>{setApproval();update()});
   ['ak-tilesL','ak-tilesW'].forEach(id=>$(id).addEventListener('input',()=>{state.selected='custom';setApproval();update()}));
   $('ak-show-hangers').addEventListener('change',()=>{state.shownHangers=$('ak-show-hangers').checked;if(state.current)$('ak-svg-container').innerHTML=svgPlan(state.current,state.shownHangers)});
   $('ak-approve').addEventListener('click',()=>{if(!state.current)return;state.approved=true;renderResults(state.current)});
