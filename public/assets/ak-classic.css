@@ -114,3 +114,10 @@ h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.25;margin:7px 0}
  .plan:has(svg[data-diagram="ba13-ceiling"]){overflow-x:auto;scrollbar-width:thin;overscroll-behavior-x:contain}
  .plan svg[data-diagram="ba13-ceiling"]{min-width:760px;max-width:none}
 }
+
+/* Wall elevation needs readable opening dimensions at mobile widths. */
+.plan svg[data-diagram="wall"]{width:100%;max-height:none;height:auto;display:block;border-radius:10px}
+@media(max-width:800px){
+ .plan:has(svg[data-diagram="wall"]){overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+ .plan svg[data-diagram="wall"]{min-width:760px;max-width:none}
+}
