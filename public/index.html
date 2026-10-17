@@ -2,607 +2,336 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ASSASSAT KHALI — حاسبة سقف Armstrong</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#112e37">
+<meta name="description" content="ASSASSAT KHALI — أدوات تقنية لحساب الأسقف والحوائط والعزل، من القياسات إلى المخطط ولائحة المواد.">
+<title>ASSASSAT KHALI — OUTIL TECHNIQUE</title>
 <style>
-  :root{color-scheme:light}
-  *{box-sizing:border-box}
-  body{margin:0;background:#f3f6f7}
-  #ak-calculator{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:#142c35;background:#f3f6f7;line-height:1.6;min-height:100vh;padding:26px 18px 50px;direction:rtl}
-  #ak-calculator button,#ak-calculator input{font:inherit}
-  #ak-calculator button{cursor:pointer}
-  #ak-calculator button:focus-visible,#ak-calculator input:focus-visible{outline:3px solid #62cbbb;outline-offset:2px}
-  #ak-calculator .ak-wrap{max-width:1250px;margin:0 auto}
-  #ak-calculator .ak-head{background:linear-gradient(120deg,#112c36,#174a51);color:#fff;padding:25px 30px;border-radius:20px;display:flex;gap:20px;align-items:center;justify-content:space-between;position:relative;overflow:hidden;margin-bottom:22px}
-  #ak-calculator .ak-head:before{content:"";width:220px;height:220px;border:1px solid #ffffff24;border-radius:50%;position:absolute;left:8%;bottom:-170px}
-  #ak-calculator .ak-strap{font-size:12px;letter-spacing:2px;color:#abdfd7;font-weight:800}
-  #ak-calculator h1{font-size:clamp(24px,3vw,34px);line-height:1.25;margin:7px 0;font-weight:900}
-  #ak-calculator .ak-head p{color:#c3dcd9;font-size:13px;margin:0}
-  #ak-calculator .ak-head-icon{display:grid;place-items:center;width:65px;height:65px;flex:none;border:1px solid #ffffff29;border-radius:18px;background:#ffffff12}
-  /* Visual workflow follows site use: dimensions → 3 suggestions → diagram → materials. */
-  #ak-calculator .ak-columns{display:grid;grid-template-areas:"dimensions dimensions" "suggestions suggestions" "plan plan" "results rules";grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:18px;align-items:start}
-  #ak-calculator .ak-left,#ak-calculator .ak-right{display:contents}
-  #ak-calculator .ak-left>.ak-panel:nth-child(1){grid-area:dimensions}
-  #ak-calculator .ak-left>.ak-panel:nth-child(2){grid-area:suggestions}
-  #ak-calculator .ak-left>.ak-panel:nth-child(3){grid-area:rules}
-  #ak-calculator .ak-right>.ak-panel:nth-child(1){grid-area:plan}
-  #ak-calculator .ak-right>.ak-panel:nth-child(2){grid-area:results}
-  #ak-calculator .ak-columns .ak-panel{margin:0}
-  #ak-calculator .ak-right>.ak-panel:nth-child(1){scroll-margin-top:16px}
+:root { color-scheme:light; --ink:#17323b; --muted:#657a80; --soft:#f3f6f5; --white:#fff; --teal:#067a6c; --deep:#112e37; --line:#dde7e5; --gold:#d4a369; --radius:22px }
+* { box-sizing:border-box }
+html { scroll-behavior:smooth }
+body { margin:0; background:var(--soft); color:var(--ink); font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif; line-height:1.65; }
+a { color:inherit; text-decoration:none }
+button,a { -webkit-tap-highlight-color:transparent }
+a:focus-visible { outline:3px solid #52c5b3; outline-offset:4px }
+.shell { max-width:1180px; margin:auto; padding:0 24px }
+.top { background:#fff; border-bottom:1px solid var(--line) }
+.top .shell { min-height:80px; display:flex; align-items:center; justify-content:space-between; gap:16px }
+.brand { display:flex; gap:13px; align-items:center; }
+.logo { width:44px; height:44px; border-radius:13px; background:var(--deep); display:grid; place-items:center; color:#fff; flex-shrink:0; }
+.logo svg { width:27px; height:27px }
+.brand strong { display:block; font-size:16px; letter-spacing:.9px; line-height:1.25 }
+.brand small { font-size:10px; color:var(--muted); font-weight:800; letter-spacing:2.2px; }
+.nav { display:flex; gap:24px; align-items:center; font-size:13px; font-weight:700; }
+.nav a:hover { color:var(--teal) }
+.nav .navlink { background:#ecf5f2; padding:9px 17px; border-radius:11px; color:#087163 }
+.hero { margin-top:26px; background:var(--deep); color:white; border-radius:var(--radius); overflow:hidden; position:relative; min-height:332px; display:grid; grid-template-columns:1.18fr .82fr; align-items:stretch }
+.hero:before { content:""; position:absolute; width:560px; height:560px; border-radius:50%; border:1px solid #ffffff14; left:-190px; top:-220px }
+.hero-copy { padding:48px 48px 44px; position:relative; z-index:1; align-self:center }
+.eyebrow { display:inline-flex; align-items:center; gap:9px; font-size:12px; font-weight:800; color:#b6e6dc; letter-spacing:1px; }
+.eyebrow:before { content:""; width:23px; height:2px; background:var(--gold) }
+h1 { font-size:clamp(28px,3.6vw,45px); line-height:1.28; letter-spacing:-1px; margin:19px 0 14px; font-weight:900 }
+.hero p { font-size:15px; color:#c7d8d8; max-width:500px; margin:0 0 24px; line-height:1.9 }
+.primary { display:inline-flex; align-items:center; justify-content:center; gap:10px; border-radius:12px; background:#eaf6f0; color:#0a554d; font-weight:850; font-size:14px; padding:12px 19px; min-height:48px; transition:transform .2s,background .2s }
+.primary:hover { transform:translateY(-2px); background:#fff }
+.primary svg { width:18px; height:18px }
+.hero-art { position:relative; overflow:hidden; background:radial-gradient(circle at 53% 45%,#24575b 0%,#153a41 55%,#112e37 90%);display:grid;place-items:center;padding:24px }
+.hero-art svg { max-width:100%; width:365px; height:auto; filter:drop-shadow(0 20px 24px #061a2055) }
+.kicker { display:flex; align-items:center; gap:12px; color:var(--muted); font-size:13px; margin:18px 0 2px }
+.kicker strong { color:var(--ink) }
+.kicker span { width:4px; height:4px; background:#a0b3b2; border-radius:50% }
+.section { padding:49px 0 14px }
+.headline { display:flex; justify-content:space-between; align-items:end; gap:18px; margin-bottom:21px }
+.section h2 { margin:0 0 5px; font-size:clamp(23px,3vw,29px); letter-spacing:-.5px; line-height:1.3 }
+.section .description { margin:0; font-size:14px; color:var(--muted) }
+.meta { color:#577b75; font-size:12px; background:#e2ece8; border-radius:99px; padding:7px 13px; font-weight:750; white-space:nowrap }
+.catalog { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:17px; }
+.product { background:#fff; border:1px solid var(--line); border-radius:19px; padding:24px; min-height:215px; display:flex; flex-direction:column; align-items:stretch; position:relative; transition:box-shadow .2s, transform .2s }
+.product.live:hover { box-shadow:0 12px 28px #0d282213; transform:translateY(-2px) }
+.product-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:15px }
+.tile-icon { width:51px; height:51px; border-radius:14px; display:grid; place-items:center; background:#e9f3f0; color:#17695e }
+.tile-icon svg { width:29px; height:29px }
+.status { border-radius:99px; padding:5px 10px; font-size:11px; font-weight:800; color:#708086; background:#f1f4f4 }
+.status.ready { color:#11745f; background:#e8f6ed }
+.product h3 { font-size:19px; margin:0 0 7px; line-height:1.5 }
+.product p { color:var(--muted); font-size:13px; margin:0 0 16px; max-width:445px; }
+.open { color:#057567; display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:850; margin-top:auto; width:max-content; min-height:30px; }
+.open svg { width:18px; height:18px }
+.future { color:#88969a; font-weight:750; font-size:12px; margin-top:auto }
+.product.planned { background:#fbfcfc; }
+.process { margin:30px 0 44px; border:1px solid var(--line); background:#fff; border-radius:19px; padding:24px 28px; }
+.process .steps { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:20px }
+.step { display:flex; flex-direction:column; gap:7px; min-width:0 }
+.num { color:#0e8a76; font-size:12px; font-weight:900; letter-spacing:1px }
+.step strong { font-size:15px }
+.step p { color:var(--muted); font-size:12px; margin:0; }
+footer { border-top:1px solid var(--line); padding:25px 0 35px; color:#677c81; font-size:12px; }
+footer .shell { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap }
+@media (max-width:800px) {
+ .hero { grid-template-columns:1fr; }
+ .hero-copy { padding:36px 30px 10px; }
+ .hero-art { min-height:210px; }
+ .hero-art svg { width:300px; }
+ .process .steps { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:560px) {
+ .shell { padding:0 15px }
+ .top .shell { min-height:68px }
+ .nav { gap:10px; font-size:11px }
+ .nav .navlink { padding:7px 10px }
+ .nav a:not(.navlink) { display:none }
+ .logo { width:38px; height:38px; border-radius:10px }
+ .brand { gap:9px }
+ .brand strong { font-size:13px }
+ .brand small { font-size:8px; letter-spacing:1px }
+ .hero { margin-top:16px; border-radius:18px; }
+ .hero-copy { padding:31px 23px 4px }
+ .hero p { font-size:13px; }
+ .hero-art { min-height:175px; padding:5px 25px 17px }
+ .hero-art svg { width:240px }
+ .kicker { font-size:11px; flex-wrap:wrap }
+ .section { padding-top:34px }
+ .headline { align-items:start; }
+ .meta { display:none }
+ .catalog { grid-template-columns:1fr; gap:12px }
+ .product { padding:18px 19px; min-height:180px; }
+ .product h3 { font-size:17px }
+ .process { padding:20px 18px; margin-top:24px }
+ .process .steps { gap:17px }
+ footer .shell { display:block }
+}
+@media (prefers-reduced-motion:reduce) { * {scroll-behavior:auto!important;transition:none!important} }
 
-  #ak-calculator .ak-panel{background:#fff;border:1px solid #e0e7e7;border-radius:18px;padding:20px;box-shadow:0 9px 28px #112c3610;margin-bottom:19px}
-  #ak-calculator .ak-panel h2{font-size:18px;margin:0 0 4px;line-height:1.4}
-  #ak-calculator .ak-sub{font-size:12.5px;color:#63757b;margin:0 0 15px}
-  #ak-calculator .ak-label-row{display:flex;align-items:center;gap:10px;margin-bottom:15px}
-  #ak-calculator .ak-step{flex:none;font-size:12px;font-weight:900;width:30px;height:30px;display:grid;place-items:center;border-radius:10px;background:#e1f4ef;color:#167767}
-  #ak-calculator .ak-input-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  #ak-calculator .ak-left>.ak-panel:nth-child(1) .ak-input-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-  #ak-calculator label.ak-field{font-size:12px;font-weight:800;color:#40555e;display:flex;gap:5px;flex-direction:column}
-  #ak-calculator label.ak-field span{font-size:11px;font-weight:400;color:#87959a}
-  #ak-calculator input[type=number]{border:1px solid #d8e2e3;background:#fcfefe;border-radius:10px;padding:10px 12px;color:#14313c;direction:ltr;text-align:center;width:100%;font-weight:800;font-size:17px;min-height:46px}
-  #ak-calculator input[type=number]:hover{border-color:#81b7b3}
-  #ak-calculator .ak-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-  #ak-calculator .ak-option{background:#f9fbfb;border:2px solid #e0e8e7;padding:13px 9px;border-radius:13px;text-align:right;color:#254650;min-width:0;transition:background .15s,border-color .15s}
-  #ak-calculator .ak-option.selected{background:#eaf8f3;border-color:#178c79}
-  #ak-calculator .ak-option:hover{border-color:#71afa5;background:#f1faf7}
-  #ak-calculator .ak-option.selected:hover{background:#eaf8f3}
-  #ak-calculator .ak-option-manual{border-style:dashed}
-  #ak-calculator .ak-option b{display:block;font-size:13px;margin-bottom:5px}
-  #ak-calculator .ak-option small{display:block;color:#587078;font-size:11px;line-height:1.7}
-  #ak-calculator .ak-option strong{display:block;color:#123843;font-size:18px;line-height:1.4;margin:4px 0}
-  #ak-calculator .ak-tool{border:0;background:none;font-size:12px;color:#187e70;font-weight:850;padding:11px 2px 0}
-  #ak-calculator .ak-custom{display:none;border:1px solid #cde3dc;background:#f8fcfa;border-radius:13px;padding:13px;margin-top:12px}
-  #ak-calculator .ak-custom.open{display:block}
-  #ak-calculator .ak-warning{font-size:12px;color:#875515;border-radius:10px;padding:10px 12px;background:#fff4dd;margin-top:12px}
-  #ak-calculator .ak-warning[hidden]{display:none}
-  #ak-calculator .ak-error{color:#a63e3e;background:#fff0f0;border-radius:10px;padding:11px;font-size:13px;margin-top:13px}
-  #ak-calculator .ak-error[hidden]{display:none}
-  #ak-calculator .ak-button{border:0;border-radius:12px;padding:13px 18px;background:#166e65;color:#fff;font-weight:850;min-height:47px;transition:background .16s}
-  #ak-calculator .ak-button:hover{background:#09574f}
-  #ak-calculator .ak-button:disabled{opacity:.43;cursor:not-allowed}
-  #ak-calculator .ak-outline{border:1px solid #cadae0;background:#fff;border-radius:12px;padding:10px 15px;min-height:41px;color:#1e4854;font-weight:750}
-  #ak-calculator .ak-outline:hover{background:#f0f6f4}
-  #ak-calculator .ak-full{width:100%}
-  #ak-calculator .ak-plan-header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
-  #ak-calculator .ak-plan-title{font-weight:900;font-size:18px}
-  #ak-calculator .ak-tag{background:#eaf5f0;color:#237267;font-size:11px;font-weight:800;border-radius:50px;padding:6px 10px}
-  #ak-calculator .ak-graphic{background:#f5f9f8;border:1px solid #e7eded;border-radius:14px;overflow:hidden;line-height:0}
-  #ak-calculator .ak-graphic svg{width:100%;height:auto;display:block}
-  #ak-calculator .ak-legend{display:flex;flex-wrap:wrap;gap:13px;margin-top:13px;color:#536d74;font-size:11px}
-  #ak-calculator .ak-legend i{display:inline-block;width:18px;height:5px;vertical-align:middle;margin-left:4px;border-radius:3px}
-  #ak-calculator .ak-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
-  #ak-calculator .ak-stat{background:#f5f8f8;border-radius:12px;text-align:center;padding:11px 5px}
-  #ak-calculator .ak-stat b{display:block;font-size:19px;line-height:1.3;color:#174951}
-  #ak-calculator .ak-stat span{font-size:11px;color:#71858b}
-  #ak-calculator .ak-small-check{display:flex;align-items:center;gap:8px;font-size:12px;color:#546e73;cursor:pointer;user-select:none}
-  #ak-calculator .ak-small-check input{accent-color:#177e6c;width:17px;height:17px}
-  #ak-calculator .ak-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
-  #ak-calculator .ak-actions button{flex:1}
-  #ak-calculator .ak-notice{font-size:12px;background:#f6f9f8;border:1px solid #dbe8e4;border-radius:12px;padding:13px;color:#52696f}
-  #ak-calculator .ak-result[hidden]{display:none}
-  #ak-calculator .ak-placeholder{background:#fafbfb;border:1px dashed #aebfc1;text-align:center;padding:32px 17px;border-radius:15px;color:#5c737a}
-  #ak-calculator .ak-placeholder b{display:block;color:#234b55;font-size:15px}
-  #ak-calculator .ak-placeholder p{margin:8px 0 0;font-size:12px}
-  #ak-calculator .ak-sectioncap{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}
-  #ak-calculator .ak-table-wrap{width:100%;overflow-x:auto}
-  #ak-calculator .ak-table{width:100%;border-collapse:collapse;text-align:right;font-size:12px;min-width:490px}
-  #ak-calculator .ak-table th{font-weight:800;background:#f2f7f5;color:#34535d;padding:11px 12px}
-  #ak-calculator .ak-table td{border-bottom:1px solid #eaf0ef;padding:10px 12px}
-  #ak-calculator .ak-table tbody tr:last-child td{border-bottom:none}
-  #ak-calculator .ak-table td:nth-child(2),#ak-calculator .ak-table td:nth-child(3){text-align:center;font-variant-numeric:tabular-nums}
-  #ak-calculator .ak-table td:last-child{font-weight:900;color:#147b69;font-size:14px}
-  #ak-calculator .ak-notes{padding:0 19px;margin:12px 0 0;font-size:12px;color:#526971}
-  #ak-calculator .ak-notes li{padding-bottom:7px}
-  #ak-calculator .ak-footer{font-size:11px;color:#7e8f94;margin-top:15px;text-align:center}
-  #ak-calculator .ak-empty{background:#fff7ec;border:1px solid #f0dec4;border-radius:10px;padding:12px;font-size:12px;color:#88601c}
-  @media(max-width:800px){#ak-calculator .ak-left>.ak-panel:nth-child(1) .ak-input-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#ak-calculator{padding:12px 10px 30px}#ak-calculator .ak-columns{grid-template-columns:minmax(0,1fr);grid-template-areas:"dimensions" "suggestions" "plan" "results" "rules";gap:12px}#ak-calculator .ak-head{padding:21px}#ak-calculator .ak-panel{padding:16px}#ak-calculator .ak-options{gap:7px}#ak-calculator .ak-head-icon{width:52px;height:52px}}
-  @media(max-width:600px){#ak-calculator .ak-options{grid-template-columns:repeat(2,minmax(0,1fr))}#ak-calculator .ak-option-manual{grid-column:1/-1}}
-  @media(max-width:380px){#ak-calculator .ak-options{grid-template-columns:1fr}#ak-calculator .ak-stats{gap:5px}#ak-calculator .ak-stat b{font-size:16px}}
-  @media print{body,#ak-calculator{background:white!important}#ak-calculator{padding:0}#ak-calculator .ak-head{background:#fff;color:#142c35;border:1px solid #a6bbc2}#ak-calculator .ak-head p,#ak-calculator .ak-strap{color:#526c73}#ak-calculator .ak-columns{display:block}#ak-calculator .ak-left,#ak-calculator .ak-actions,#ak-calculator .ak-small-check,#ak-calculator .ak-custom,#ak-calculator .ak-hide-print{display:none!important}#ak-calculator .ak-panel{box-shadow:none;break-inside:avoid}#ak-calculator .ak-result{display:block}#ak-calculator .ak-table{min-width:0}#ak-calculator .ak-graphic svg{max-height:520px}}
+/* 2026 Industrial Premium refresh — UI/UX Pro Max principles: B2B clarity,
+   semantic tokens, spacious hierarchy, focus, consistent cards, mobile first. */
+:root{
+  --ink:#172a31; --muted:#566e74; --soft:#f5f7f5; --white:#fff;
+  --teal:#146b62; --deep:#10252c; --line:#dce5e2;
+  --gold:#efb167; --radius:24px;
+  --surface:#ffffff; --paper:#f5f7f5; --stroke:#dce5e2;
+  --forest:#0d6358; --night:#11282f; --orange:#e99a55;
+  --shadow-card:0 2px 4px rgba(7,29,34,.018),0 20px 42px rgba(7,29,34,.025);
+}
+html{scroll-padding-top:110px}
+body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans Arabic","Manrope",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;overflow-x:hidden}
+.shell{max-width:1216px;padding-inline:32px}
+.top{background:rgba(253,254,253,.96);border-color:rgba(215,228,224,.85);box-shadow:0 2px 24px rgba(15,36,42,.035);position:sticky;top:0;z-index:50;backdrop-filter:blur(16px)}
+.top .shell{min-height:84px}
+.logo{width:48px;height:48px;border-radius:14px;background:#0d3033;box-shadow:0 8px 17px rgba(0,49,48,.16)}
+.logo svg{width:28px;height:28px}
+.brand{gap:14px}
+.brand strong{font-family:"Manrope","IBM Plex Sans Arabic",sans-serif;font-size:16px;color:#132c32;font-weight:800;letter-spacing:.4px}
+.brand small{letter-spacing:2.5px;color:#738d8b;font-size:10px}
+.nav{gap:28px;color:#4b6669}
+.nav a{transition:color .18s ease}
+.nav .navlink{background:var(--night);color:#fff;border:1px solid #274044;border-radius:11px;padding:10px 16px;min-height:44px;display:inline-flex;align-items:center}
+.nav .navlink:hover{background:var(--forest);color:#fff}
+.hero{border-radius:28px;min-height:409px;grid-template-columns:1.13fr .87fr;
+  margin-top:30px;isolation:isolate;box-shadow:0 22px 60px rgba(17,39,44,.12);
+  background:radial-gradient(ellipse at 85% 100%,rgba(24,91,85,.6),transparent 45%),
+  linear-gradient(118deg,#10292f 0%,#14353a 52%,#0a2027 100%)}
+.hero:before{width:630px;height:630px;left:-260px;top:-405px;border:1px solid rgba(255,255,255,.095)}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(13,44,49,.07) 60%,rgba(12,34,40,.45) 100%);}
+.hero-copy{padding:59px 50px 54px;max-width:685px}
+.eyebrow{font-size:11px;font-family:"Manrope","IBM Plex Sans Arabic",sans-serif;letter-spacing:1.75px;color:#a6d5d0}
+.eyebrow:before{background:#e9a55e;width:24px}
+h1{font-size:clamp(33px,4vw,52px);line-height:1.4;letter-spacing:-.9px;margin:14px 0 19px;font-weight:850;text-wrap:balance}
+.hero p{color:#cadfdd;font-size:16px;line-height:2;max-width:515px;margin:0 0 25px}
+.primary{min-height:52px;border-radius:12px;background:#eab26c;color:#15313a;
+  box-shadow:0 7px 20px rgba(235,176,99,.16);
+  font-family:"IBM Plex Sans Arabic",sans-serif;font-size:14px;font-weight:850;
+  padding:12px 21px;transition:background .2s ease,box-shadow .2s ease}
+.primary:hover{background:#f6c48a;box-shadow:0 8px 24px rgba(235,176,99,.25);transform:none}
+.primary:active{background:#d79a53}
+.primary svg{stroke-width:2.4}
+.hero-proof{margin-top:21px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;direction:rtl;color:#b1d1ce}
+.hero-proof .proof-pill{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:0}
+.hero-proof .proof-pill svg{width:14px;height:14px;stroke:#e6b474}
+.hero-proof .proof-dot{width:3px;height:3px;border-radius:50%;background:#6f9e99}
+.hero-art{background:transparent;isolation:isolate;padding:24px 18px 24px 0;place-items:center}
+.hero-art:before{content:"";position:absolute;inset:22px 0 22px 5px;
+  background-image:linear-gradient(rgba(151,197,186,.1) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(151,197,186,.1) 1px,transparent 1px);
+  background-size:28px 28px;opacity:.5;mask-image:linear-gradient(to right,transparent,black 25%,black 80%,transparent)}
+.hero-art svg{position:relative;z-index:1;width:390px;max-width:100%;filter:drop-shadow(0 19px 21px #06182065);transform:rotate(-1deg)}
+.hero-art:after{position:absolute;content:"PLAN / 60 × 60";color:#b5d6d1;font:700 10px "Manrope",sans-serif;letter-spacing:2px;bottom:24px;left:27px;opacity:.8}
+.kicker{margin:23px 0 0;padding:10px 15px;border:1px solid #e0e8e5;display:inline-flex;background:#fff;
+ border-radius:11px;color:#657a7c;font-size:12px;box-shadow:0 2px 10px rgba(6,25,30,.025)}
+.kicker strong{color:#0e5f55;font-weight:800}
+.section{padding-top:54px}
+.headline{margin-bottom:25px}
+.section h2,.process h2{font-size:clamp(25px,3vw,32px);font-weight:850;letter-spacing:-.5px;color:#18313a;margin-bottom:9px}
+.section .description{font-size:15px;color:#587078;line-height:1.9}
+.meta{background:#e9f0ed;color:#476760;padding:8px 14px;font-size:12px;border:1px solid #d8e4e0}
+.catalog{gap:20px}
+.product{border-radius:22px;padding:28px 29px;min-height:252px;box-shadow:var(--shadow-card);
+  border:1px solid #dbe5e2;transition:box-shadow .2s ease,border-color .2s ease;
+  overflow:hidden}
+.product:before{content:"";position:absolute;left:0;top:0;width:100%;height:3px;background:transparent}
+.product.live{border:1px solid #bfdbd4;background:linear-gradient(145deg,#ffffff 60%,#edf6f2 100%);box-shadow:0 12px 44px rgba(14,92,77,.072)}
+.product.live:before{background:linear-gradient(90deg,#167b68,#b5dfd2)}
+.product.live:hover{box-shadow:0 16px 42px rgba(14,92,77,.11);transform:none;border-color:#7fbbb0}
+.product.planned{background:linear-gradient(145deg,#fff 70%,#f5f7f6 100%);opacity:1}
+.product.planned .tile-icon{background:#f1f5f4;color:#748f90}
+.product-top{margin-bottom:19px}
+.tile-icon{width:57px;height:57px;border-radius:15px;background:#e6f1ed;border:1px solid #d3e9e0;color:#12675b}
+.tile-icon svg{width:28px;height:28px;stroke-width:1.6}
+.status{font-size:11px;background:#f0f3f2;color:#637d80;border:1px solid #e2eae8;padding:5px 13px}
+.status.ready{background:#e5f5ec;color:#115e48;border-color:#c7e5d2}
+.product h3{font-size:20px;line-height:1.6;letter-spacing:-.2px;font-weight:850;color:#1c353c;margin-bottom:8px}
+.product p{font-size:14px;color:#587178;line-height:1.85;margin-bottom:21px;max-width:500px}
+.open{background:#143940;color:#fff;min-height:42px;border-radius:10px;padding:8px 14px;font-size:13px;gap:11px;
+ transition:background .2s ease, box-shadow .2s ease}
+.open:hover{background:#0c6e61;box-shadow:0 5px 13px rgba(21,103,93,.12)}
+.open svg{width:17px;height:17px}
+.future{font-size:12px;color:#768b8a;background:#f0f4f3;display:inline-flex;align-items:center;min-height:30px;
+  border-radius:8px;padding:4px 10px;align-self:start;letter-spacing:0}
+.process{background:#142f35;color:#f3f8f7;border-color:#2d4e50;box-shadow:0 16px 32px rgba(16,42,47,.07);
+  border-radius:23px;padding:32px 37px;margin:34px 0 52px}
+.process h2{color:#fff}
+.process .description{color:#b5d1cb}
+.process .headline{margin-bottom:24px}
+.process .steps{gap:22px}
+.step{border-inline-start:1px solid #39565a;padding-inline-start:16px;gap:7px}
+.step:first-child{border-inline-start:0;padding-inline-start:0}
+.num{color:#eab26c;font-size:11px;font-family:"Manrope","IBM Plex Sans Arabic",sans-serif}
+.step strong{font-size:15px;color:#f5f8f7}
+.step p{font-size:12px;color:#b8ceca;line-height:1.9}
+footer{background:#edf1ef;color:#587077;border-top:1px solid #dce5e2;padding:24px 0 28px}
+footer .shell{align-items:center}
+a:focus-visible{outline:3px solid #f4af60;outline-offset:4px}
+@media(max-width:800px){
+ .hero{grid-template-columns:1fr;min-height:0}
+ .hero-copy{max-width:none;padding:43px 36px 8px}
+ .hero-art{min-height:250px;padding:0 24px 22px}
+ .hero-art:before{inset:0 24px}
+ .hero-art svg{width:340px}
+ .hero-art:after{bottom:12px;left:25px}
+ .product{min-height:247px;padding:24px}
+ .process .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .step:nth-child(3){border-inline-start:0;padding-inline-start:0}
+}
+@media(max-width:560px){
+ .shell{padding-inline:17px}
+ .top .shell{min-height:72px}
+ .brand strong{font-size:13px}
+ .brand small{font-size:8px;letter-spacing:1.3px}
+ .logo{width:42px;height:42px}
+ .nav{gap:8px}
+ .nav .navlink{font-size:11px;min-height:44px;padding:9px 12px}
+ .hero{margin-top:18px;border-radius:21px}
+ .hero-copy{padding:32px 24px 4px}
+ .eyebrow{font-size:9px;letter-spacing:1px}
+ h1{font-size:clamp(28px,8vw,38px);line-height:1.45;margin:17px 0 14px}
+ .hero p{font-size:14px;line-height:1.9;margin-bottom:19px}
+ .primary{width:100%;padding:11px 13px;font-size:13px;min-height:48px}
+ .hero-proof{gap:9px;justify-content:center;margin-top:13px}
+ .hero-proof .proof-pill{font-size:10px}
+ .hero-art{min-height:190px;padding:0 18px 14px}
+ .hero-art svg{width:290px}
+ .hero-art:after{display:none}
+ .kicker{margin-top:16px;padding:10px 12px;font-size:11px}
+ .section{padding-top:37px}
+ .headline{margin-bottom:20px}
+ .section h2,.process h2{font-size:24px}
+ .section .description{font-size:13px}
+ .catalog{grid-template-columns:1fr;gap:14px}
+ .product{min-height:224px;padding:23px 22px}
+ .product h3{font-size:19px}
+ .product p{font-size:13px}
+ .process{padding:24px 20px;margin-top:26px;margin-bottom:33px}
+ .process .steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 15px}
+ .step{padding-inline-start:10px}
+ .step:nth-child(3){padding-inline-start:0}
+ .step strong{font-size:13px}
+ .step p{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+ .product,.open,.primary{transition:none!important}
+ .hero-art svg{transform:none}
+}
+
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-<main id="ak-calculator">
-  <div class="ak-wrap">
-    <header class="ak-head">
-      <div>
-        <div class="ak-strap">ASSASSAT KHALI — OUTIL TECHNIQUE</div>
-        <h1>حاسبة سقف Armstrong</h1>
-        <p>من قياسات الغرفة → اقتراح البوردور → المخطط → لائحة السلعة</p>
-      </div>
-      <div class="ak-head-icon" aria-hidden="true">
-        <svg viewBox="0 0 46 46" width="42" height="42" fill="none">
-          <rect x="4" y="7" width="38" height="30" rx="3" stroke="#A7E5DA" stroke-width="2"/>
-          <path d="M16.7 7v30M29.3 7v30M4 17h38M4 27h38" stroke="#A7E5DA" stroke-width="1.5"/>
-          <path d="M4 37l5 5h28l5-5" stroke="#6BBDAF" stroke-width="1.5"/>
-        </svg>
-      </div>
-    </header>
-    <div class="ak-columns">
-      <section class="ak-left">
-        <div class="ak-panel">
-          <div class="ak-label-row"><div class="ak-step">1</div><div><h2>المقاسات ديال الغرفة</h2><p class="ak-sub" style="margin:0">دخل القياسات بالمتر، والسنتيمتر للنزول.</p></div></div>
-          <div class="ak-input-grid">
-            <label class="ak-field">الطول (m)<input id="ak-length" type="number" min="0.8" max="50" step="0.01" inputmode="decimal" value="8"></label>
-            <label class="ak-field">العرض (m)<input id="ak-width" type="number" min="0.8" max="50" step="0.01" inputmode="decimal" value="4"></label>
-            <label class="ak-field">النزول (cm)<input id="ak-drop" type="number" min="5" max="100" step="1" inputmode="numeric" value="30"></label>
-            <label class="ak-field">طول Tige للقص (cm)<input id="ak-cut" type="number" min="5" max="100" step="0.1" inputmode="decimal" value="30"><span>قياس مبدئي، تأكد فالموقع</span></label>
-          </div>
-          <p class="ak-warning">طول القص ماشي بالضرورة هو النزول النهائي. تحقق من المسافة الفعلية وعلو Porteur/Coulisseau قبل قطع Tiges.</p>
-          <div id="ak-error" class="ak-error" role="alert" hidden></div>
-        </div>
-        <div class="ak-panel">
-          <div class="ak-label-row"><div class="ak-step">2</div><div><h2>اقتراح البوردور BA13</h2><p class="ak-sub" style="margin:0">دائماً بوردور متساوي من الجهتين المتقابلتين.</p></div></div>
-          <div id="ak-options" class="ak-options" role="group" aria-label="اختيارات البوردور"></div>
-          <div class="ak-custom" id="ak-custom" role="region" aria-label="إعدادات التوزيع اليدوي">
-            <p class="ak-sub">حدد عدد بلاكات 60cm كاملة. عرض البوردور غادي يتحسب أوتوماتيكياً.</p>
-            <div class="ak-input-grid">
-              <label class="ak-field">بلاكات على الطول<input id="ak-tilesL" type="number" min="1" step="1" value="12"></label>
-              <label class="ak-field">بلاكات على العرض<input id="ak-tilesW" type="number" min="1" step="1" value="6"></label>
-            </div>
-          </div>
-          <p id="ak-option-summary" class="ak-notice" style="margin:13px 0 0"></p>
-          <div id="ak-border-warning" class="ak-warning" hidden></div>
-        </div>
-        <div class="ak-panel">
-          <div class="ak-label-row"><div class="ak-step" aria-hidden="true">✓</div><div><h2>طريقة التركيب المعتمدة</h2><p class="ak-sub" style="margin:0">قواعد الحساب المتفق عليها</p></div></div>
-          <div class="ak-notice">
-            <strong>• Porteur T:</strong> في الاتجاه الطولي فقط، والمسافة بين الخطوط 1.20m ويمكن إضافة فراغ 0.60m.<br>
-            <strong>• Cross 1.20:</strong> كيبدأ من الحد الفاصل مع BA13 في طرف الطول، وكيكرر كل 60cm حتى النهاية.<br>
-            <strong>• Cross 0.60:</strong> وسط فراغات 1.20، وفي فراغ 0.60 كنستعملوه بوحده بلا Cross 1.20.<br>
-            <strong>• Cornière:</strong> على حيطان الغرفة كاملة، ماشي بين BA13 وArmstrong.<br>
-            <strong>• Suspension:</strong> Cheville laiton + Tige + Coulisseau؛ بلا Pivot.
-          </div>
-        </div>
-      </section>
-      <section class="ak-right">
-        <div class="ak-panel">
-          <div class="ak-plan-header">
-            <div><div class="ak-label-row" style="margin:0"><div class="ak-step">3</div><div><div class="ak-plan-title">المخطط التفاعلي</div><div class="ak-sub" style="margin:2px 0 0">Vue en plan — البروفيلات والمساحات مرسومين بالنسب الصحيحة</div></div></div></div>
-            <span class="ak-tag" id="ak-plan-state">معاينة قبل الحساب</span>
-          </div>
-          <div class="ak-graphic" id="ak-svg-container" aria-label="رسم تخطيطي لسقف Armstrong"></div>
-          <div class="ak-legend">
-            <span><i style="background:#205fa3"></i>Porteur 3.60</span>
-            <span><i style="background:#d89b3b"></i>Cross 1.20</span>
-            <span><i style="background:#229b80"></i>Cross 0.60</span>
-            <span><i style="background:#e4bd8c;height:12px;width:12px"></i>BA13</span>
-            <span><i style="background:#243540;height:10px;width:10px;border-radius:50%"></i>علاقة</span>
-          </div>
-          <div class="ak-stats">
-            <div class="ak-stat"><b id="ak-stat-area">32</b><span>المساحة m²</span></div>
-            <div class="ak-stat"><b id="ak-stat-grid">12 × 6</b><span>شبكة 60×60</span></div>
-            <div class="ak-stat"><b id="ak-stat-tiles">72</b><span>عدد البلاكات</span></div>
-          </div>
-          <label class="ak-small-check"><input id="ak-show-hangers" type="checkbox" checked> إظهار مواقع العلاقات التقريبية فوق Porteur</label>
-          <button type="button" id="ak-approve" class="ak-button ak-full" style="margin-top:16px">اعتمد المخطط وحسب السلعة</button>
-          <div class="ak-actions">
-            <button class="ak-outline" id="ak-download-svg" type="button">تحميل المخطط SVG</button>
-            <button class="ak-outline" id="ak-print" type="button">طباعة / PDF</button>
-          </div>
-        </div>
-        <div class="ak-panel">
-          <div class="ak-sectioncap"><div class="ak-label-row" style="margin:0"><div class="ak-step">4</div><div><h2>لائحة السلعة</h2><p class="ak-sub" style="margin:0">كتبان غير من بعد اعتماد المخطط</p></div></div><span id="ak-calculation-status" class="ak-tag" style="background:#f1f4f5;color:#7a8c91">مازال ما تعمدش</span></div>
-          <div id="ak-before-results" class="ak-placeholder" style="margin-top:15px">
-            <b>المخطط واجد للمعاينة</b>
-            <p>راجع البوردور وتوزيع البروفيلات، ومن بعد اضغط «اعتمد المخطط وحسب السلعة».</p>
-          </div>
-          <div id="ak-results" class="ak-result" hidden>
-            <div id="ak-formulas" class="ak-notice" style="margin:14px 0"></div>
-            <div class="ak-table-wrap"><table class="ak-table"><thead><tr><th>السلعة</th><th>الكمية المحسوبة</th><th>الشراء المقترح</th></tr></thead><tbody id="ak-bom"></tbody></table></div>
-            <div class="ak-actions"><button class="ak-button" id="ak-download-pdf" type="button">تحميل لائحة السلعة + المخطط PDF</button><button class="ak-outline" id="ak-download-csv" type="button">تحميل CSV</button><button class="ak-outline" id="ak-copy" type="button">نسخ القائمة</button></div>
-            <div class="ak-empty" style="margin-top:14px"><strong>مهم:</strong> لائحة Armstrong ما كتغطيش هيكل BA13 (Fourrure، دعامات، تثبيت الحواف)، حيث خاصو تصميم مستقل. العدد ديال العلاقات تقديري ويخصو التحقق من نوع النظام والحمولة ومواضع وصلات Porteur.</div>
-          </div>
-        </div>
-      </section>
-    </div>
-    <div class="ak-footer">ASSASSAT KHALI · Calculateur Armstrong V1.4 · PDF + مخطط / CSV · تقديرات الشراء تحتاج مراجعة تقنية قبل التنفيذ</div>
+<header class="top">
+ <div class="shell">
+  <a class="brand" href="./" aria-label="الصفحة الرئيسية ASSASSAT KHALI">
+   <span class="logo"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M5 25V7l11 7 11-7v18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21h14M16 14v12" stroke="#99dbd2" stroke-width="2.5" stroke-linecap="round"/></svg></span>
+   <span><strong>ASSASSAT KHALI</strong><small>OUTIL TECHNIQUE</small></span>
+  </a>
+  <nav class="nav" aria-label="التنقل الرئيسي">
+   <a href="#tools">الحاسبات</a><a href="#method">طريقة العمل</a><a class="navlink" href="calculators/armstrong/">حاسبة Armstrong</a>
+  </nav>
+ </div>
+</header>
+<main class="shell">
+ <section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-copy">
+   <span class="eyebrow">ASSASSAT KHALI • OUTIL TECHNIQUE</span>
+   <h1 id="hero-heading">من القياس للمخطط<br>حتى للائحة السلعة.</h1>
+   <p>أدوات حساب تقنية منظمة للحرفيين وأوراش البناء. دخل المقاسات، راجع الاقتراحات، شوف المخطط، ومن بعد حمّل المواد ديالك فملف PDF.</p>
+   <a class="primary" href="calculators/armstrong/">ابدأ بحاسبة Armstrong <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+   <div class="hero-proof" aria-label="خصائص التطبيق">
+    <span class="proof-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>مخططات تقنية</span><i class="proof-dot" aria-hidden="true"></i>
+    <span class="proof-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>PDF مع السلعة</span><i class="proof-dot" aria-hidden="true"></i>
+    <span class="proof-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>بلا تعقيدات</span>
+   </div>
   </div>
+  <div class="hero-art" aria-hidden="true">
+   <svg viewBox="0 0 360 265" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="tile" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dff0ea"/><stop offset="1" stop-color="#a1c9c1"/></linearGradient><linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e5c89d"/><stop offset="1" stop-color="#c69d67"/></linearGradient></defs>
+    <path d="M36 92 233 28 328 90 125 165Z" fill="#0b222c" stroke="#6ab0a5" stroke-width="1.4" opacity=".52"/>
+    <path d="M35 112 229 45 326 111 126 185Z" fill="#d9bc90" stroke="#eed7b4" stroke-width="2"/>
+    <path d="M56 110 229 57 307 111 127 171Z" fill="#163f46" stroke="#1c706d" stroke-width="2"/>
+    <path d="M71 111 226 66 293 111 128 160Z" fill="url(#tile)" stroke="#a5d2cb" stroke-width="2"/>
+    <g stroke="#5c9a93" stroke-width="1.2"><path d="M100 102 154 146M130 93 182 138M161 84 212 127M190 76 242 119M219 67 272 110"/><path d="M92 121 245 77M113 136 270 95M139 155 295 112"/></g>
+    <g stroke="#4ca5a5" stroke-width="1.4" opacity=".85"><path d="M36 112v47M126 185v44M326 111v47M36 159l90 70 200-71" fill="none"/></g>
+    <circle cx="231" cy="22" r="3" fill="#e4bc80"/><path d="M231 27v27" stroke="#e4bc80" stroke-dasharray="3 4" stroke-width="1.5"/>
+    <circle cx="310" cy="80" r="3" fill="#e4bc80"/><path d="M310 84v25" stroke="#e4bc80" stroke-dasharray="3 4" stroke-width="1.5"/>
+    <circle cx="123" cy="63" r="3" fill="#e4bc80"/><path d="M123 67v34" stroke="#e4bc80" stroke-dasharray="3 4" stroke-width="1.5"/>
+    <rect x="20" y="207" width="88" height="37" rx="9" fill="#ffffff" opacity=".96"/><text x="64" y="225" text-anchor="middle" fill="#184952" font-size="10" font-weight="bold">60 × 60</text><text x="64" y="237" text-anchor="middle" fill="#648b85" font-size="8">Armstrong</text>
+    <rect x="236" y="191" width="102" height="45" rx="9" fill="#ffffff" opacity=".95"/><text x="287" y="209" text-anchor="middle" fill="#184952" font-size="9" font-weight="bold">Porteur + Cross</text><text x="287" y="223" text-anchor="middle" fill="#648b85" font-size="8">مخطط تقني</text>
+   </svg>
+  </div>
+ </section>
+ <div class="kicker"><strong>جوج حاسبات متاحات دابا</strong><span></span>جوج حاسبات أخرى قيد التطوير</div>
+ <section class="section" id="tools" aria-labelledby="tools-heading">
+  <div class="headline"><div><h2 id="tools-heading">الحاسبات التقنية</h2><p class="description">اختار نوع الأشغال باش تشوف الخيارات والمخطط وحساب السلعة.</p></div><span class="meta">4 تخصصات</span></div>
+  <div class="catalog">
+   <article class="product live">
+    <div class="product-top"><span class="tile-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="26" height="26" rx="3"/><path d="M3 12h26M3 21h26M12 3v26M21 3v26"/></svg></span><span class="status ready">متاحة دابا</span></div>
+    <h3>Armstrong مع بوردور BA13</h3><p>اقتراحات تلقائية، تعديل يدوي، مخطط Porteur وCross، وحساب السلعة مع PDF فيه الرسم.</p>
+    <a class="open" href="calculators/armstrong/">فتح الحاسبة <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m6-6-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+   </article>
+   <article class="product live">
+    <div class="product-top"><span class="tile-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="26" height="26" rx="3"/><path d="M10 3v26M18 3v26M25 3v26M3 11h26M3 20h26"/></svg></span><span class="status ready">متاحة دابا</span></div>
+    <h3>Armstrong بلا بوردور</h3><p>توزيع بلاكات 60×60، القصّات المتوازنة، حساب الشبكة والكميات.</p><a class="open" href="calculators/armstrong-full/">فتح الحاسبة <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m6-6-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+   </article>
+   <article class="product planned" aria-label="أسقف الجبص بورد BA13، قيد التطوير">
+    <div class="product-top"><span class="tile-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9h24M4 9v16h24V9M10 9v16M22 9v16M4 17h24"/></svg></span><span class="status">قيد التطوير</span></div>
+    <h3>أسقف الجبص بورد BA13</h3><p>الأسقف العادية والإنارة المخفية، Fourrure وCornière والألواح والتثبيت.</p><span class="future" aria-label="هذه الحاسبة غير متاحة حالياً">الحاسبة مغلقة حالياً — قيد التطوير</span>
+   </article>
+   <article class="product planned" aria-label="الحوائط والعزل، قيد التطوير">
+    <div class="product-top"><span class="tile-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 27V5h22v22H5ZM12 5v22M20 5v22M5 13h22M5 20h22"/></svg></span><span class="status">قيد التطوير</span></div>
+    <h3>الحوائط والعزل</h3><p>Cloison وDoublage وRails وMontants وRockwool، مع خصم الأبواب والفتحات.</p><span class="future" aria-label="هذه الحاسبة غير متاحة حالياً">الحاسبة مغلقة حالياً — قيد التطوير</span>
+   </article>
+  </div>
+ </section>
+ <section class="process" id="method" aria-label="طريقة العمل">
+  <div class="headline"><div><h2>كيفاش كتخدم الحاسبات؟</h2><p class="description">نفس الخطوات فكل أنواع الأشغال.</p></div></div>
+  <div class="steps">
+   <div class="step"><span class="num">01 / قياسات</span><strong>دخل المقاسات</strong><p>الطول والعرض والنزول أو الارتفاع.</p></div>
+   <div class="step"><span class="num">02 / اختيار</span><strong>راجع الاقتراحات</strong><p>اختار التصميم المناسب أو عدّلو يدوياً.</p></div>
+   <div class="step"><span class="num">03 / مخطط</span><strong>شوف الرسم</strong><p>التوزيع التقني قبل اعتماد السلعة.</p></div>
+   <div class="step"><span class="num">04 / مواد</span><strong>حمّل PDF</strong><p>الكميات والمخطط فوثيقة واحدة.</p></div>
+  </div>
+ </section>
 </main>
-<script>
-(function(){
-  'use strict';
-  const $=id=>document.getElementById(id);
-  const M=0.6, mainLen=3.6, teeLen=1.2, rodLenCm=100;
-  const state={selected:'1',approved:false,options:[],current:null,shownHangers:true,lastCsv:''};
-  const fmt=(v,d=2)=>Number(v).toFixed(d).replace(/\.?0+$/,'');
-  const cm=v=>fmt(v*100,1)+' cm';
-  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const ceil=Math.ceil;
-  const nearly=(a,b)=>Math.abs(a-b)<0.00001;
-  const val=id=>Number($(id).value);
-  function getDimensions(){
-    const L=val('ak-length'), W=val('ak-width'), drop=val('ak-drop'), cut=val('ak-cut');
-    if(![L,W,drop,cut].every(Number.isFinite)||L<0.8||W<0.8||L>50||W>50||drop<5||drop>100||cut<5||cut>100){throw Error('القياسات خاصها تكون صحيحة: الطول والعرض من 0.8m حتى 50m، والنزول والقص من 5 حتى 100cm.');}
-    if(L*W>600)throw Error('المساحة كبيرة بزاف لهاد النسخة (أقصى حد 600m²). قسمها لمناطق مستقلة.');
-    return {L,W,drop,cut};
-  }
-  function dimOptions(dim){
-    const maxN=Math.floor((dim-0.001)/M+1e-8);
-    let a=[];
-    for(let n=1;n<=maxN;n++){
-      const b=(dim-M*n)/2;
-      if(b>=0.12-1e-7 && b<=1.4+1e-7){a.push({n,b,score:Math.abs(b-0.30)+(b>0.8?(b-0.8)*0.15:0)})}
-    }
-    // Small rooms may only admit narrow borders. Keep those options and flag them in the UI.
-    if(!a.length){
-      for(let n=1;n<=maxN;n++){
-        const b=(dim-M*n)/2;
-        if(b>=.05-1e-7 && b<=1.4+1e-7)a.push({n,b,score:Math.abs(b-.30)});
-      }
-    }
-    a.sort((x,y)=>x.score-y.score || y.n-x.n);
-    return a;
-  }
-  function getChoices(d){
-    const l=dimOptions(d.L),w=dimOptions(d.W);
-    if(!l.length||!w.length) throw Error('ما لقيناش توزيع مناسب ببوردور على الجهات الأربع. جرّب مقاسات أخرى أو توزيع مخصص.');
-    const choices=[{nL:l[0].n,nW:w[0].n,label:'الخيار 1',source:'auto'}];
-    const l2=l.find(v=>v.n<l[0].n) || l.find(v=>v.n!==l[0].n);
-    const w2=w.find(v=>v.n<w[0].n) || w.find(v=>v.n!==w[0].n);
-    if(l2 || w2){
-      const second={nL:l2?l2.n:l[0].n,nW:w2?w2.n:w[0].n,label:'الخيار 2',source:'auto'};
-      if(second.nL!==choices[0].nL||second.nW!==choices[0].nW)choices.push(second);
-    }
-    return choices;
-  }
-  function buildPlan(d,opt){
-    const {L,W,drop,cut}=d,nL=Number(opt.nL),nW=Number(opt.nW);
-    if(!Number.isInteger(nL)||!Number.isInteger(nW)||nL<1||nW<1)throw Error('عدد البلاكات خاصو يكون عدد صحيح وأكبر من صفر.');
-    const bL=(L-nL*M)/2,bW=(W-nW*M)/2;
-    if(bL<0.049999||bW<0.049999)throw Error('خاص يكون BA13 على الجهتين، على الأقل 5cm لكل جهة. نقص عدد البلاكات.');
-    const bays12=Math.floor(nW/2),bays06=nW%2;
-    const nP=bays12+bays06+1;
-    const fieldL=nL*M,fieldW=nW*M;
-    const pPieces=nP*ceil((fieldL-1e-9)/mainLen);
-    const c12=bays12*(nL+1);
-    const c06=bays12*nL+bays06*(nL+1);
-    const hangsPerLine=ceil(fieldL/1);
-    const hangs=nP*hangsPerLine;
-    const rodPieces=Math.floor((rodLenCm+1e-7)/cut);
-    if(rodPieces<1)throw Error('طول القطعة كبير أكثر من طول Tige.');
-    const rods=ceil(hangs/rodPieces);
-    const wallPerimeter=2*(L+W);
-    const angle=ceil((wallPerimeter-1e-9)/3);
-    const wallFix=ceil(wallPerimeter/0.50);
-    const roomArea=L*W,armArea=fieldL*fieldW,ba13Area=roomArea-armArea;
-    const boards=ceil((ba13Area-1e-8)/(1.2*2.8));
-    return {L,W,drop,cut,nL,nW,bL,bW,bays12,bays06,nP,fieldL,fieldW,pPieces,c12,c06,hangsPerLine,hangs,rodPieces,rods,wallPerimeter,angle,wallFix,roomArea,armArea,ba13Area,boards,tiles:nL*nW};
-  }
-  function setApproval(no){state.approved=false;$('ak-results').hidden=true;$('ak-before-results').hidden=false;$('ak-calculation-status').textContent='مازال ما تعمدش';$('ak-calculation-status').style.background='#f1f4f5';$('ak-calculation-status').style.color='#7a8c91';$('ak-plan-state').textContent='معاينة قبل الحساب'}
-  function renderOptions(d){
-    state.options=getChoices(d);
-    if(!state.options.some((_,i)=>String(i+1)===state.selected)&&state.selected!=='custom')state.selected='1';
-    const autoCards=state.options.map((o,i)=>{
-      const p=buildPlan(d,o),selected=state.selected===String(i+1);
-      return `<button class="ak-option${selected?' selected':''}" type="button" data-choice="${i+1}" aria-pressed="${selected}"><b>الخيار ${i+1}</b><small>بوردور في الطول / العرض</small><strong>${cm(p.bL)} / ${cm(p.bW)}</strong><small>${p.nL} × ${p.nW} بلاكات 60×60</small></button>`;
-    });
-    const manualSelected=state.selected==='custom';
-    const manualL=val('ak-tilesL'), manualW=val('ak-tilesW');
-    const manualCard=`<button class="ak-option ak-option-manual${manualSelected?' selected':''}" id="ak-custom-toggle" type="button" data-choice="custom" aria-pressed="${manualSelected}" aria-expanded="${manualSelected}" aria-controls="ak-custom"><b>الخيار 3 — تعديل يدوي</b><small>عدد البلاكات في الطول / العرض</small><strong>${manualL} × ${manualW}</strong><small>+ تعديل توزيع البلاكات يدوياً</small></button>`;
-    $('ak-options').innerHTML=[...autoCards,manualCard].join('');
-    $('ak-options').querySelectorAll('[data-choice]').forEach(b=>b.addEventListener('click',()=>{
-      const selected=b.dataset.choice;
-      if(selected==='custom'){
-        if(state.selected!=='custom' && state.current){
-          $('ak-tilesL').value=state.current.nL;
-          $('ak-tilesW').value=state.current.nW;
-        }
-      }
-      if(state.selected===selected)return;
-      state.selected=selected;
-      setApproval();update();
-    }));
-  }
-  function currentPlan(d){
-    let opt;
-    if(state.selected==='custom')opt={nL:val('ak-tilesL'),nW:val('ak-tilesW')};
-    else opt=state.options[Number(state.selected)-1] || state.options[0];
-    return buildPlan(d,opt);
-  }
-  function hangerPositions(p){
-    const n=p.hangsPerLine,L=p.fieldL;
-    if(n<=1)return [L/2];
-    // Approximate layout, final hanging points near manufacturer-approved joints.
-    if(nearly(L,7.2)&&n===8)return [.45,1.45,2.45,3.55,4.55,5.55,6.55,7.05];
-    const a=Math.min(0.3,L/(n+1)),b=L-Math.min(.3,L/(n+1));
-    return Array.from({length:n},(_,i)=>a+(b-a)*i/(n-1));
-  }
-  function svgPlan(p,showHangers){
-    const bound={x:98,y:95,w:900,h:405},s=Math.min(bound.w/p.L,bound.h/p.W);
-    const x=bound.x+(bound.w-p.L*s)/2, y=bound.y+(bound.h-p.W*s)/2,wi=p.L*s,he=p.W*s;
-    const fx=x+p.bL*s, fy=y+p.bW*s, fwi=p.fieldL*s, fhe=p.fieldW*s;
-    const lines=[];
-    const push=(t)=>lines.push(t);
-    const poly=(a,b,c,d,color,stroke)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="${color}" stroke-width="${stroke}"/>`;
-    let yy=[fy];
-    for(let k=0;k<p.bays12;k++) yy.push(yy[yy.length-1]+1.2*s);
-    if(p.bays06)yy.push(yy[yy.length-1]+.6*s);
-    // 1.20 tees: transverse lines at x=0 and x=each 0.60 module.
-    for(let j=0;j<=p.nL;j++){
-      const xx=fx+j*.6*s;
-      for(let k=0;k<p.bays12;k++)push(poly(xx,yy[k],xx,yy[k+1],'#D59428',Math.max(2.2,s*.025)));
-      // A 0.60 bay uses ONLY 0.60 tees, including the first and last edges.
-      if(p.bays06)push(poly(xx,yy[p.bays12],xx,yy[p.bays12+1],'#219A7C',Math.max(2.2,s*.025)));
-    }
-    // Mid-bay 0.60 tees run parallel to Porteur between successive Cross-tee 1.20.
-    for(let k=0;k<p.bays12;k++){
-      for(let j=0;j<p.nL;j++){
-        const cy=yy[k]+.6*s;
-        push(poly(fx+j*.6*s,cy,fx+(j+1)*.6*s,cy,'#219A7C',Math.max(2.0,s*.021)));
-      }
-    }
-    // Porteurs only along room length.
-    yy.forEach(cy=>push(poly(fx,cy,fx+fwi,cy,'#1F5D9F',Math.max(3.5,s*.043))));
-    if(showHangers){
-      const xs=hangerPositions(p);
-      yy.forEach(cy=>xs.forEach(hx=>push(`<circle cx="${fx+hx*s}" cy="${cy}" r="${Math.max(3.1,Math.min(5.5,s*.055))}" fill="#233A44" stroke="#ffffff" stroke-width="1.2"/>`)));
-    }
-    const borderX=Math.max(50,wi/5),borderY=Math.max(35,he/6);
-    const wLabel=(p.nW%2?' + 0.60m':'');
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 610" role="img" aria-label="مخطط سقف Armstrong ${esc(fmt(p.L))} في ${esc(fmt(p.W))} متر؛ شبكة ${p.nL} على ${p.nW}">
-      <rect width="1100" height="610" fill="#f5f9f8"/>
-      <g font-family="Arial,Tahoma,sans-serif" text-anchor="middle" fill="#455B64">
-        <text x="550" y="39" font-size="23" font-weight="700">${esc(fmt(p.L))} m — الطول</text>
-        <text x="38" y="295" font-size="21" font-weight="700" transform="rotate(-90 38 295)">${esc(fmt(p.W))} m — العرض</text>
-      </g>
-      <rect x="${x}" y="${y}" width="${wi}" height="${he}" fill="#E6C69E" stroke="#AE885B" stroke-width="2"/>
-      <rect x="${fx}" y="${fy}" width="${fwi}" height="${fhe}" fill="#E0F1EB"/>
-      ${lines.join('')}
-      <g fill="#415660" font-size="16" font-family="Arial,Tahoma,sans-serif" text-anchor="middle" font-weight="700">
-      <text x="${fx-p.bL*s/2}" y="${y+he/2}" transform="rotate(-90 ${fx-p.bL*s/2} ${y+he/2})">${esc(cm(p.bL))}</text>
-      <text x="${fx+fwi+p.bL*s/2}" y="${y+he/2}" transform="rotate(-90 ${fx+fwi+p.bL*s/2} ${y+he/2})">${esc(cm(p.bL))}</text>
-      <text x="${x+wi/2}" y="${y+p.bW*s/2+5}">${esc(cm(p.bW))}</text>
-      <text x="${x+wi/2}" y="${fy+fhe+p.bW*s/2+5}">${esc(cm(p.bW))}</text>
-      </g>
-      <rect x="344" y="535" width="410" height="43" rx="10" fill="#ffffff" stroke="#dce7e4"/>
-      <text x="549" y="562" fill="#305a58" font-size="19" font-weight="700" text-anchor="middle" font-family="Arial,Tahoma,sans-serif">${p.nL} × ${p.nW} بلاكة 60×60 — ${p.tiles} بلاكة</text>
-    </svg>`;
-  }
-  function rowsForBom(p){
-    const add=(name,base,buy,why='')=>({name,base,buy,why});
-    return [
-      add('بلاكات Armstrong 60×60',p.tiles,ceil(p.tiles*1.05),'احتياط ≈ 5%'),
-      add('Porteur T 3.60m',p.pPieces,p.pPieces+1,'فالاتجاه الطولي فقط'),
-      add('Cross-tee 1.20m',p.c12,p.c12+ceil(p.c12*.10),'شامل البداية والنهاية'),
-      add('Cross-tee 0.60m',p.c06,p.c06+ceil(p.c06*.10),'شامل فراغ 0.60 إذا وجد'),
-      add('Cornière 3m للحائط',p.angle,p.angle+1,'الجدران فقط'),
-      add('Cheville laiton',p.hangs,p.hangs+ceil(p.hangs*.10),'واحدة لكل علاقة'),
-      add('Coulisseau',p.hangs,p.hangs+ceil(p.hangs*.10),'واحد لكل علاقة'),
-      add('Tige 1m',p.rods,p.rods+1,`${p.rodPieces} قطع لكل متر حسب طول القص`),
-      add('Cheville à frapper',p.wallFix,ceil(p.wallFix*1.15/10)*10,'تباعد 50cm، مع احتياط'),
-      add('ألواح BA13 1.20×2.80',p.boards,p.boards+1,'الحد الأدنى بالمساحة، تحقق من تقطيع الألواح'),
-      add('Vis BA13 (تقدير أولي)',ceil(p.ba13Area*30/10)*10,ceil(p.ba13Area*30*1.10/10)*10,'يُراجع بعد تحديد هيكل BA13')
-    ];
-  }
-  function renderResults(p){
-    const rows=rowsForBom(p);
-    $('ak-formulas').innerHTML=`<strong>تفصيل الحساب المعتمد:</strong><br>
-      Armstrong = ${fmt(p.fieldL)} × ${fmt(p.fieldW)}m = <b>${fmt(p.armArea)}m²</b>، وBA13 = <b>${fmt(p.ba13Area)}m²</b>.<br>
-      Porteur = ${p.nP} خطوط × ${ceil(p.fieldL/3.6-1e-9)} قطع لكل خط = <b>${p.pPieces}</b>.<br>
-      Cross 1.20 = ${p.bays12} فراغات 1.20 × (${p.nL}+1) = <b>${p.c12}</b>.<br>
-      Cross 0.60 = (${p.bays12} × ${p.nL}) + (${p.bays06} × ${p.nL+1}) = <b>${p.c06}</b>.<br>
-      العلاقات = ${p.nP} خطوط × ${p.hangsPerLine} = <b>${p.hangs}</b>.<br>
-      Tige = ${p.hangs} ÷ ${p.rodPieces} قطع/متر = <b>${p.rods} Tiges</b> (بالرفع).`;
-    $('ak-bom').innerHTML=rows.map(r=>`<tr><td>${esc(r.name)}<div style="color:#87979a;font-size:10px;font-weight:400">${esc(r.why)}</div></td><td>${r.base}</td><td>${r.buy}</td></tr>`).join('');
-    state.lastCsv=[['المادة','الكمية المحسوبة','كمية الشراء','ملاحظة'],...rows.map(r=>[r.name,r.base,r.buy,r.why])].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
-    $('ak-results').hidden=false;
-    $('ak-before-results').hidden=true;
-    $('ak-calculation-status').textContent='مخطط معتمد';
-    $('ak-calculation-status').style.background='#e1f6eb';
-    $('ak-calculation-status').style.color='#12735d';
-    $('ak-plan-state').textContent='مخطط معتمد';
-  }
-  function update(regen=true){
-    try{
-      const d=getDimensions();
-      if(regen)renderOptions(d);
-      const p=currentPlan(d);
-      state.current=p;
-      $('ak-error').hidden=true;
-      $('ak-approve').disabled=false;
-      $('ak-svg-container').innerHTML=svgPlan(p,state.shownHangers);
-      $('ak-stat-area').textContent=fmt(p.roomArea);
-      $('ak-stat-grid').textContent=p.nL+' × '+p.nW;
-      $('ak-stat-tiles').textContent=p.tiles;
-      $('ak-option-summary').innerHTML=`<strong>البوردور في الطول:</strong> ${esc(cm(p.bL))} من الجهتين.<br><strong>البوردور في العرض:</strong> ${esc(cm(p.bW))} من الجهتين.<br><strong>مساحة Armstrong:</strong> ${fmt(p.armArea)}m².`;
-      $('ak-border-warning').hidden=!(p.bL<0.15 || p.bW<0.15);
-      if(!$('ak-border-warning').hidden)$('ak-border-warning').textContent='واحد البوردور أقل من 15cm. راجع إمكانية التنفيذ والتدعيم قبل الاعتماد.';
-      $('ak-options').querySelectorAll('[data-choice]').forEach(b=>{const on=state.selected===b.dataset.choice;b.classList.toggle('selected',on);b.setAttribute('aria-pressed',String(on));if(b.dataset.choice==='custom')b.setAttribute('aria-expanded',String(on))});
-      $('ak-custom').classList.toggle('open',state.selected==='custom');
-      if(state.approved)renderResults(p);
-    }catch(e){
-      state.current=null;
-      $('ak-error').hidden=false;
-      $('ak-error').textContent=e.message;
-      $('ak-svg-container').innerHTML='<div style="padding:45px 15px;text-align:center;color:#687e82;line-height:1.6">القياسات غير صالحة. صلح المعلومات باش يظهر المخطط.</div>';
-      $('ak-approve').disabled=true;
-      $('ak-stat-area').textContent='—';$('ak-stat-grid').textContent='—';$('ak-stat-tiles').textContent='—';
-      $('ak-option-summary').textContent='—';
-      // Keep all three choice cards available while the user corrects invalid values.
-      setApproval();
-    }
-  }
-  function download(filename,content,type){
-    const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
-  }
-  // Self-contained 2-page PDF: the materials sheet plus the exact selected SVG plan.
-  // Both pages are drawn in the browser so Arabic remains correctly shaped and
-  // the export needs no third-party libraries or network connection.
-  async function pdfReport(p){
-    if(!state.approved) return;
-    const rows=rowsForBom(p);
-    const W=1240,H=1754;
-    const c=document.createElement('canvas');c.width=W;c.height=H;
-    const g=c.getContext('2d');
-    if(!g)throw Error('المتصفح لا يدعم إنشاء PDF. استعمل طباعة / PDF.');
-    g.fillStyle='#ffffff';g.fillRect(0,0,W,H);
-    function rounded(x,y,w,h,r,fill){
-      g.beginPath();g.roundRect(x,y,w,h,r);g.fillStyle=fill;g.fill();
-    }
-    function txt(s,x,y,size=27,color='#203b46',weight=500,align='right'){
-      g.fillStyle=color;g.font=`${weight} ${size}px Tahoma, Arial, sans-serif`;
-      g.textAlign=align;g.textBaseline='alphabetic';g.direction=align==='left'?'ltr':'rtl';
-      g.fillText(String(s),x,y);
-    }
-    g.fillStyle='#12333f';g.fillRect(0,0,W,191);
-    g.fillStyle='#15917c';g.fillRect(0,186,W,5);
-    txt('ASSASSAT KHALI',76,83,37,'#c1e8dd',800,'left');
-    txt('لائحة سلعة سقف Armstrong',1164,99,43,'#ffffff',800);
-    txt('حساب المواد بعد اعتماد مخطط توزيع البوردور BA13',1164,151,23,'#d8e7e9',400);
-    const cards=[
-      {x:75,name:'مقاسات الغرفة',val:`${fmt(p.L)} × ${fmt(p.W)} m`},
-      {x:445,name:'نزول السقف',val:`${fmt(p.drop)} cm`},
-      {x:815,name:'شبكة البلاكات',val:`${p.nL} × ${p.nW}`}
-    ];
-    cards.forEach(a=>{rounded(a.x,219,350,120,17,'#edf5f3');txt(a.name,a.x+320,258,23,'#668084',600);txt(a.val,a.x+27,307,36,'#143a47',800,'left')});
-    rounded(75,359,1090,86,14,'#f7f9f9');
-    txt(`البوردور في الطول: ${cm(p.bL)} من كل جهة`,1124,393,26,'#244e58',700);
-    txt(`البوردور في العرض: ${cm(p.bW)} من كل جهة`,1124,428,26,'#244e58',700);
-    txt('لائحة السلعة',1165,500,36,'#153a46',800);
-    txt(`Armstrong: ${fmt(p.armArea)} m²    |    BA13: ${fmt(p.ba13Area)} m²`,76,499,23,'#6c8588',500,'left');
-    let top=530,rowH=75;
-    rounded(75,top,1090,70,11,'#1d5e63');
-    txt('السلعة',1120,575,26,'#ffffff',800);
-    txt('الكمية المحسوبة',613,575,23,'#ffffff',800);
-    txt('الشراء المقترح',325,575,23,'#ffffff',800);
-    top+=70;
-    rows.forEach((r,i)=>{
-      let y=top+i*rowH;
-      if(i%2===0)g.fillStyle='#f6faf8';else g.fillStyle='#ffffff';
-      g.fillRect(75,y,1090,rowH);
-      g.fillStyle='#e1ebe8';g.fillRect(75,y+rowH-1,1090,1);
-      txt(r.name,1120,y+34,23,'#193e4a',700);
-      txt(r.why,1120,y+65,17,'#71888a',400);
-      txt(r.base,584,y+50,30,'#294e57',700);
-      txt(r.buy,285,y+50,31,'#13836c',800);
-    });
-    const end=top+rows.length*rowH;
-    rounded(75,end+30,1090,136,15,'#fff7e9');
-    txt('ملاحظة تقنية',1123,end+69,26,'#906522',800);
-    txt('الحساب تقديري لشبكة Armstrong والتعليق؛ لا يشمل هيكل BA13 المستقل.',1123,end+103,21,'#815c26',500);
-    txt('راجع أماكن التعليق ووصلات البروفيلات وتفاصيل التثبيت قبل الشراء والتنفيذ.',1123,end+132,21,'#815c26',500);
-    const today=new Date().toLocaleDateString('fr-MA');
-    g.fillStyle='#d5e2df';g.fillRect(75,H-106,1090,2);
-    txt('ASSASSAT KHALI — Calculateur Armstrong',75,H-61,20,'#75888b',700,'left');
-    txt(`تاريخ إعداد اللائحة: ${today}`,1165,H-61,21,'#75888b',500);
-    // Second A4 page: render the SAME SVG that the user approved on screen.
-    // This includes dimensions, BA13 borders, grid profiles, and optionally hangers.
-    const pagePlan=document.createElement('canvas');pagePlan.width=W;pagePlan.height=H;
-    const pg=pagePlan.getContext('2d');
-    if(!pg)throw Error('تعذر إنشاء صفحة المخطط.');
-    pg.fillStyle='#ffffff';pg.fillRect(0,0,W,H);
-    pg.fillStyle='#12333f';pg.fillRect(0,0,W,191);
-    pg.fillStyle='#15917c';pg.fillRect(0,186,W,5);
-    function planTxt(s,x,y,size=27,color='#203b46',weight=500,align='right'){
-      pg.fillStyle=color;pg.font=`${weight} ${size}px Tahoma, Arial, sans-serif`;
-      pg.textAlign=align;pg.textBaseline='alphabetic';pg.direction=align==='left'?'ltr':'rtl';
-      pg.fillText(String(s),x,y);
-    }
-    function planRounded(x,y,w,h,r,fill){
-      pg.beginPath();pg.roundRect(x,y,w,h,r);pg.fillStyle=fill;pg.fill();
-    }
-    planTxt('ASSASSAT KHALI',76,83,37,'#c1e8dd',800,'left');
-    planTxt('مخطط توزيع سقف Armstrong',1164,99,43,'#ffffff',800);
-    planTxt('المخطط المعتمد المرفق مع لائحة السلعة',1164,151,23,'#d8e7e9',400);
-    planRounded(75,217,1090,114,16,'#edf5f3');
-    planTxt(`الغرفة: ${fmt(p.L)} × ${fmt(p.W)} m`,1124,266,31,'#163d48',800);
-    planTxt(`Armstrong: ${fmt(p.fieldL)} × ${fmt(p.fieldW)} m`,1124,309,27,'#41636d',600);
-    planTxt(`البوردور BA13: ${cm(p.bL)} بالطول / ${cm(p.bW)} بالعرض`,86,310,23,'#41636d',600,'left');
-    planRounded(75,354,1090,745,16,'#f5f9f8');
-    const svgSource=svgPlan(p,state.shownHangers);
-    // SVG has no external images/fonts and can be rasterized within a sandboxed embed.
-    const planImage=new Image();
-    await new Promise((resolve,reject)=>{
-      planImage.onload=resolve;
-      planImage.onerror=()=>reject(Error('تعذر تحويل المخطط إلى صورة PDF.'));
-      planImage.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgSource);
-    });
-    pg.drawImage(planImage,84,419,1072,594);
-    planTxt('رموز المخطط',1165,1161,32,'#153a46',800);
-    const legend=[
-      {name:'Porteur T 3.60',color:'#1F5D9F'},
-      {name:'Cross-tee 1.20',color:'#D59428'},
-      {name:'Cross-tee 0.60',color:'#219A7C'},
-      {name:'BA13',color:'#E6C69E'}
-    ];
-    legend.forEach((item,i)=>{
-      const x=75+(i%2)*553, y=1200+Math.floor(i/2)*69;
-      planRounded(x,y,532,57,10,'#f2f7f5');
-      pg.fillStyle=item.color;pg.fillRect(x+26,y+20,43,17);
-      planTxt(item.name,x+504,y+38,25,'#244a54',700);
-    });
-    if(state.shownHangers){
-      planRounded(75,1353,1090,63,11,'#edf3f4');
-      planTxt('النقاط الداكنة فوق Porteur كتمثل مواقع العلاقات التقريبية.',1120,1396,23,'#345c62',600);
-    }
-    planRounded(75,1440,1090,142,15,'#fff7e9');
-    planTxt('ملاحظة تقنية',1120,1484,27,'#906522',800);
-    planTxt('الرسم توضيحي هندسي لتوزيع السقف، وليس مخطط تنفيذ إنشائي معتمداً.',1120,1523,22,'#815c26',500);
-    planTxt('خاص مراجعة تعليق البروفيلات وهيكل BA13 والوصلات مع نظام التصنيع.',1120,1562,21,'#815c26',500);
-    pg.fillStyle='#d5e2df';pg.fillRect(75,H-106,1090,2);
-    planTxt('ASSASSAT KHALI — Calculateur Armstrong',75,H-61,20,'#75888b',700,'left');
-    planTxt('صفحة المخطط 2 / 2',1165,H-61,21,'#75888b',500);
-
-    // Create one PDF with two separate A4 pages, each backed by a crisp image.
-    function toJpegBytes(canvas){
-      const b64=canvas.toDataURL('image/jpeg',0.94).split(',')[1];
-      const raw=atob(b64),bytes=new Uint8Array(raw.length);
-      for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
-      return bytes;
-    }
-    const images=[toJpegBytes(c),toJpegBytes(pagePlan)];
-    const enc=new TextEncoder(),chunks=[];let length=0;
-    const append=b=>{chunks.push(b);length+=b.byteLength;};
-    const put=s=>append(enc.encode(s));
-    const offsets=[0];
-    put('%PDF-1.4\n%PDFGEN\n');
-    const obj=(id,write)=>{offsets[id]=length;put(`${id} 0 obj\n`);write();put('\nendobj\n');};
-    obj(1,()=>put('<< /Type /Catalog /Pages 2 0 R >>'));
-    obj(2,()=>put('<< /Type /Pages /Kids [3 0 R 6 0 R] /Count 2 >>'));
-    images.forEach((bytes,i)=>{
-      const pageId=3+i*3,imageId=pageId+1,contentId=pageId+2;
-      obj(pageId,()=>put(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 ${imageId} 0 R >> >> /Contents ${contentId} 0 R >>`));
-      obj(imageId,()=>{
-        put(`<< /Type /XObject /Subtype /Image /Width ${W} /Height ${H} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${bytes.length} >>\nstream\n`);
-        append(bytes);put('\nendstream');
-      });
-      const draw='q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n';
-      obj(contentId,()=>{put(`<< /Length ${enc.encode(draw).length} >>\nstream\n`);put(draw);put('endstream')});
-    });
-    const xref=length;put('xref\n0 9\n0000000000 65535 f \n');
-    for(let i=1;i<=8;i++)put(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
-    put(`trailer\n<< /Size 9 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
-    const pdf=new Blob(chunks,{type:'application/pdf'});
-    const link=document.createElement('a');link.href=URL.createObjectURL(pdf);
-    link.download=`ASSASSAT_KHALI_Armstrong_${fmt(p.L)}x${fmt(p.W)}_Materials_Plan.pdf`;
-    document.body.appendChild(link);link.click();link.remove();
-    setTimeout(()=>URL.revokeObjectURL(link.href),15000);
-  }
-  $('ak-download-pdf').addEventListener('click',async()=>{
-    if(!state.approved||!state.current)return;
-    const btn=$('ak-download-pdf');
-    btn.disabled=true;btn.textContent='جاري تجهيز PDF بالمخطط...';
-    try{await pdfReport(state.current)}catch(e){
-      console.error(e);
-      alert('تعذر تحميل ملف PDF مباشرة. استعمل زر طباعة / PDF واختر Save as PDF.');
-    }finally{
-      btn.disabled=false;btn.textContent='تحميل لائحة السلعة + المخطط PDF';
-    }
-  });
-  ['ak-length','ak-width'].forEach(id=>$(id).addEventListener('input',()=>{state.selected='1';setApproval();update()}));
-  $('ak-drop').addEventListener('input',()=>{const v=$('ak-drop').value;$('ak-cut').value=v;setApproval();update()});
-  $('ak-cut').addEventListener('input',()=>{setApproval();update()});
-  ['ak-tilesL','ak-tilesW'].forEach(id=>$(id).addEventListener('input',()=>{state.selected='custom';setApproval();update()}));
-  $('ak-show-hangers').addEventListener('change',()=>{state.shownHangers=$('ak-show-hangers').checked;if(state.current)$('ak-svg-container').innerHTML=svgPlan(state.current,state.shownHangers)});
-  $('ak-approve').addEventListener('click',()=>{if(!state.current)return;state.approved=true;renderResults(state.current)});
-  $('ak-download-svg').addEventListener('click',()=>{if(!state.current)return;const svg=$('ak-svg-container').querySelector('svg');if(svg)download('ASSASSAT-KHALI-Armstrong-'+fmt(state.current.L)+'x'+fmt(state.current.W)+'.svg','<?xml version="1.0" encoding="UTF-8"?>\n'+svg.outerHTML,'image/svg+xml;charset=utf-8')});
-  $('ak-download-csv').addEventListener('click',()=>{if(state.approved)download('ASSASSAT-KHALI-liste-materiaux.csv','\ufeff'+state.lastCsv,'text/csv;charset=utf-8')});
-  $('ak-print').addEventListener('click',()=>{window.print()});
-  $('ak-copy').addEventListener('click',async()=>{if(!state.approved)return;const str=state.lastCsv.replaceAll('"','').replaceAll(',',' | ');try{await navigator.clipboard.writeText(str);$('ak-copy').textContent='تم النسخ ✓'}catch(e){$('ak-copy').textContent='استعمل تحميل CSV'}setTimeout(()=>$('ak-copy').textContent='نسخ القائمة',2200)});
-  window.AK_ARMSTRONG_TEST={getChoices,buildPlan,rowsForBom};
-  update();
-})();
-</script>
+<footer><div class="shell"><span>ASSASSAT KHALI — OUTIL TECHNIQUE</span><span>حسابات تقديرية تحتاج مراجعة تقنية حسب موقع المشروع ونظام التركيب.</span></div></footer>
 </body>
 </html>

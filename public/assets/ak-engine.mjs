@@ -1,0 +1,190 @@
+import {wallLayout} from './ak-wall-layout.mjs';
+import {ba13Layout} from './ak-ba13-layout.mjs';
+/* ASSASSAT KHALI — calculator logic. Geometry estimates require on-site verification. */
+const EPS=1e-8;
+export const round=(v,d=2)=>Number(v.toFixed(d));
+const ceil=(x)=>Math.ceil(x-EPS);
+const positive=(v,name)=>{const n=Number(v);if(!Number.isFinite(n)||n<=0)throw Error(`${name}: دخل قيمة صحيحة وأكبر من صفر.`);return n};
+export function validateRoom(L,W){L=positive(L,'الطول');W=positive(W,'العرض');if(L<.6||W<.6||L>40||W>40||L*W>500)throw Error('القياسات خارج الحدود: 0.60–40m وبحد أقصى 500m². قسّم المساحة لمناطق.');return {L,W};}
+function segmentLength(stock,linear){return ceil(linear/stock)}
+export function tilesOptions(span){const max=Math.floor((span-EPS)/.6),arr=[];
+ for(let full=max;full>=Math.max(0,max-2);full--){const cut=(span-.6*full)/2;if(cut>=-EPS&&cut<.6-EPS)arr.push({full,edge:Math.max(0,round(cut,4)),score:(cut<.25?.25-cut:0)+(cut===0?-.1:0)+(.6-cut)*.07})}
+ // Exact multiples of 0.60m may have zero cut (best option) and a centered alternative.
+ if(Math.abs(span/.6-Math.round(span/.6))<EPS){arr.unshift({full:Math.round(span/.6),edge:0,score:-1})}
+ return [...new Map(arr.map(x=>[x.full,x])).values()].sort((a,b)=>a.score-b.score||b.full-a.full);
+}
+export function fullArmstrongOptions(L,W){
+ const a=tilesOptions(L),b=tilesOptions(W);if(!a.length||!b.length)throw Error('الغرفة صغيرة بزاف لتوزيع 60×60.');
+ const candidates=a.flatMap(x=>b.map(y=>({nL:x.full,nW:y.full,score:x.score+y.score})));
+ candidates.sort((x,y)=>x.score-y.score||y.nL+y.nW-x.nL-x.nW);
+ const first=candidates[0];
+ // Alternative is the next best whole-grid combination; avoid changing both dimensions at once unnecessarily.
+ const second=candidates.find(p=>(p.nL!==first.nL||p.nW!==first.nW)&&(p.nL===first.nL||p.nW===first.nW)) ||
+              candidates.find(p=>p.nL!==first.nL||p.nW!==first.nW);
+ return [{nL:first.nL,nW:first.nW},...(second?[{nL:second.nL,nW:second.nW}]:[])];
+}
+/** Geometry is the single source for both counted and drawn tees (metres). */
+export function buildArmstrongGrid(L,W,lengthCuts,widthCuts){
+ const positions=cuts=>{let x=0;return [0,...cuts.map(v=>{x+=v;return round(x,6)})]};
+ const xLines=positions(lengthCuts),yLines=positions(widthCuts);
+ const innerY=yLines.slice(1,-1);
+ if(!innerY.length)throw Error('العرض صغير على شبكة Porteur القياسية. خاص توزيع خاص للحائط؛ ما يمكنش نحسبوه تلقائياً.');
+ const mains=[];
+ // Porteur follows the longitudinal direction on every second internal 60cm line.
+ // Keep the last edge bay as one Cross 0.60 or one Cross 1.20, without an extra Porteur.
+ // A shortened tee drawn at the wall still counts as one complete standard stock piece.
+ for(let i=0;i<innerY.length;i+=2)mains.push(innerY[i]);
+ const transverse=[];
+ const add=(kind,x1,y1,x2,y2,placement)=>{
+   const len=round(Math.hypot(x2-x1,y2-y1),6),stock=kind==='cross120'?1.2:.6;
+   if(len<.0001||len>stock+EPS)throw Error('توزيع الشبكة غير صالح: قطعة Cross أكبر من طولها القياسي.');
+   transverse.push({kind,x1:round(x1,6),y1:round(y1,6),x2:round(x2,6),y2:round(y2,6),length:len,cut:len<stock-EPS,placement});
+ };
+ // Cross-tees transverse between supports at every interior longitudinal cell boundary.
+ const supports=[0,...mains,W];
+ for(const x of xLines.slice(1,-1)){
+   for(let i=0;i<supports.length-1;i++){
+     const y0=supports[i],y1=supports[i+1],gap=y1-y0;
+     if(gap>1.2+EPS)throw Error('تباعد Porteur أكثر من 1.20m.');
+     if(gap<.0001)continue;
+     const placement=(i===0||i===supports.length-2)?'to-wall':'between-porteurs';
+     if(gap>.6+EPS)add('cross120',x,y0,x,y1,placement);
+     else add('cross060',x,y0,x,y1,placement);
+   }
+ }
+ // Split any bay over 60cm, including the final shortened bay to the wall.
+ // Place Cross 0.60 exactly on the existing tile-grid line (not at an arbitrary midpoint).
+ for(let i=0;i<supports.length-1;i++){
+   const low=supports[i],high=supports[i+1],gap=high-low;
+   if(gap>1.2+EPS)throw Error('تباعد الدعم أكثر من 1.20m.');
+   if(gap>.6+EPS){
+     const between=yLines.filter(v=>v>low+EPS&&v<high-EPS);
+     if(between.length!==1)throw Error('توزيع الشبكة لا يتطابق مع فواصل بلاكات 60cm.');
+     const middle=between[0];
+     for(let j=0;j<xLines.length-1;j++)add('cross060',xLines[j],middle,xLines[j+1],middle,'infill');
+   }
+ }
+ const c120=transverse.filter(v=>v.kind==='cross120');
+ const c060=transverse.filter(v=>v.kind==='cross060');
+ // Trade rule: any installed Cross 0.60 strictly under 30cm consumes half a
+ // 60cm stock bar; two such cuts share one bar. At exactly 30cm, count a full
+ // bar, as requested. The installed geometry and color stay unchanged.
+ const cross060HalfCount=c060.filter(v=>v.length<.30-EPS).length;
+ const cross060RegularCount=c060.length-cross060HalfCount;
+ const cross060StockEquivalent=cross060RegularCount+cross060HalfCount/2;
+ const cross060Stock=ceil(cross060StockEquivalent);
+ return {
+  xLines,yLines,carrierPositions:mains,carrierCount:mains.length,
+  crossSegments:transverse,cross120:c120.length,cross060:c060.length,
+  cross120Cut:c120.filter(v=>v.cut).length,cross060Cut:c060.filter(v=>v.cut).length,
+  cross060HalfCount,cross060RegularCount,cross060StockEquivalent,cross060Stock,
+  cross120Full:c120.filter(v=>!v.cut).length,cross060Full:c060.filter(v=>!v.cut).length,
+  rowIntersections:xLines.length-2,
+  wall060:c060.filter(v=>v.placement==='to-wall').length,
+  infill060:c060.filter(v=>v.placement==='infill').length,
+  bay120:mains.slice(1).filter((p,i)=>Math.abs(p-mains[i]-1.2)<EPS).length,
+  bay060:mains.slice(1).filter((p,i)=>Math.abs(p-mains[i]-.6)<EPS).length
+ };
+}
+export function calcArmstrongFull(d){const {L,W}=validateRoom(d.L,d.W);const drop=positive(d.drop,'النزول'),cut=positive(d.cut,'طول قص Tige');
+ if(drop<5||drop>120||cut>100)throw Error('النزول بين 5 و120cm، وقص Tige بين 1 و100cm.');
+ const nL=Number(d.nL),nW=Number(d.nW);
+ if(!Number.isInteger(nL)||!Number.isInteger(nW)||nL<0||nW<0)throw Error('عدد البلاكات الوسطية خاصو يكون عدد صحيح.');
+ const edgeL=(L-.6*nL)/2, edgeW=(W-.6*nW)/2;
+ if(edgeL< -EPS||edgeW< -EPS||edgeL>=.6-EPS||edgeW>=.6-EPS)throw Error('التقسيم غير صالح: القصّات خاصها تكون بين 0 و60cm.');
+ const partsL=nL+(edgeL>EPS?2:0),partsW=nW+(edgeW>EPS?2:0);
+ const rowsL=partsL,rowsW=partsW,wholeTiles=nL*nW,edgePieces=rowsL*rowsW-wholeTiles;
+ const boundaryCuts=[edgeL>EPS?edgeL:0,...Array(nL).fill(.6),edgeL>EPS?edgeL:0].filter(x=>x>EPS);
+ const widthCuts=[edgeW>EPS?edgeW:0,...Array(nW).fill(.6),edgeW>EPS?edgeW:0].filter(x=>x>EPS);
+ // Conservative material upper bound: one new tile per cell; reuse of offcuts is not credited.
+ const tiles=rowsL*rowsW,area=L*W;
+ // Count exactly the Cross segments that the SVG draws.
+ const grid=buildArmstrongGrid(L,W,boundaryCuts,widthCuts);
+ const {carrierCount,carrierPositions:mains,cross120,cross060,rowIntersections}=grid;
+ const porteur=carrierCount*ceil(L/3.6);
+ const hangersPerCarrier=ceil(L/1);const hangers=carrierCount*hangersPerCarrier;
+ const rodPieces=Math.floor((100+EPS)/cut);if(rodPieces<1)throw Error('طول قص Tige أكثر من متر.');
+ const rods=ceil(hangers/rodPieces),perimeter=2*(L+W);
+ return {type:'armstrong-full',L,W,drop,cut,nL,nW,edgeL:round(edgeL,5),edgeW:round(edgeW,5),partsL,partsW,wholeTiles,edgePieces,tiles,area,porteur,cross120,cross060,carrierCount,carrierPositions:mains,hangers,rods,rodPieces,angle:ceil(perimeter/3),wallFix:ceil(perimeter/.5),lengthCuts:boundaryCuts,widthCuts,perimeter,rowIntersections,lateralBays:carrierCount+1,
+ ...grid,
+ note:'كل Cross 0.60 أقل من 30cm محسوبة نصف بروفيل (كل جوج = واحد)؛ 30cm بالضبط أو أكثر محسوبة قطعة كاملة. Cross 1.20 المقطوعة محسوبة قطعة كاملة. ما كنزيدوش Porteur إضافي غير للفراغ الأخير. Cross 1.20 المقطوعة باتجاه الحائط وارتكازها على Cornière خاصهم تحقق من نظام المصنع قبل التنفيذ.'};
+}
+export function calcBA13Ceiling(d){
+ const {L,W}=validateRoom(d.L,d.W);
+ const mode=d.mode==='hidden'?'hidden':'plain';
+ const drop=positive(d.drop,'النزول');if(drop<6||drop>100)throw Error('النزول خاصو يكون بين 6 و100cm.');
+ const layout=ba13Layout(L,W,mode),area=L*W,perimeter=2*(L+W);
+ const hangers=layout.hangerPoints.length,rodParts=Math.floor((100+EPS)/drop);
+ if(rodParts<1)throw Error('طول Tige غير صالح');
+ const suspensionRods=ceil(hangers/rodParts),boards=ceil(area/(1.2*2.8));
+ return {type:'ba13-ceiling',mode,L,W,drop,area,perimeter,
+  ...layout,
+  ledLen:layout.ringLength,ledWallPerimeter:mode==='hidden'?perimeter:0,
+  first:.15,spacing:.5,fourrure:layout.stockBars,
+  hangers,suspensionRods,rodParts,
+  angle:ceil(perimeter/3),wallFix:ceil(perimeter/.5),boards,cutBoards:ceil(boards*1.1),
+  vis:ceil(area*25),jointTape:ceil(area*.9),
+  note:'توزيع Fourrure كل 50cm، أول خط 15cm. الإنارة المخفية فيها حلقة دعم على بعد 10cm من الحائط. طول بروفيل 3m محسوب بخطة قصّ قابلة للتنفيذ نظرياً مع إعادة استعمال القطع، والوصلات والتعليق والمقاسات والتثبيت بحاجة مراجعة تقنية في الورش. ألواح BA13 محسوبة بالمساحة كحد أدنى نظري وليس خطة تقطيع دقيقة.'};
+}
+export function calcWall(d){
+ const L=positive(d.L,'طول الحائط'),H=positive(d.H,'الارتفاع');
+ if(L<.5||L>40||H<1||H>4)throw Error('طول الحائط بين 0.5 و40m، والارتفاع بين 1 و4m.');
+ const kind=['cloison','doublage','isolated'].includes(d.kind)?d.kind:'cloison',layers=Number(d.layers)||1;
+ if(![1,2].includes(layers))throw Error('عدد طبقات BA13 خاصو يكون 1 أو 2.');
+ const spacing=Number(d.spacing)||.6;
+ if(![.4,.6].includes(spacing))throw Error('اختار تباعد Montants 40cm أو 60cm.');
+ const stock=Number(d.studLength)||3;
+ if(![3,4].includes(stock)||H>stock+EPS)throw Error('طول Montant المختار (3m أو 4m) خاصو يناسب ارتفاع الحائط.');
+ const number=(v,name)=>{const n=Number(v??0);if(!Number.isFinite(n)||n<0)throw Error(name+': أدخل قيمة صحيحة وماشي سالبة.');return n;};
+ const doorW=number(d.doorW,'عرض الباب'),doorH=number(d.doorH,'ارتفاع الباب');
+ const windowW=number(d.windowW,'عرض الشباك'),windowH=number(d.windowH,'ارتفاع الشباك');
+ if((doorW>0&&(!doorH||doorH>H||doorW>=L))||(!doorW&&doorH>0))throw Error('أبعاد الباب غير مناسبة للحائط.');
+ if((windowW>0&&(!windowH||windowH>H||windowW>=L))||(!windowW&&windowH>0))throw Error('أبعاد الشباك غير مناسبة للحائط.');
+ const doorX=number(d.doorX===undefined ? 0.2 : d.doorX,'موضع الباب');
+ const windowX=number(d.windowX===undefined?Math.max(0,L-windowW-.2):d.windowX,'موضع الشباك');
+ const windowBottom=number(d.windowBottom===undefined ? 0.9 : d.windowBottom,'ارتفاع بداية الشباك');
+ const geometry=wallLayout({L,H,doorW,doorH,doorX,windowW,windowH,windowX,windowBottom,spacing});
+ const area=L*H,doorArea=doorW*doorH,windowArea=windowW*windowH,netArea=area-doorArea-windowArea;
+ if(netArea<=.01)throw Error('صافي مساحة الحائط غير صالح.');
+ const faces=kind==='doublage'?1:2,boardArea=netArea*faces*layers;
+ const boards=ceil(boardArea/(1.2*2.8)),purchaseBoards=ceil(boards*1.1);
+ const insulated=kind==='isolated'||!!d.rockwool;
+ const woolDensity=Number(d.woolDensity??50),woolThickness=Number(d.woolThickness??50);
+ if(![30,50,70].includes(woolDensity)||![50,70].includes(woolThickness))throw Error('اختار كثافة وسُمك Rockwool من القائمة.');
+ const insulationArea=insulated?netArea:0,woolUnits=insulated?ceil(insulationArea/.72):0;
+ return {type:'wall',kind,L,H,area,netArea,faces,layers,spacing,stock,
+  doorW,doorH,doorX,windowW,windowH,windowX,windowBottom,doorArea,windowArea,
+  boardArea,boards,purchaseBoards,
+  ...geometry,montants:geometry.studs,insulated,insulationArea,woolUnits,woolDensity,woolThickness,
+  screwCount:ceil(boardArea*25),jointTape:ceil(netArea*faces*1.1),
+  note:'مواقع الباب والشباك مرسومة حسب المسافات المدخلة من بداية الحائط، وRails مقسّمة على 3m مع استغلال القصّات نظرياً. تدعيم الفتحات، الوصلات، مقاومة الحريق، العزل الصوتي، ونوع الـMontants والـRails خاصهم مراجعة تقنية. ألواح BA13 محسوبة نظرياً بالمساحة وليس خطة تقطيع.'};
+}
+export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',reserve=.05,why='')=>{const buy=Number.isInteger(qty)?Math.ceil(qty*(1+reserve)):round(qty*(1+reserve),2);rows.push({name,qty,unit,buy,why});};
+ if(p.type==='armstrong-full'){
+ add('بلاكات Armstrong 60×60 (قبل تحسين القصّات)',p.tiles,'بلاكة',.05,'كامل + مقطوع؛ تقدير متحفظ');
+ add('Porteur T 3.60m',p.porteur,'قطعة',.1,'مع اتجاه طول الغرفة');
+ add('Cross 1.20m',p.cross120,'قطعة',.1,`${p.cross120Full} بدون قص + ${p.cross120Cut} قصيرة ومقصوصة، وكل وحدة محسوبة بروفيل 1.20 كامل`);
+ add('Cross 0.60m',p.cross060Stock,'بروفيل',.1,`${p.cross060} قطعة فالمخطط: ${p.cross060RegularCount} محسوبة كاملة + ${p.cross060HalfCount} أقل من 30cm محسوبة نصف بروفيل (كل جوج = واحد). المجموع: ${p.cross060StockEquivalent} بروفيل مكافئ، مدوّر للشراء إلى ${p.cross060Stock}.`);
+ add('Cornière محيطية 3m',p.angle,'قطعة',.1,'على الحائط فقط');
+ add('Cheville laiton',p.hangers,'قطعة',.1);add('Coulisseau',p.hangers,'قطعة',.1);
+ add('Tige 1m',p.rods,'قطعة',.1,`${p.rodPieces} قطع من كل Tige`);add('Cheville à frapper',p.wallFix,'قطعة',.15,'تقدير كل 50cm');
+ } else if(p.type==='ba13-ceiling'){
+ add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1,'تقدير بالمساحة');
+ add('Fourrure 3m',p.fourrure,'قطعة',.12,`${round(p.totalFourrure,2)}m مركّبة: ${round(p.profileRun,2)}m خطوط + ${round(p.perimeterExtra,2)}m حلقة LED. خطة قصّ 3m: ${p.cutCount} قطعة و${p.joinCount} وصلة، مع إمكانية استغلال القطع المقصوصة؛ راجع المخطط.`);
+ add('Raccord Fourrure (Éclisse) — تقديري',p.joinCount,'وصلة',.12,'كل خط أطول من 3m يحتاج وصلات؛ تأكد من نوع raccord ودعم الوصلات');
+ add('Cornière galvanisée 3m',p.angle,'قطعة',.1);
+ add('علاقات / نقاط التعليق',p.hangers,'نقطة',.1,'تقريبية حسب النظام');
+ add('Tige 1m (للتعليق)',p.suspensionRods,'قطعة',.1,'وفق طول القص المبدئي = النزول');
+ add('Cheville à frapper',p.wallFix,'قطعة',.15);
+ add('Vis BA13',p.vis,'قطعة',.1,'تقدير حسب المساحة');add('Bande à joint',p.jointTape,'متر',.1,'تقدير أولي');
+ if(p.mode==='hidden')add('طول مسار LED الداخلي على بعد 10cm',round(p.ledLen,2),'متر',0,'محيط الحيط = '+round(p.ledWallPerimeter,2)+'m؛ LED وتجهيزاته غير مشمولة');
+ } else if(p.type==='wall'){
+ add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1,'بحسب المساحة والطبقات');
+ add('Rails 3m',p.rails,'قطعة',.12,`${round(p.railLinear,2)}m مركبة / ${p.railCutPieces.length} مقاطع في خطة القص / ${p.railJoins} وصلات؛ تحقق من القص فالموقع`);
+ add('Raccord Rails (تقديري)',p.railJoins,'وصلة',.12,'الوصلات تعتمد على نظام التثبيت وبروفيل Rails المستعمل');
+ add(`Montants ${p.stock}m`,p.montants,'قطعة',.1,`${p.baseStuds} خطوط رئيسية بتباعد ${p.spacing*100}cm + ${p.extraStuds} تدعيم جانبي تقديري للفتحات`);
+ add('Vis BA13',p.screwCount,'قطعة',.1);add('Bande à joint',p.jointTape,'متر',.1);
+ if(p.insulated){add(`Rockwool ${p.woolDensity}kg/m³ — ${p.woolThickness}mm (0.60×1.20)`,p.woolUnits,'وحدة',.1,'العدد بالمساحة الصافية؛ راجع مقاس المنتج والحشو المحيطي');}
+ }
+ return rows;
+}

@@ -1,0 +1,123 @@
+/* ASSASSAT KHALI — CLASSIC CALCULATOR VISUAL SYSTEM
+ * Matched to the original Armstrong + BA13 calculator's approved design.
+ * Design-only: no geometry, materials, SVG drawing, or PDF generation.
+ */
+:root{
+ --bg:#f3f6f7;--ink:#142c35;--muted:#63757b;--border:#e0e7e7;
+ --green:#166e65;--dark:#112c36;--amber:#e9ae6c;--white:#fff;--radius:18px;
+}
+html{scroll-padding-top:20px}
+body{background:#f3f6f7;color:#142c35;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.6}
+button,input,select{font-family:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #62cbbb;outline-offset:3px}
+.top{background:transparent;border:0}
+.topin{max-width:1250px;min-height:61px;padding:0 18px}
+.identity{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:#243f48;font-size:12px;gap:9px}
+.identity .mark{width:34px;height:34px;border-radius:10px;background:#174a51;color:#c9e8e2;box-shadow:none;font-size:13px}
+.back{color:#167767;background:#e6f4ef;min-height:41px;padding:9px 14px;border:1px solid #d5e9e3;font-size:12px}
+.back:hover{background:#d5eee5}
+.wrap{max-width:1250px;padding:0 18px 42px}
+.hero{background:linear-gradient(120deg,#112c36,#174a51);color:#fff;border-radius:20px;padding:25px 30px;min-height:117px;margin:0 0 20px;gap:20px;box-shadow:none}
+.hero:before{width:220px;height:220px;border:1px solid #ffffff24;left:8%;bottom:-170px;top:auto}
+.eyebrow{font:800 12px system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;letter-spacing:2px;color:#abdfd7}
+h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.25;margin:7px 0}
+.hero p{font-size:13px;color:#c3dcd9;line-height:1.7}
+.hero-mark{display:grid;place-items:center;width:65px;height:65px;min-width:65px;flex:none;border:1px solid #ffffff29;border-radius:18px;background:#ffffff12;font-family:system-ui,sans-serif;color:#a7e5da;font-size:41px;font-weight:500;opacity:1;line-height:1}
+.hero-mark svg{width:45px;height:45px;stroke:#a7e5da}
+.stepguide{display:none}
+.panel{background:#fff;border:1px solid #e0e7e7;border-radius:18px;padding:20px;margin:0 0 18px;box-shadow:0 9px 28px #112c3610}
+.panelheader{margin:0 0 15px;gap:10px;align-items:center}
+.step{width:30px;min-width:30px;height:30px;background:#e1f4ef;color:#167767;border-radius:10px;font:900 12px system-ui,sans-serif}
+.panelheader h2{font-size:18px;font-weight:850;line-height:1.4;margin:0 0 4px}
+.panelheader p{font-size:12.5px;color:#63757b;margin:0}
+.inputs{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.formfield{gap:4px}
+.formfield label{font-size:12px;color:#40555e;font-weight:800}
+.formfield input,.formfield select{border:1px solid #d8e2e3;background:#fcfefe;border-radius:10px;min-height:46px;padding:10px 12px;font-size:16px;color:#14313c;text-align:center;font-weight:800}
+.formfield input:hover,.formfield select:hover{border-color:#81b7b3}
+.formfield select{text-align:right;font-size:13px}
+.hint{font-size:12px;color:#875515;background:#fff4dd;border:0;border-radius:10px;padding:10px 12px;margin-top:14px;line-height:1.85}
+.hint b{color:#875515}
+.options{gap:10px}
+.choice{min-height:112px;background:#f9fbfb;border:2px solid #e0e8e7;border-radius:13px;padding:13px 11px;color:#254650;transition:background .15s,border-color .15s}
+.choice b{font-size:13px;font-weight:850}
+.choice small{font-size:11px;line-height:1.7;color:#587078}
+.choice strong{font:850 18px system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:#123843}
+.choice.selected{background:#eaf8f3;border-color:#178c79;box-shadow:none}
+.choice:hover{border-color:#71afa5;background:#f1faf7}
+.choice.selected:hover{background:#eaf8f3}
+.choice[data-choice="2"]{border-style:dashed}
+.choice[data-choice="2"].selected{border-style:solid}
+.custom{background:#f8fcfa;border:1px solid #cde3dc;border-radius:13px}
+.cardtoggle{gap:10px}
+.chip{border-color:#d8e5e1;color:#426067;border-radius:11px;font-weight:750}
+.chip[aria-pressed=true]{border-color:#178c79;background:#eaf8f3;color:#176e65}
+.metric{flex:1;min-width:135px;max-width:none;background:#f5f8f8;border:0;border-radius:12px;text-align:center;padding:12px 8px}
+.metric small{font-size:11px;color:#71858b}
+.metric strong{font:850 19px system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:#174951}
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
+.plan{background:#f5f9f8;border:1px solid #e7eded;border-radius:14px;padding:10px;overflow:hidden;line-height:0}
+.plan svg:not([data-diagram="armstrong-full"]){max-height:none}
+.plan svg[data-diagram="armstrong-full"]{max-height:none}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+.actions .primary{width:100%;flex-basis:100%;min-height:47px;border:0;border-radius:12px;padding:13px 18px;background:#166e65;color:#fff;font-weight:850;font-size:13px}
+.actions .primary:hover{background:#09574f}
+.actions .secondary{flex:1;min-height:41px;border:1px solid #cadae0;border-radius:12px;background:#fff;color:#1e4854;font-weight:750;font-size:12px}
+.actions .secondary:hover{background:#f0f6f4}
+.locked{background:#fafbfb;border:1px dashed #aebfc1;border-radius:15px;text-align:center;color:#5c737a;padding:29px 17px}
+.bom table{font-size:12px;min-width:490px}
+.bom th{font-weight:800;background:#f2f7f5;color:#34535d;padding:11px 12px}
+.bom td{background:#fff;padding:10px 12px;border-bottom:1px solid #eaf0ef}
+.bom tr:nth-child(even){background:#fff}
+.bom .qty{font:850 14px system-ui,sans-serif;color:#234b55}
+.bom .buy{color:#147b69;font-size:14px;font-weight:900}
+.bom .note{font-size:11px;color:#71858b}
+.smallprint{font-size:12px;background:#f6f9f8;color:#52696f;border:1px solid #dbe8e4;border-radius:12px;padding:13px}
+.ak-hanger-toggle{background:#f6f9f8;border:0;color:#546e73;border-radius:9px;font-size:12px;min-height:43px;margin-top:10px;margin-bottom:10px}
+.ak-hanger-toggle:hover{background:#edf7f2}
+.footer{text-align:center;color:#7e8f94;font-size:11px}
+@media(max-width:800px){
+ .topin{padding-inline:10px}
+ .wrap{padding:0 10px 30px}
+ .hero{padding:21px;border-radius:18px}
+ .hero-mark{width:52px;height:52px;min-width:52px;border-radius:14px}
+ .hero-mark svg{width:35px;height:35px}
+ .panel{padding:16px;margin-bottom:12px}
+ .inputs{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .options{gap:7px}
+ .plan:has(svg[data-diagram="armstrong-full"]){overflow-x:auto}
+ .plan svg[data-diagram="armstrong-full"]{min-width:760px;max-width:none}
+}
+@media(max-width:600px){
+ .eyebrow{font-size:10px;letter-spacing:1px}
+ .hero p{font-size:12px}
+ .hero-mark{display:grid}
+ .options{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .choice{min-height:108px;padding:12px 9px}
+ .choice:last-child:nth-child(odd){grid-column:1/-1;min-height:98px}
+ .summary{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+ .metric{min-width:0;padding:11px 5px}
+ .metric strong{font-size:16px}
+ .metric small{font-size:10px}
+ .actions .secondary{min-width:140px}
+}
+@media(max-width:380px){.options{grid-template-columns:1fr}.choice:last-child:nth-child(odd){grid-column:auto}}
+@media print{
+ body,.panel{background:#fff!important}
+ .top,.hero,.stepguide,.actions,.hint,.footer,.ak-hanger-toggle{display:none!important}
+ .panel{box-shadow:none;break-inside:avoid}
+}
+
+/* BA13 schematic: keep line spacing and annotations readable on mobile. */
+.plan svg[data-diagram="ba13-ceiling"]{display:block;width:100%;max-height:none;height:auto;border-radius:10px}
+@media(max-width:800px){
+ .plan:has(svg[data-diagram="ba13-ceiling"]){overflow-x:auto;scrollbar-width:thin;overscroll-behavior-x:contain}
+ .plan svg[data-diagram="ba13-ceiling"]{min-width:760px;max-width:none}
+}
+
+/* Wall elevation needs readable opening dimensions at mobile widths. */
+.plan svg[data-diagram="wall"]{width:100%;max-height:none;height:auto;display:block;border-radius:10px}
+@media(max-width:800px){
+ .plan:has(svg[data-diagram="wall"]){overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+ .plan svg[data-diagram="wall"]{min-width:760px;max-width:none}
+}
