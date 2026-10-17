@@ -140,9 +140,9 @@ export function calcWall(d){
  const windowW=number(d.windowW,'عرض الشباك'),windowH=number(d.windowH,'ارتفاع الشباك');
  if((doorW>0&&(!doorH||doorH>H||doorW>=L))||(!doorW&&doorH>0))throw Error('أبعاد الباب غير مناسبة للحائط.');
  if((windowW>0&&(!windowH||windowH>H||windowW>=L))||(!windowW&&windowH>0))throw Error('أبعاد الشباك غير مناسبة للحائط.');
- const doorX=number(d.doorX===undefined?.2:d.doorX,'موضع الباب');
+ const doorX=number(d.doorX===undefined ? 0.2 : d.doorX,'موضع الباب');
  const windowX=number(d.windowX===undefined?Math.max(0,L-windowW-.2):d.windowX,'موضع الشباك');
- const windowBottom=number(d.windowBottom===undefined?.9:d.windowBottom,'ارتفاع بداية الشباك');
+ const windowBottom=number(d.windowBottom===undefined ? 0.9 : d.windowBottom,'ارتفاع بداية الشباك');
  const geometry=wallLayout({L,H,doorW,doorH,doorX,windowW,windowH,windowX,windowBottom,spacing});
  const area=L*H,doorArea=doorW*doorH,windowArea=windowW*windowH,netArea=area-doorArea-windowArea;
  if(netArea<=.01)throw Error('صافي مساحة الحائط غير صالح.');
@@ -181,6 +181,7 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  } else if(p.type==='wall'){
  add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1,'بحسب المساحة والطبقات');
  add('Rails 3m',p.rails,'قطعة',.12,`${round(p.railLinear,2)}m مركبة / ${p.railCutPieces.length} مقاطع في خطة القص / ${p.railJoins} وصلات؛ تحقق من القص فالموقع`);
+ add('Raccord Rails (تقديري)',p.railJoins,'وصلة',.12,'الوصلات تعتمد على نظام التثبيت وبروفيل Rails المستعمل');
  add(`Montants ${p.stock}m`,p.montants,'قطعة',.1,`${p.baseStuds} خطوط رئيسية بتباعد ${p.spacing*100}cm + ${p.extraStuds} تدعيم جانبي تقديري للفتحات`);
  add('Vis BA13',p.screwCount,'قطعة',.1);add('Bande à joint',p.jointTape,'متر',.1);
  if(p.insulated){add(`Rockwool ${p.woolDensity}kg/m³ — ${p.woolThickness}mm (0.60×1.20)`,p.woolUnits,'وحدة',.1,'العدد بالمساحة الصافية؛ راجع مقاس المنتج والحشو المحيطي');}
