@@ -153,7 +153,7 @@ test('Stock rule never changes the diagram coordinates or color for short tees',
  const svg=armstrongFullPlanSvg(p);
  assert.match(svg,/data-profile="cross060"/);
  assert.match(svg,/stroke="#7C3AED"/);
- assert.match(svg,new RegExp(p.cross060HalfCount+' مقاطع أقل من 30cm'));
+ assert.match(svg,new RegExp(p.cross060HalfCount+' أنصاف أقل من 30cm'));
  assert.match(svg,new RegExp(p.cross060Stock+' بروفيل'));
 });
 
