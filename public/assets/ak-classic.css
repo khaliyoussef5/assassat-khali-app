@@ -125,3 +125,10 @@ h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.25;margin:7px 0}
 /* Official company symbol, cropped from the provided logo. */
 .identity .mark{background:#fff;border:1px solid #dce8e5;color:#173b4e;box-shadow:0 2px 8px #112c3612}
 .identity .mark img{display:block;width:30px;height:33px;object-fit:contain}
+
+/* Armstrong 02: one ceiling-drop control integrated with the layout suggestions. */
+.option-drop{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin:15px 0 12px;padding:15px 17px;border-radius:13px;border:1px solid #cbded9;background:#f4faf7}
+.option-drop .formfield{flex:0 0 230px;max-width:100%;margin:0}
+.option-drop .formfield input{background:#fff;min-height:45px}
+.option-drop p{font-size:12px;color:#61767a;line-height:1.8;margin:0;flex:1;min-width:175px}
+@media(max-width:600px){.option-drop{align-items:stretch;padding:12px}.option-drop .formfield{flex:1 1 100%;max-width:none}.option-drop p{min-width:100%}}
