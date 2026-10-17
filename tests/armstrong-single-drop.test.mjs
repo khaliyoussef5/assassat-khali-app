@@ -45,7 +45,7 @@ test('Both calculators use drop alone to update rods; supplied obsolete cut has 
  assert.equal(full.rods,Math.ceil(full.hangers/3));
  assert.equal(full40.rods,Math.ceil(full40.hangers/2));
  for(const p of [full,full40]){
-  assert.match(materials(p).find(x=>x.name==='Tige 1m').why,/حسب النزول/);
+  assert.match(materials(p).find(x=>x.name==='Tige 1m').why,/نزول السقف/);
  }
  assert.equal(full.porteur,full40.porteur);
  assert.equal(full.cross120,full40.cross120);
