@@ -88,7 +88,7 @@ test('Technical plan and PDF annotate only the final leftover and joints',()=>{
  const appSrc=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
  assert.match(planSrc,/p.porteurWaste/);
  assert.match(printSrc,/p.porteurWaste/);
- assert.match(appSrc,/p.porteurJoints/);
+ assert.match(appSrc,/const rows=materials\(p\)/); // Detailed joint data is available in the engine, diagram and printed PDF
  assert.match(html,/p.pWaste/);
  assert.match(html,/p.pJoints/);
 });
