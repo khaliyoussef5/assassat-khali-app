@@ -29,6 +29,7 @@ export function armstrongFullPlanSvg(p,{showHangers=true}={}){
  push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 610" data-diagram="armstrong-full" role="img" aria-label="مخطط سقف Armstrong بلا بوردور، الطول '+esc(F(p.L))+' متر، العرض '+esc(F(p.W))+' متر">');
  push('<title>ASSASSAT KHALI — Armstrong بلا بوردور</title>');
  push('<desc>مخطط متناسب: Porteur باللون الأزرق، Cross 1.20 برتقالي، Cross 0.60 أخضر، وأطراف البلاكات المقطوعة باللون البيج وليست BA13. باقي الطول: '+esc(cm(p.edgeL))+' من كل جهة؛ باقي العرض: '+esc(cm(p.edgeW))+' من كل جهة. Porteur 3.60m: '+p.porteur+' بروفيل، '+p.porteurJoints+' وصلات، الشوت النهائي '+F(p.porteurWaste)+'m. Cross 0.60: '+p.cross060+' مقطع، '+p.cross060Stock+' بروفيل للشراء، '+p.cross060HalfCount+' أنصاف أقل من 30cm.</desc>');
+ if(showHangers)push('<desc>علاقات × '+p.hangers+'</desc>');
  push('<rect width="1100" height="610" fill="'+C.bg+'"/>');
  push('<g font-family="Arial,Tahoma,sans-serif" text-anchor="middle" fill="#455B64">');
  push(label(550,39,F(p.L)+' m — الطول','font-size="23" font-weight="700"'));
