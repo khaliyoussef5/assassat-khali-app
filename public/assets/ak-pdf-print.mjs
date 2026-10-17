@@ -99,7 +99,8 @@ export function drawArmstrongPrintPage(ctx,p,width=3508,height=2480,{showHangers
   label(ctx,'علاقات',977,734,14,COLORS.ink,'left','700','rtl');
   label(ctx,String(p.hangers),977,757,16,'#0f766e','left','800');
  }
- label(ctx,'Cross 0.60: '+p.cross060+' مقاطع فالمخطط / '+p.cross060Stock+' بروفيل للشراء (قبل الاحتياط)',68,804,15,COLORS.sub,'left','600');
- label(ctx,'مقاطع أقل من 30cm: '+p.cross060HalfCount+' (كل جوج أنصاف = بروفيل واحد)',68,827,13,COLORS.sub,'left','600');
+ label(ctx,'Porteur 3.60: '+p.porteur+' بروفيل / '+p.porteurJoints+' وصلات / الشوت ديال الخط الأخير '+nice(p.porteurWaste)+'m',68,798,15,COLORS.sub,'left','600');
+ label(ctx,'Cross 0.60: '+p.cross060+' مقاطع / '+p.cross060Stock+' بروفيل للشراء قبل الاحتياط',68,818,13,COLORS.sub,'left','600');
+ label(ctx,'مقاطع Cross أقل من 30cm: '+p.cross060HalfCount+' (كل جوج أنصاف = بروفيل واحد)',68,837,12,COLORS.sub,'left','600');
  ctx.restore();
 }

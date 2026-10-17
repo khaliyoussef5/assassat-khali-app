@@ -10,7 +10,7 @@ const app=document.body.dataset.calculator;let approved=false,plan=null,chosen=0
 const names={'armstrong-full':'Armstrong بلا بوردور','ba13-ceiling':'سقف الجبص بورد BA13','walls':'الحوائط والعزل'};
 const fields={
  'armstrong-full':[
- ['L','الطول (m)',8],['W','العرض (m)',4],['drop','النزول (cm)',30],['cut','طول قص Tige (cm)',30]
+ ['L','الطول (m)',8],['W','العرض (m)',4]
  ],'ba13-ceiling':[
  ['L','الطول (m)',8],['W','العرض (m)',4],['drop','النزول (cm)',30]
  ],'walls':[
@@ -28,7 +28,7 @@ function coreMarkup(){return `
 <section class="hero"><div><span class="eyebrow">ASSASSAT KHALI / CALCULATEUR TECHNIQUE</span><h1>${names[app]}</h1><p>${headlines[app].desc}</p></div><div class="hero-mark" aria-hidden="true">${headlines[app].icon}</div></section>
 <div class="stepguide" aria-label="خطوات الحاسبة"><span><b>01</b> القياسات</span><span><b>02</b> الاختيارات</span><span><b>03</b> المخطط</span><span><b>04</b> السلعة وPDF</span></div>
 <section class="panel"><div class="panelheader"><span class="step">01</span><div><h2>قياسات المشروع</h2><p>دخل المقاسات الحقيقية قبل مراجعة المخطط.</p></div></div><div class="inputs" id="fields"></div><div class="hint"><b>مهم:</b> الكميات تقديرية للحصر المبدئي؛ خاص مراجعة النظام المعتمد والوصلات والتثبيت قبل الشراء والتنفيذ.</div></section>
-<section class="panel"><div class="panelheader"><span class="step">02</span><div><h2 id="option-title">نوع التوزيع والاختيارات</h2><p id="option-subtitle">راجع الاختيارات أو بدّل القياسات.</p></div></div><div id="options"></div><div id="custom" class="custom" hidden></div></section>
+<section class="panel"><div class="panelheader"><span class="step">02</span><div><h2 id="option-title">نوع التوزيع والاختيارات</h2><p id="option-subtitle">راجع الاختيارات أو بدّل القياسات.</p></div></div><div id="options"></div><div id="option-drop" class="option-drop" hidden></div><div id="custom" class="custom" hidden></div></section>
 <section class="panel"><div class="panelheader"><span class="step">03</span><div><h2>المخطط التفاعلي</h2><p>رسم تقريبي متناسب مع المقاسات والتوزيع المختار.</p></div></div><div class="plan" id="plan" role="img" aria-label="مخطط توزيع تقني"></div><div class="summary" id="summary"></div><div id="error" class="error" role="alert" hidden></div><div class="actions"><button type="button" id="approve" class="primary">اعتمد المخطط وحسب السلعة</button><button type="button" id="svg-download" class="secondary">تحميل المخطط SVG</button></div></section>
 <section class="panel"><div class="panelheader"><span class="step">04</span><div><h2>لائحة السلعة</h2><p>كتبان من بعد ما تعتمد المخطط المختار.</p></div></div><div id="locked" class="locked">راجع المخطط أولاً، ومن بعد ضغط على «اعتمد المخطط وحسب السلعة».</div><div id="result" class="result" hidden><div class="bom" id="bom"></div><div class="actions"><button type="button" id="pdf-download" class="primary">تحميل لائحة السلعة + المخطط PDF</button><button type="button" id="csv-download" class="secondary">تحميل CSV</button><button type="button" id="print" class="secondary">طباعة</button></div><div id="note" class="smallprint"></div></div></section>
 <p class="footer">ASSASSAT KHALI — حساب تقريبي وليس مخطط تنفيذ معتمد. راجع المواصفات التقنية ديال المصنع.</p>
@@ -39,6 +39,11 @@ if(app==='armstrong-full'||app==='ba13-ceiling'){
  $('show-hangers').addEventListener('change',event=>{showHangers=event.target.checked;if(plan)$('plan').innerHTML=svgH(plan);});
 }
 for(const [id,label,val] of fields[app])$('fields').insertAdjacentHTML('beforeend',`<div class="formfield"><label for="in-${id}">${label}</label><input id="in-${id}" type="number" inputmode="decimal" step="0.01" min="0" value="${val}"></div>`);
+if(app==='armstrong-full'){
+ $('option-drop').hidden=false;
+ $('option-drop').innerHTML='<div class="formfield"><label for="in-drop">نزول السقف المستعار (cm)</label><input id="in-drop" type="number" inputmode="decimal" min="5" max="100" step="1" value="30"></div><p>كمية Tige محسوبة بافتراض أن طول القصّ كيساوي النزول. القياس الفعلي كيتراجع فالموقع قبل القطع.</p>';
+ $('in-drop').addEventListener('input',()=>{refresh()});
+}
 const field=(id)=>Number($('in-'+id)?.value), raw=id=>$('in-'+id)?.value;
 const metric=(lab,val)=>`<div class="metric"><small>${lab}</small><strong>${escapeText(val)}</strong></div>`;
 const picker=(id,label,options)=>`<div class="formfield"><label for="in-${id}">${label}</label><select id="in-${id}">${options.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select></div>`;
@@ -52,7 +57,7 @@ if(app==='walls')$('fields').insertAdjacentHTML('beforeend',[
  picker('woolDensity','كثافة Rockwool',[['30','30kg/m³'],['50','50kg/m³'],['70','70kg/m³']]),
  picker('woolThickness','سماكة Rockwool',[['50','50mm'],['70','70mm']])
 ].join(''));
-function dims(){let out={};for(const [id] of fields[app])out[id]=field(id);for(const id of ['mode','kind','layers','spacing','studLength','rockwool','woolDensity','woolThickness'])if($('in-'+id))out[id]=$('in-'+id).value;return out;}
+function dims(){let out={};for(const [id] of fields[app])out[id]=field(id);if(app==='armstrong-full')out.drop=field('drop');for(const id of ['mode','kind','layers','spacing','studLength','rockwool','woolDensity','woolThickness'])if($('in-'+id))out[id]=$('in-'+id).value;return out;}
 function optionsUI(){
  if(app==='armstrong-full'){
    const d=dims();options=fullArmstrongOptions(d.L,d.W);
@@ -78,7 +83,7 @@ function createModel(){let d=dims();if(app==='armstrong-full'){const o=chosen===
  if(app==='ba13-ceiling')return calcBA13Ceiling(d);
  return calcWall({...d,rockwool:d.rockwool==='1'});
 }
-function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['Porteur',p.porteur],['Cross 1.20',p.cross120],['Cross 0.60 (راكبة)',p.cross060],['Cross 0.60 (بروفيلات)',p.cross060Stock],['بلاكات كاملة',p.wholeTiles],['بلاكات مقطوعة',p.edgePieces]]:
+function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['Porteur 3.60m',p.porteur],['شوت Porteur النهائي',fmt(p.porteurWaste)+'m'],['وصلات Porteur',p.porteurJoints],['Cross 1.20',p.cross120],['Cross 0.60 (راكبة)',p.cross060],['Cross 0.60 (بروفيلات)',p.cross060Stock],['بلاكات كاملة',p.wholeTiles],['بلاكات مقطوعة',p.edgePieces]]:
  app==='ba13-ceiling'?[['مساحة السقف',fmt(p.area)+'m²'],['خطوط Fourrure',p.positions.length],['Fourrure 3m',p.fourrure],['وصلات (تقديرية)',p.joinCount],['علاقات',p.hangers],['ألواح BA13 النظري',p.boards]]:
  [['صافي المساحة',fmt(p.netArea)+'m²'],['ألواح BA13 النظري',p.boards],['Montants',p.montants],['Rails 3m',p.rails],['تدعيم جنبات',p.extraStuds],['طبقات / وجه',p.layers]];
  $('summary').innerHTML=parts.map(([a,b])=>metric(a,b)).join('');

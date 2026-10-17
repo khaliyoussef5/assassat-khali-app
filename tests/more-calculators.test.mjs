@@ -56,7 +56,8 @@ test('Only approved Armstrong calculators are live; BA13 and walls remain develo
 test('8x4: no extra Porteur at a 1.10m wall remainder and every segment counts as a full tee',()=>{
  const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:5});
  assert.deepEqual(p.carrierPositions,[.5,1.7,2.9]);
- assert.equal(p.porteur,9);
+ assert.equal(p.porteur,7); // بقايا القص من الخط الأول كتستعمل فالخط الموالي
+ assert.equal(p.porteurWaste,1.2);assert.equal(p.porteurJoints,6);
  assert.equal(p.cross120,39); // 13 rows × 2 standard 1.20 + 1 cut 1.10 to wall
  assert.equal(p.cross120Cut,13);assert.equal(p.cross120Full,26);
  assert.equal(p.cross060,55); // 13 × 0.50 wall plus 14 × 3 infill
@@ -152,7 +153,7 @@ test('Stock rule never changes the diagram coordinates or color for short tees',
  const svg=armstrongFullPlanSvg(p);
  assert.match(svg,/data-profile="cross060"/);
  assert.match(svg,/stroke="#7C3AED"/);
- assert.match(svg,new RegExp(p.cross060HalfCount+' مقاطع أقل من 30cm'));
+ assert.match(svg,new RegExp(p.cross060HalfCount+' أنصاف أقل من 30cm'));
  assert.match(svg,new RegExp(p.cross060Stock+' بروفيل'));
 });
 

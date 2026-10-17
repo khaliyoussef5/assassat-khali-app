@@ -32,15 +32,17 @@
   #ak-calculator .ak-head-icon{display:grid;place-items:center;width:65px;height:65px;flex:none;border:1px solid #ffffff3d;border-radius:18px;background:#ffffff;box-shadow:0 4px 12px #0b26351b}
   #ak-calculator .ak-head-icon img{display:block;object-fit:contain;max-width:90%;max-height:90%}
   /* Visual workflow follows site use: dimensions → 3 suggestions → diagram → materials. */
-  #ak-calculator .ak-columns{display:grid;grid-template-areas:"dimensions dimensions" "suggestions suggestions" "plan plan" "results rules";grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:18px;align-items:start}
+  #ak-calculator .ak-columns{display:grid;grid-template-areas:"dimensions dimensions" "suggestions suggestions" "results rules";grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:18px;align-items:start}
   #ak-calculator .ak-left,#ak-calculator .ak-right{display:contents}
   #ak-calculator .ak-left>.ak-panel:nth-child(1){grid-area:dimensions}
   #ak-calculator .ak-left>.ak-panel:nth-child(2){grid-area:suggestions}
   #ak-calculator .ak-left>.ak-panel:nth-child(3){grid-area:rules}
-  #ak-calculator .ak-right>.ak-panel:nth-child(1){grid-area:plan}
-  #ak-calculator .ak-right>.ak-panel:nth-child(2){grid-area:results}
+  #ak-calculator .ak-suggestions-panel{min-width:0}
+  #ak-calculator .ak-suggestions-panel .ak-embedded-plan{min-width:0}
+  #ak-calculator .ak-suggestions-panel .ak-embedded-plan .ak-plan-header{padding-inline:2px}
+  #ak-calculator .ak-right>.ak-panel:nth-child(1){grid-area:results}
   #ak-calculator .ak-columns .ak-panel{margin:0}
-  #ak-calculator .ak-right>.ak-panel:nth-child(1){scroll-margin-top:16px}
+  #ak-calculator .ak-embedded-plan{scroll-margin-top:16px;margin-top:19px;padding-top:17px;border-top:1px solid #e0e9e7}
 
   #ak-calculator .ak-panel{background:#fff;border:1px solid #e0e7e7;border-radius:18px;padding:20px;box-shadow:0 9px 28px #112c3610;margin-bottom:19px}
   #ak-calculator .ak-panel h2{font-size:18px;margin:0 0 4px;line-height:1.4}
@@ -107,10 +109,14 @@
   #ak-calculator .ak-notes li{padding-bottom:7px}
   #ak-calculator .ak-footer{font-size:11px;color:#7e8f94;margin-top:15px;text-align:center}
   #ak-calculator .ak-empty{background:#fff7ec;border:1px solid #f0dec4;border-radius:10px;padding:12px;font-size:12px;color:#88601c}
-  @media(max-width:800px){#ak-calculator .ak-left>.ak-panel:nth-child(1) .ak-input-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#ak-calculator{padding:12px 10px 30px}#ak-calculator .ak-columns{grid-template-columns:minmax(0,1fr);grid-template-areas:"dimensions" "suggestions" "plan" "results" "rules";gap:12px}#ak-calculator .ak-head{padding:21px}#ak-calculator .ak-panel{padding:16px}#ak-calculator .ak-options{gap:7px}#ak-calculator .ak-head-icon{width:52px;height:52px}}
+  @media(max-width:800px){#ak-calculator .ak-left>.ak-panel:nth-child(1) .ak-input-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#ak-calculator{padding:12px 10px 30px}#ak-calculator .ak-columns{grid-template-columns:minmax(0,1fr);grid-template-areas:"dimensions" "suggestions" "results" "rules";gap:12px}#ak-calculator .ak-head{padding:21px}#ak-calculator .ak-panel{padding:16px}#ak-calculator .ak-options{gap:7px}#ak-calculator .ak-head-icon{width:52px;height:52px}}
   @media(max-width:600px){#ak-calculator .ak-options{grid-template-columns:repeat(2,minmax(0,1fr))}#ak-calculator .ak-option-manual{grid-column:1/-1}}
   @media(max-width:380px){#ak-calculator .ak-options{grid-template-columns:1fr}#ak-calculator .ak-stats{gap:5px}#ak-calculator .ak-stat b{font-size:16px}}
-  @media print{body,#ak-calculator{background:white!important}#ak-calculator{padding:0}#ak-calculator .ak-head{background:#fff;color:#142c35;border:1px solid #a6bbc2}#ak-calculator .ak-head p,#ak-calculator .ak-strap{color:#526c73}#ak-calculator .ak-columns{display:block}#ak-calculator .ak-left,#ak-calculator .ak-actions,#ak-calculator .ak-small-check,#ak-calculator .ak-custom,#ak-calculator .ak-hide-print{display:none!important}#ak-calculator .ak-panel{box-shadow:none;break-inside:avoid}#ak-calculator .ak-result{display:block}#ak-calculator .ak-table{min-width:0}#ak-calculator .ak-graphic svg{max-height:520px}}
+  @media print{body,#ak-calculator{background:white!important}#ak-calculator{padding:0}#ak-calculator .ak-head{background:#fff;color:#142c35;border:1px solid #a6bbc2}#ak-calculator .ak-head p,#ak-calculator .ak-strap{color:#526c73}#ak-calculator .ak-columns{display:block}#ak-calculator .ak-left>.ak-panel:not(.ak-suggestions-panel),#ak-calculator .ak-suggestions-panel>.ak-label-row,#ak-calculator .ak-suggestions-panel>#ak-options,#ak-calculator .ak-suggestions-panel>.ak-drop-setting,#ak-calculator .ak-suggestions-panel>.ak-custom,#ak-calculator .ak-suggestions-panel>#ak-option-summary,#ak-calculator .ak-suggestions-panel>#ak-border-warning,#ak-calculator .ak-actions,#ak-calculator .ak-small-check,#ak-calculator .ak-hide-print{display:none!important}#ak-calculator .ak-panel{box-shadow:none;break-inside:avoid}#ak-calculator .ak-result{display:block}#ak-calculator .ak-table{min-width:0}#ak-calculator .ak-graphic svg{max-height:520px}}
+  #ak-calculator .ak-drop-setting{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:#f4faf7;border:1px solid #cbded9;border-radius:13px;padding:14px 16px;margin-top:15px}
+  #ak-calculator .ak-drop-setting .ak-field{width:235px;max-width:100%;flex:none}
+  #ak-calculator .ak-drop-setting .ak-sub{flex:1;margin:0;min-width:210px;color:#577376;font-size:12px;line-height:1.85}
+  @media(max-width:600px){#ak-calculator .ak-drop-setting .ak-field{width:100%}#ak-calculator .ak-drop-setting .ak-sub{min-width:100%}}
 </style>
 </head>
 <body>
@@ -127,19 +133,22 @@
     <div class="ak-columns">
       <section class="ak-left">
         <div class="ak-panel">
-          <div class="ak-label-row"><div class="ak-step">1</div><div><h2>المقاسات ديال الغرفة</h2><p class="ak-sub" style="margin:0">دخل القياسات بالمتر، والسنتيمتر للنزول.</p></div></div>
+          <div class="ak-label-row"><div class="ak-step">1</div><div><h2>المقاسات ديال الغرفة</h2><p class="ak-sub" style="margin:0">دخل الطول والعرض بالمتر، والنزول غادي تختارو فمرحلة التوزيع.</p></div></div>
           <div class="ak-input-grid">
             <label class="ak-field">الطول (m)<input id="ak-length" type="number" min="0.8" max="50" step="0.01" inputmode="decimal" value="8"></label>
             <label class="ak-field">العرض (m)<input id="ak-width" type="number" min="0.8" max="50" step="0.01" inputmode="decimal" value="4"></label>
-            <label class="ak-field">النزول (cm)<input id="ak-drop" type="number" min="5" max="100" step="1" inputmode="numeric" value="30"></label>
-            <label class="ak-field">طول Tige للقص (cm)<input id="ak-cut" type="number" min="5" max="100" step="0.1" inputmode="decimal" value="30"><span>قياس مبدئي، تأكد فالموقع</span></label>
           </div>
-          <p class="ak-warning">طول القص ماشي بالضرورة هو النزول النهائي. تحقق من المسافة الفعلية وعلو Porteur/Coulisseau قبل قطع Tiges.</p>
           <div id="ak-error" class="ak-error" role="alert" hidden></div>
         </div>
-        <div class="ak-panel">
-          <div class="ak-label-row"><div class="ak-step">2</div><div><h2>اقتراح البوردور BA13</h2><p class="ak-sub" style="margin:0">دائماً بوردور متساوي من الجهتين المتقابلتين.</p></div></div>
+        <div class="ak-panel ak-suggestions-panel">
+          <div class="ak-label-row"><div class="ak-step">2</div><div><h2>اقتراحات البوردور وتوزيع السقف</h2><p class="ak-sub" style="margin:0">دائماً بوردور متساوي من الجهتين المتقابلتين.</p></div></div>
           <div id="ak-options" class="ak-options" role="group" aria-label="اختيارات البوردور"></div>
+          <div class="ak-drop-setting">
+            <label class="ak-field" for="ak-drop">نزول السقف المستعار (cm)
+              <input id="ak-drop" type="number" min="5" max="100" step="1" inputmode="decimal" value="30">
+            </label>
+            <p class="ak-sub">حساب Tige كيستعمل النزول كطول قصّ تقديري؛ تأكد من القياس الفعلي مع Porteur وCoulisseau قبل القطع.</p>
+          </div>
           <div class="ak-custom" id="ak-custom" role="region" aria-label="إعدادات التوزيع اليدوي">
             <p class="ak-sub">حدد عدد بلاكات 60cm كاملة. عرض البوردور غادي يتحسب أوتوماتيكياً.</p>
             <div class="ak-input-grid">
@@ -149,6 +158,31 @@
           </div>
           <p id="ak-option-summary" class="ak-notice" style="margin:13px 0 0"></p>
           <div id="ak-border-warning" class="ak-warning" hidden></div>
+          <section class="ak-embedded-plan" aria-label="المخطط التفاعلي والتوزيع المعتمد">
+            <div class="ak-plan-header">
+              <div><div class="ak-label-row" style="margin:0"><div class="ak-step">3</div><div><div class="ak-plan-title">المخطط التفاعلي</div><div class="ak-sub" style="margin:2px 0 0">Vue en plan — البروفيلات والمساحات مرسومين بالنسب الصحيحة</div></div></div></div>
+              <span class="ak-tag" id="ak-plan-state">معاينة قبل الحساب</span>
+            </div>
+            <div class="ak-graphic" id="ak-svg-container" aria-label="رسم تخطيطي لسقف Armstrong"></div>
+            <div class="ak-legend">
+              <span><i style="background:#205fa3"></i>Porteur 3.60</span>
+              <span><i style="background:#d89b3b"></i>Cross 1.20</span>
+              <span><i style="background:#229b80"></i>Cross 0.60</span>
+              <span><i style="background:#e4bd8c;height:12px;width:12px"></i>BA13</span>
+              <span><i style="background:#243540;height:10px;width:10px;border-radius:50%"></i>علاقة</span>
+            </div>
+            <div class="ak-stats">
+              <div class="ak-stat"><b id="ak-stat-area">32</b><span>المساحة m²</span></div>
+              <div class="ak-stat"><b id="ak-stat-grid">12 × 6</b><span>شبكة 60×60</span></div>
+              <div class="ak-stat"><b id="ak-stat-tiles">72</b><span>عدد البلاكات</span></div>
+            </div>
+            <label class="ak-small-check"><input id="ak-show-hangers" type="checkbox" checked> إظهار مواقع العلاقات التقريبية فوق Porteur</label>
+            <button type="button" id="ak-approve" class="ak-button ak-full" style="margin-top:16px">اعتمد المخطط وحسب السلعة</button>
+            <div class="ak-actions">
+              <button class="ak-outline" id="ak-download-svg" type="button">تحميل المخطط SVG</button>
+              <button class="ak-outline" id="ak-print" type="button">طباعة / PDF</button>
+            </div>
+            </section>
         </div>
         <div class="ak-panel">
           <div class="ak-label-row"><div class="ak-step" aria-hidden="true">✓</div><div><h2>طريقة التركيب المعتمدة</h2><p class="ak-sub" style="margin:0">قواعد الحساب المتفق عليها</p></div></div>
@@ -162,31 +196,6 @@
         </div>
       </section>
       <section class="ak-right">
-        <div class="ak-panel">
-          <div class="ak-plan-header">
-            <div><div class="ak-label-row" style="margin:0"><div class="ak-step">3</div><div><div class="ak-plan-title">المخطط التفاعلي</div><div class="ak-sub" style="margin:2px 0 0">Vue en plan — البروفيلات والمساحات مرسومين بالنسب الصحيحة</div></div></div></div>
-            <span class="ak-tag" id="ak-plan-state">معاينة قبل الحساب</span>
-          </div>
-          <div class="ak-graphic" id="ak-svg-container" aria-label="رسم تخطيطي لسقف Armstrong"></div>
-          <div class="ak-legend">
-            <span><i style="background:#205fa3"></i>Porteur 3.60</span>
-            <span><i style="background:#d89b3b"></i>Cross 1.20</span>
-            <span><i style="background:#229b80"></i>Cross 0.60</span>
-            <span><i style="background:#e4bd8c;height:12px;width:12px"></i>BA13</span>
-            <span><i style="background:#243540;height:10px;width:10px;border-radius:50%"></i>علاقة</span>
-          </div>
-          <div class="ak-stats">
-            <div class="ak-stat"><b id="ak-stat-area">32</b><span>المساحة m²</span></div>
-            <div class="ak-stat"><b id="ak-stat-grid">12 × 6</b><span>شبكة 60×60</span></div>
-            <div class="ak-stat"><b id="ak-stat-tiles">72</b><span>عدد البلاكات</span></div>
-          </div>
-          <label class="ak-small-check"><input id="ak-show-hangers" type="checkbox" checked> إظهار مواقع العلاقات التقريبية فوق Porteur</label>
-          <button type="button" id="ak-approve" class="ak-button ak-full" style="margin-top:16px">اعتمد المخطط وحسب السلعة</button>
-          <div class="ak-actions">
-            <button class="ak-outline" id="ak-download-svg" type="button">تحميل المخطط SVG</button>
-            <button class="ak-outline" id="ak-print" type="button">طباعة / PDF</button>
-          </div>
-        </div>
         <div class="ak-panel">
           <div class="ak-sectioncap"><div class="ak-label-row" style="margin:0"><div class="ak-step">4</div><div><h2>لائحة السلعة</h2><p class="ak-sub" style="margin:0">كتبان غير من بعد اعتماد المخطط</p></div></div><span id="ak-calculation-status" class="ak-tag" style="background:#f1f4f5;color:#7a8c91">مازال ما تعمدش</span></div>
           <div id="ak-before-results" class="ak-placeholder" style="margin-top:15px">
@@ -218,8 +227,8 @@
   const nearly=(a,b)=>Math.abs(a-b)<0.00001;
   const val=id=>Number($(id).value);
   function getDimensions(){
-    const L=val('ak-length'), W=val('ak-width'), drop=val('ak-drop'), cut=val('ak-cut');
-    if(![L,W,drop,cut].every(Number.isFinite)||L<0.8||W<0.8||L>50||W>50||drop<5||drop>100||cut<5||cut>100){throw Error('القياسات خاصها تكون صحيحة: الطول والعرض من 0.8m حتى 50m، والنزول والقص من 5 حتى 100cm.');}
+    const L=val('ak-length'), W=val('ak-width'), drop=val('ak-drop'), cut=drop;
+    if(![L,W,drop].every(Number.isFinite)||L<0.8||W<0.8||L>50||W>50||drop<5||drop>100){throw Error('القياسات خاصها تكون صحيحة: الطول والعرض من 0.8m حتى 50m، والنزول من 5 حتى 100cm.');}
     if(L*W>600)throw Error('المساحة كبيرة بزاف لهاد النسخة (أقصى حد 600m²). قسمها لمناطق مستقلة.');
     return {L,W,drop,cut};
   }
@@ -253,14 +262,33 @@
     return choices;
   }
   function buildPlan(d,opt){
-    const {L,W,drop,cut}=d,nL=Number(opt.nL),nW=Number(opt.nW);
+    const {L,W,drop}=d,cut=drop,nL=Number(opt.nL),nW=Number(opt.nW);
     if(!Number.isInteger(nL)||!Number.isInteger(nW)||nL<1||nW<1)throw Error('عدد البلاكات خاصو يكون عدد صحيح وأكبر من صفر.');
     const bL=(L-nL*M)/2,bW=(W-nW*M)/2;
     if(bL<0.049999||bW<0.049999)throw Error('خاص يكون BA13 على الجهتين، على الأقل 5cm لكل جهة. نقص عدد البلاكات.');
     const bays12=Math.floor(nW/2),bays06=nW%2;
     const nP=bays12+bays06+1;
     const fieldL=nL*M,fieldW=nW*M;
-    const pPieces=nP*ceil((fieldL-1e-9)/mainLen);
+    // قصّ Porteur بالتسلسل: الباقي من كل خط نستعملوه في بداية الخط التالي.
+    // الحساب بالميكرومتر للحفاظ على الدقة مع المقاسات العشرية.
+    const scale=1e6,nominal=Math.round(mainLen*scale),run=Math.round(fieldL*scale);
+    let pPieces=0,unused=0,pJoints=0;
+    const pLineCuts=[];
+    for(let line=0;line<nP;line++){
+      let missing=run;
+      const cuts=[];
+      while(missing>0){
+        if(!unused){pPieces++;unused=nominal;}
+        const used=Math.min(unused,missing);
+        cuts.push(used/scale);
+        unused-=used;
+        missing-=used;
+      }
+      pJoints+=cuts.length-1;
+      pLineCuts.push(cuts);
+    }
+    const pWaste=unused/scale;
+    const pTotalLength=nP*fieldL;
     const c12=bays12*(nL+1);
     const c06=bays12*nL+bays06*(nL+1);
     const hangsPerLine=ceil(fieldL/1);
@@ -273,7 +301,7 @@
     const wallFix=ceil(wallPerimeter/0.50);
     const roomArea=L*W,armArea=fieldL*fieldW,ba13Area=roomArea-armArea;
     const boards=ceil((ba13Area-1e-8)/(1.2*2.8));
-    return {L,W,drop,cut,nL,nW,bL,bW,bays12,bays06,nP,fieldL,fieldW,pPieces,c12,c06,hangsPerLine,hangs,rodPieces,rods,wallPerimeter,angle,wallFix,roomArea,armArea,ba13Area,boards,tiles:nL*nW};
+    return {L,W,drop,cut,nL,nW,bL,bW,bays12,bays06,nP,fieldL,fieldW,pPieces,pWaste,pJoints,pTotalLength,pLineCuts,c12,c06,hangsPerLine,hangs,rodPieces,rods,wallPerimeter,angle,wallFix,roomArea,armArea,ba13Area,boards,tiles:nL*nW};
   }
   function setApproval(no){state.approved=false;$('ak-results').hidden=true;$('ak-before-results').hidden=false;$('ak-calculation-status').textContent='مازال ما تعمدش';$('ak-calculation-status').style.background='#f1f4f5';$('ak-calculation-status').style.color='#7a8c91';$('ak-plan-state').textContent='معاينة قبل الحساب'}
   function renderOptions(d){
@@ -369,13 +397,13 @@
     const add=(name,base,buy,why='')=>({name,base,buy,why});
     return [
       add('بلاكات Armstrong 60×60',p.tiles,ceil(p.tiles*1.05),'احتياط ≈ 5%'),
-      add('Porteur T 3.60m',p.pPieces,p.pPieces+1,'فالاتجاه الطولي فقط'),
+      add('Porteur T 3.60m',p.pPieces,p.pPieces+1,`باقي القص كيتنقل للخط اللي بعدو. الشوت ديال آخر خط فقط: ${fmt(p.pWaste)}m؛ وصلات: ${p.pJoints}`),
       add('Cross-tee 1.20m',p.c12,p.c12+ceil(p.c12*.10),'شامل البداية والنهاية'),
       add('Cross-tee 0.60m',p.c06,p.c06+ceil(p.c06*.10),'شامل فراغ 0.60 إذا وجد'),
       add('Cornière 3m للحائط',p.angle,p.angle+1,'الجدران فقط'),
       add('Cheville laiton',p.hangs,p.hangs+ceil(p.hangs*.10),'واحدة لكل علاقة'),
       add('Coulisseau',p.hangs,p.hangs+ceil(p.hangs*.10),'واحد لكل علاقة'),
-      add('Tige 1m',p.rods,p.rods+1,`${p.rodPieces} قطع لكل متر حسب طول القص`),
+      add('Tige 1m',p.rods,p.rods+1,`${p.rodPieces} قطع لكل متر بافتراض قصّ ${fmt(p.drop)}cm حسب النزول؛ راجع القياس فالورش`),
       add('Cheville à frapper',p.wallFix,ceil(p.wallFix*1.15/10)*10,'تباعد 50cm، مع احتياط'),
       add('ألواح BA13 1.20×2.80',p.boards,p.boards+1,'الحد الأدنى بالمساحة، تحقق من تقطيع الألواح'),
       add('Vis BA13 (تقدير أولي)',ceil(p.ba13Area*30/10)*10,ceil(p.ba13Area*30*1.10/10)*10,'يُراجع بعد تحديد هيكل BA13')
@@ -385,7 +413,7 @@
     const rows=rowsForBom(p);
     $('ak-formulas').innerHTML=`<strong>تفصيل الحساب المعتمد:</strong><br>
       Armstrong = ${fmt(p.fieldL)} × ${fmt(p.fieldW)}m = <b>${fmt(p.armArea)}m²</b>، وBA13 = <b>${fmt(p.ba13Area)}m²</b>.<br>
-      Porteur = ${p.nP} خطوط × ${ceil(p.fieldL/3.6-1e-9)} قطع لكل خط = <b>${p.pPieces}</b>.<br>
+      Porteur = ${p.nP} خطوط × ${fmt(p.fieldL)}m = ${fmt(p.pTotalLength)}m ÷ 3.60m = <b>${p.pPieces} بروفيل</b>. الشوت كيتستعمل فالخط الموالي؛ الشوت النهائي <b>${fmt(p.pWaste)}m</b>، والوصلات ${p.pJoints}.<br>
       Cross 1.20 = ${p.bays12} فراغات 1.20 × (${p.nL}+1) = <b>${p.c12}</b>.<br>
       Cross 0.60 = (${p.bays12} × ${p.nL}) + (${p.bays06} × ${p.nL+1}) = <b>${p.c06}</b>.<br>
       العلاقات = ${p.nP} خطوط × ${p.hangsPerLine} = <b>${p.hangs}</b>.<br>
@@ -597,8 +625,7 @@
     }
   });
   ['ak-length','ak-width'].forEach(id=>$(id).addEventListener('input',()=>{state.selected='1';setApproval();update()}));
-  $('ak-drop').addEventListener('input',()=>{const v=$('ak-drop').value;$('ak-cut').value=v;setApproval();update()});
-  $('ak-cut').addEventListener('input',()=>{setApproval();update()});
+  $('ak-drop').addEventListener('input',()=>{setApproval();update()});
   ['ak-tilesL','ak-tilesW'].forEach(id=>$(id).addEventListener('input',()=>{state.selected='custom';setApproval();update()}));
   $('ak-show-hangers').addEventListener('change',()=>{state.shownHangers=$('ak-show-hangers').checked;if(state.current)$('ak-svg-container').innerHTML=svgPlan(state.current,state.shownHangers)});
   $('ak-approve').addEventListener('click',()=>{if(!state.current)return;state.approved=true;renderResults(state.current)});
