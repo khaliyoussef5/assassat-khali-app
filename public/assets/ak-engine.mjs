@@ -1,3 +1,4 @@
+import {wallLayout} from './ak-wall-layout.mjs';
 import {ba13Layout} from './ak-ba13-layout.mjs';
 /* ASSASSAT KHALI — calculator logic. Geometry estimates require on-site verification. */
 const EPS=1e-8;
@@ -125,29 +126,38 @@ export function calcBA13Ceiling(d){
   vis:ceil(area*25),jointTape:ceil(area*.9),
   note:'توزيع Fourrure كل 50cm، أول خط 15cm. الإنارة المخفية فيها حلقة دعم على بعد 10cm من الحائط. طول بروفيل 3m محسوب بخطة قصّ قابلة للتنفيذ نظرياً مع إعادة استعمال القطع، والوصلات والتعليق والمقاسات والتثبيت بحاجة مراجعة تقنية في الورش. ألواح BA13 محسوبة بالمساحة كحد أدنى نظري وليس خطة تقطيع دقيقة.'};
 }
-export function calcWall(d){const L=positive(d.L,'طول الحائط'),H=positive(d.H,'الارتفاع');if(L<.5||L>40||H<1||H>4)throw Error('طول الحائط بين 0.5 و40m، والارتفاع بين 1 و4m.');
- const kind=['cloison','doublage','isolated'].includes(d.kind)?d.kind:'cloison';const layers=Number(d.layers)||1;
+export function calcWall(d){
+ const L=positive(d.L,'طول الحائط'),H=positive(d.H,'الارتفاع');
+ if(L<.5||L>40||H<1||H>4)throw Error('طول الحائط بين 0.5 و40m، والارتفاع بين 1 و4m.');
+ const kind=['cloison','doublage','isolated'].includes(d.kind)?d.kind:'cloison',layers=Number(d.layers)||1;
  if(![1,2].includes(layers))throw Error('عدد طبقات BA13 خاصو يكون 1 أو 2.');
- const spacing=Number(d.spacing)||.6;if(![.4,.6].includes(spacing))throw Error('اختار تباعد 40cm أو 60cm للـMontants.');
- const stock=Number(d.studLength)||3;if(![3,4].includes(stock)||H>stock+EPS)throw Error('اختار طول Montant كافي لارتفاع الحائط (3m أو 4m) بلا وصلات مرتجلة.');
- const doorW=Math.max(0,Number(d.doorW)||0),doorH=Math.max(0,Number(d.doorH)||0);
- const windowW=Math.max(0,Number(d.windowW)||0),windowH=Math.max(0,Number(d.windowH)||0);
- if(doorW>0&&(doorH<=0||doorH>H||doorW>=L))throw Error('أبعاد الباب غير مناسبة للحائط.');
- if(windowW>0&&(windowH<=0||windowH>H||windowW>=L))throw Error('أبعاد الشباك غير مناسبة للحائط.');
- if(doorW+windowW>=L)throw Error('مجموع عرض الفتحات كبير مقارنة بطول الحائط.');
- const doorArea=doorW*doorH,windowArea=windowW*windowH,area=L*H,netArea=area-doorArea-windowArea;
- if(netArea<=.01)throw Error('مساحة الحائط الصافية غير صالحة.');
+ const spacing=Number(d.spacing)||.6;
+ if(![.4,.6].includes(spacing))throw Error('اختار تباعد Montants 40cm أو 60cm.');
+ const stock=Number(d.studLength)||3;
+ if(![3,4].includes(stock)||H>stock+EPS)throw Error('خاص Montant 3m أو 4m مناسب للارتفاع.');
+ const number=(v,name)=>{const n=Number(v??0);if(!Number.isFinite(n)||n<0)throw Error(name+': أدخل قيمة صحيحة وماشي سالبة.');return n;};
+ const doorW=number(d.doorW,'عرض الباب'),doorH=number(d.doorH,'ارتفاع الباب');
+ const windowW=number(d.windowW,'عرض الشباك'),windowH=number(d.windowH,'ارتفاع الشباك');
+ if((doorW>0&&(!doorH||doorH>H||doorW>=L))||(!doorW&&doorH>0))throw Error('أبعاد الباب غير مناسبة للحائط.');
+ if((windowW>0&&(!windowH||windowH>H||windowW>=L))||(!windowW&&windowH>0))throw Error('أبعاد الشباك غير مناسبة للحائط.');
+ const doorX=number(d.doorX===undefined?.2:d.doorX,'موضع الباب');
+ const windowX=number(d.windowX===undefined?Math.max(0,L-windowW-.2):d.windowX,'موضع الشباك');
+ const windowBottom=number(d.windowBottom===undefined?.9:d.windowBottom,'ارتفاع بداية الشباك');
+ const geometry=wallLayout({L,H,doorW,doorH,doorX,windowW,windowH,windowX,windowBottom,spacing});
+ const area=L*H,doorArea=doorW*doorH,windowArea=windowW*windowH,netArea=area-doorArea-windowArea;
+ if(netArea<=.01)throw Error('صافي مساحة الحائط غير صالح.');
  const faces=kind==='doublage'?1:2,boardArea=netArea*faces*layers;
- // Conservative: adds two side studs per opening and headers from Rails.
- const baseStuds=ceil(L/spacing)+1,openings=(doorW>0?1:0)+(windowW>0?1:0),studs=baseStuds+2*openings;
- const railLinear=2*L-doorW+doorW+(windowW>0?2*windowW:0); // top header replaces floor rail opening
- const rails=ceil(railLinear/3),montants=studs;
  const boards=ceil(boardArea/(1.2*2.8)),purchaseBoards=ceil(boards*1.1);
- const insulated=(kind==='isolated'||!!d.rockwool);const insulationArea=insulated?netArea:0;
- const woolUnits=insulated?ceil(insulationArea/.72):0;
- return {type:'wall',kind,L,H,area,netArea,faces,layers,spacing,stock,doorW,doorH,windowW,windowH,doorArea,windowArea,boardArea,studs,montants,railLinear,rails,boards,purchaseBoards,
- screwCount:ceil(boardArea*25),jointTape:ceil(netArea*faces*1.1),insulated,insulationArea,woolUnits,
- note:'حساب Rails/Montants والفتحات تقديري. تدعيم جنبات الأبواب والشبابيك، الوصلات، مقاومة الحريق والصوت ونظام العزل خاصها مراجعة تقنية قبل التنفيذ.'};
+ const insulated=kind==='isolated'||!!d.rockwool;
+ const woolDensity=Number(d.woolDensity??50),woolThickness=Number(d.woolThickness??50);
+ if(![30,50,70].includes(woolDensity)||![50,70].includes(woolThickness))throw Error('اختار كثافة وسُمك Rockwool من القائمة.');
+ const insulationArea=insulated?netArea:0,woolUnits=insulated?ceil(insulationArea/.72):0;
+ return {type:'wall',kind,L,H,area,netArea,faces,layers,spacing,stock,
+  doorW,doorH,doorX,windowW,windowH,windowX,windowBottom,doorArea,windowArea,
+  boardArea,boards,purchaseBoards,
+  ...geometry,montants:geometry.studs,insulated,insulationArea,woolUnits,woolDensity,woolThickness,
+  screwCount:ceil(boardArea*25),jointTape:ceil(netArea*faces*1.1),
+  note:'مواقع الباب والشباك مرسومة حسب المسافات المدخلة من بداية الحائط، وRails مقسّمة على 3m مع استغلال القصّات نظرياً. تدعيم الفتحات، الوصلات، مقاومة الحريق، العزل الصوتي، ونوع الـMontants والـRails خاصهم مراجعة تقنية. ألواح BA13 محسوبة نظرياً بالمساحة وليس خطة تقطيع.'};
 }
 export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',reserve=.05,why='')=>{const buy=Number.isInteger(qty)?Math.ceil(qty*(1+reserve)):round(qty*(1+reserve),2);rows.push({name,qty,unit,buy,why});};
  if(p.type==='armstrong-full'){
@@ -170,10 +180,10 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  if(p.mode==='hidden')add('طول مسار LED الداخلي على بعد 10cm',round(p.ledLen,2),'متر',0,'محيط الحيط = '+round(p.ledWallPerimeter,2)+'m؛ LED وتجهيزاته غير مشمولة');
  } else if(p.type==='wall'){
  add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1,'بحسب المساحة والطبقات');
- add(`Rails 3m`,p.rails,'قطعة',.12,'يشمل تقدير فتحة الباب والشباك');
- add(`Montants ${p.stock}m`,p.montants,'قطعة',.1,`${p.spacing*100}cm تباعد + دعم فتحات`);
+ add('Rails 3m',p.rails,'قطعة',.12,`${round(p.railLinear,2)}m مركبة / ${p.railCutPieces.length} مقاطع في خطة القص / ${p.railJoins} وصلات؛ تحقق من القص فالموقع`);
+ add(`Montants ${p.stock}m`,p.montants,'قطعة',.1,`${p.baseStuds} خطوط رئيسية بتباعد ${p.spacing*100}cm + ${p.extraStuds} تدعيم جانبي تقديري للفتحات`);
  add('Vis BA13',p.screwCount,'قطعة',.1);add('Bande à joint',p.jointTape,'متر',.1);
- if(p.insulated){add('Rockwool تقدير عدد وحدات 0.60×1.20',p.woolUnits,'وحدة',.1,'تحقق من القياس والكثافة');}
+ if(p.insulated){add(`Rockwool ${p.woolDensity}kg/m³ — ${p.woolThickness}mm (0.60×1.20)`,p.woolUnits,'وحدة',.1,'العدد بالمساحة الصافية؛ راجع مقاس المنتج والحشو المحيطي');}
  }
  return rows;
 }
