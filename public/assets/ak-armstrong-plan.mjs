@@ -55,7 +55,7 @@ export function armstrongFullPlanSvg(p,{showHangers=true}={}){
  for(const seg of p.crossSegments){
   const color=seg.kind==='cross120'?C.cross120:C.cross060;
   const thick=seg.kind==='cross120'?Math.max(2.2,scale*.025):Math.max(2,scale*.021);
-  push(line(X(seg.x1),Y(seg.y1),X(seg.x2),Y(seg.y2),color,thick,'data-profile="'+seg.kind+'" data-cut="'+(seg.cut?'yes':'no')+'"'));
+  push(line(X(seg.x1),Y(seg.y1),X(seg.x2),Y(seg.y2),color,thick,'data-profile="'+seg.kind+'" data-cut="'+(seg.cut?'yes':'no')+'" stroke-linecap="butt"'));
  }
  for(const support of p.carrierPositions){
   push(line(x,Y(support),right,Y(support),C.porteur,Math.max(3.5,scale*.043),'data-profile="porteur"'));
