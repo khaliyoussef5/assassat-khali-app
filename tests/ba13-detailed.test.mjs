@@ -92,5 +92,5 @@ test('BA13 is wired into shared UI SVG, print PDF and existing approved Classic 
  assert.match(app,/if\(p.type==='ba13-ceiling'\)return ba13PlanSvg\(p,\{showHangers\}\)/);
  assert.match(app,/drawBA13PrintPage\(z,p,planCanvas.width,planCanvas.height,\{showHangers\}\)/);
  assert.match(app,/isLandscapePrint=isArmPrint\|\|isBA13Print/);
- assert.match(html,/ak-classic.css/);
+ assert.match(html,/قيد التطوير/);assert.doesNotMatch(html,/ak-app\.mjs/);
 });
