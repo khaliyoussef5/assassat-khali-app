@@ -18,8 +18,8 @@ test('Google Analytics tag appears once and inside <head> on every published HTM
   const headEnd=html.indexOf('</head>',headStart);
   assert.ok(headStart>=0&&headEnd>headStart,path+' missing head');
   const head=html.slice(headStart,headEnd);
-  assert.equal((html.match(/googletagmanager\\.com\\/gtag\\/js/g)||[]).length,1,path+' should contain one async tag');
-  assert.equal((html.match(/gtag\\('config', 'G-E8P48Z2PYQ'\\)/g)||[]).length,1,path+' should configure GA once');
+  assert.equal(html.split('www.googletagmanager.com/gtag/js?id='+id).length-1,1,path+' should contain one async tag');
+  assert.equal(html.split("gtag('config', '"+id+"')").length-1,1,path+' should configure GA once');
   assert.match(head,/<script async src="https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=G-E8P48Z2PYQ"><\/script>/);
   assert.match(head,/window\.dataLayer = window\.dataLayer \|\| \[\];/);
   assert.match(head,/gtag\('js', new Date\(\)\);/);
