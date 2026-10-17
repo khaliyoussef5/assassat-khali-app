@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/webp" href="../../assets/logo-assassat-khali.webp">
 <title>ASSASSAT KHALI — حاسبة سقف Armstrong</title>
 <style>
   :root{color-scheme:light}
@@ -18,7 +19,8 @@
   #ak-calculator .ak-strap{font-size:12px;letter-spacing:2px;color:#abdfd7;font-weight:800}
   #ak-calculator h1{font-size:clamp(24px,3vw,34px);line-height:1.25;margin:7px 0;font-weight:900}
   #ak-calculator .ak-head p{color:#c3dcd9;font-size:13px;margin:0}
-  #ak-calculator .ak-head-icon{display:grid;place-items:center;width:65px;height:65px;flex:none;border:1px solid #ffffff29;border-radius:18px;background:#ffffff12}
+  #ak-calculator .ak-head-icon{display:grid;place-items:center;width:65px;height:65px;flex:none;border:1px solid #ffffff3d;border-radius:18px;background:#ffffff;box-shadow:0 4px 12px #0b26351b}
+  #ak-calculator .ak-head-icon img{display:block;object-fit:contain;max-width:90%;max-height:90%}
   /* Visual workflow follows site use: dimensions → 3 suggestions → diagram → materials. */
   #ak-calculator .ak-columns{display:grid;grid-template-areas:"dimensions dimensions" "suggestions suggestions" "plan plan" "results rules";grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:18px;align-items:start}
   #ak-calculator .ak-left,#ak-calculator .ak-right{display:contents}
@@ -110,13 +112,7 @@
         <h1>حاسبة سقف Armstrong</h1>
         <p>من قياسات الغرفة → اقتراح البوردور → المخطط → لائحة السلعة</p>
       </div>
-      <div class="ak-head-icon" aria-hidden="true">
-        <svg viewBox="0 0 46 46" width="42" height="42" fill="none">
-          <rect x="4" y="7" width="38" height="30" rx="3" stroke="#A7E5DA" stroke-width="2"/>
-          <path d="M16.7 7v30M29.3 7v30M4 17h38M4 27h38" stroke="#A7E5DA" stroke-width="1.5"/>
-          <path d="M4 37l5 5h28l5-5" stroke="#6BBDAF" stroke-width="1.5"/>
-        </svg>
-      </div>
+      <div class="ak-head-icon" aria-hidden="true"><img src="../../assets/logo-assassat-khali.webp" alt="" width="51" height="56"></div>
     </header>
     <div class="ak-columns">
       <section class="ak-left">
