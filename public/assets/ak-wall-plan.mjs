@@ -1,7 +1,7 @@
 /* Position-aware wall plan; uses calcWall data as the only geometric source. */
 const F=n=>Number(n).toLocaleString('fr-FR',{maximumFractionDigits:2});
 const T=n=>Number(n).toFixed(2).replace(/\.?0+$/,'');
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;'}[c]));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const C={stud:'#2563A6',jamb:'#0F766E',rail:'#193f48',open:'#C47D2D',wool:'#EED3A1',ink:'#1D404A',muted:'#557179'};
 const text=(x,y,t,size=13,color=C.ink,extra='')=>'<text x="'+T(x)+'" y="'+T(y)+'" fill="'+color+'" font-size="'+size+'" font-family="Tahoma,Arial,sans-serif" '+extra+'>'+esc(t)+'</text>';
 const line=(x1,y1,x2,y2,c,w,attr='')=>'<line x1="'+T(x1)+'" y1="'+T(y1)+'" x2="'+T(x2)+'" y2="'+T(y2)+'" stroke="'+c+'" stroke-width="'+w+'" '+attr+'/>';
