@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
 import {calcArmstrongFull,materials,fullArmstrongOptions} from '../public/assets/ak-engine.mjs';
 import {armstrongFullPlanSvg} from '../public/assets/ak-armstrong-plan.mjs';
 
@@ -73,4 +74,8 @@ test('Changes are scoped to borderless Armstrong; locked calculators remain isol
  assert.match(app,/if\(app==='armstrong-full'\)/);
  assert.match(old,/id="ak-approve"/);
  assert.match(old,/id="ak-download-pdf"/);
+});
+
+test('Shared browser module parses as valid JavaScript before production deployment',()=>{
+ execFileSync(process.execPath,['--check',new URL('../public/assets/ak-app.mjs',import.meta.url).pathname],{stdio:'pipe'});
 });
