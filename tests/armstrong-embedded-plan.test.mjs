@@ -5,19 +5,21 @@ const html=readFileSync(new URL('../public/calculators/armstrong/index.html',imp
 
 // Confirm real ancestor containment, not just textual ordering of headings.
 function tagsAndAncestors(markup){
- const main=markup.slice(markup.indexOf('<main'),markup.indexOf('</main>')+7),stack=[],ancestors={},tokens=/<\/?(?:div|section)\b[^>]*>/g;
+ const main=markup.slice(markup.indexOf('<main'),markup.indexOf('</main>')+7),stack=[],ancestors={},tokens=/<\/?[a-z][a-z0-9-]*\b[^>]*>/gi;
  for(const token of main.matchAll(tokens)){
   const tag=token[0],isClose=tag.startsWith('</'),name=/^<\/?([a-z]+)/.exec(tag)[1];
   if(isClose){
-   const current=stack.pop();
-   assert.equal(current?.name,name,'HTML should be properly nested at '+token.index);
+   if(name==='div'||name==='section'){
+    const current=stack.pop();
+    assert.equal(current?.name,name,'HTML should be properly nested at '+token.index);
+   }
    continue;
   }
   const cls=/\bclass="([^"]+)"/.exec(tag)?.[1]||'';
   const id=/\bid="([^"]+)"/.exec(tag)?.[1];
   const cur={name,id,cls};
   if(id)ancestors[id]=[...stack.map(x=>x.cls||x.id),cls];
-  stack.push(cur);
+  if(name==='div'||name==='section')stack.push(cur);
  }
  assert.equal(stack.length,0,'Unclosed div/section elements');
  return ancestors;
