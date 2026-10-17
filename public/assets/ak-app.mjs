@@ -34,16 +34,44 @@ function coreMarkup(){return `
 <p class="footer">ASSASSAT KHALI — حساب تقريبي وليس مخطط تنفيذ معتمد. راجع المواصفات التقنية ديال المصنع.</p>
 </main>`;}
 document.body.insertAdjacentHTML('afterbegin',coreMarkup());
+/* For borderless Armstrong only, preserve the approved order while leaving
+ * development-only calculators' DOM and engines untouched. */
+if(app==='armstrong-full'){
+ const panels=[...document.querySelectorAll('main.wrap > section.panel')];
+ if(panels.length!==4)throw Error('Armstrong layout unavailable');
+ const [dimensions,choices,drawing,result]=panels;
+ dimensions.after(drawing);
+ dimensions.querySelector('.panelheader p').textContent='دخل الطول والعرض ونزول السقف المستعار؛ المخطط كيتحدّث مباشرة.';
+ dimensions.querySelector('.hint').remove();
+ drawing.querySelector('.step').textContent='02';
+ choices.querySelector('.step').textContent='03';
+ drawing.querySelector('.panelheader p').remove();
+ const approve=document.getElementById('approve');
+ choices.append(approve);approve.classList.add('ak-full-approve');
+ document.getElementById('svg-download').remove();
+ result.querySelector('#csv-download').remove();
+ result.querySelector('#print').remove();
+ result.querySelector('#note').remove();
+ const copy=document.createElement('button');
+ copy.type='button';copy.id='copy-materials';copy.className='secondary';copy.textContent='نسخ القائمة';
+ result.querySelector('#result .actions').append(copy);
+ const pdf=document.getElementById('pdf-download');
+ pdf.textContent='تحميل لائحة المواد + المخطط PDF';
+ pdf.classList.add('ak-full-pdf');
+ result.classList.add('ak-armstrong-full-results');
+ const dropField=document.createElement('div');
+ dropField.className='formfield';
+ dropField.innerHTML='<label for="in-drop">نزول السقف المستعار (cm)</label><input id="in-drop" type="number" inputmode="decimal" min="5" max="100" step="1" value="30">';
+ document.getElementById('fields').append(dropField);
+ dimensions.insertAdjacentHTML('beforeend','<p class="ak-full-measurement-note">عدد Tige كيتحسب حسب النزول كتقدير أولي. تأكد من طول القص الفعلي فالورش قبل القطع.</p>');
+}
+
 if(app==='armstrong-full'||app==='ba13-ceiling'){
  $('summary').insertAdjacentHTML('afterend','<label class="ak-hanger-toggle" for="show-hangers"><input type="checkbox" id="show-hangers" checked><span class="ak-hanger-icon" aria-hidden="true">●</span><span><strong>إظهار العلاقات فالمخطط</strong><small>نقط التعليق على Porteur، تقريباً كل 1m</small></span></label>');
  $('show-hangers').addEventListener('change',event=>{showHangers=event.target.checked;if(plan)$('plan').innerHTML=svgH(plan);});
 }
 for(const [id,label,val] of fields[app])$('fields').insertAdjacentHTML('beforeend',`<div class="formfield"><label for="in-${id}">${label}</label><input id="in-${id}" type="number" inputmode="decimal" step="0.01" min="0" value="${val}"></div>`);
-if(app==='armstrong-full'){
- $('option-drop').hidden=false;
- $('option-drop').innerHTML='<div class="formfield"><label for="in-drop">نزول السقف المستعار (cm)</label><input id="in-drop" type="number" inputmode="decimal" min="5" max="100" step="1" value="30"></div><p>كمية Tige محسوبة بافتراض أن طول القصّ كيساوي النزول. القياس الفعلي كيتراجع فالموقع قبل القطع.</p>';
- $('in-drop').addEventListener('input',()=>{refresh()});
-}
+if(app==='armstrong-full')$('in-drop').addEventListener('input',refresh);
 const field=(id)=>Number($('in-'+id)?.value), raw=id=>$('in-'+id)?.value;
 const metric=(lab,val)=>`<div class="metric"><small>${lab}</small><strong>${escapeText(val)}</strong></div>`;
 const picker=(id,label,options)=>`<div class="formfield"><label for="in-${id}">${label}</label><select id="in-${id}">${options.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select></div>`;
@@ -83,7 +111,7 @@ function createModel(){let d=dims();if(app==='armstrong-full'){const o=chosen===
  if(app==='ba13-ceiling')return calcBA13Ceiling(d);
  return calcWall({...d,rockwool:d.rockwool==='1'});
 }
-function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['Porteur 3.60m',p.porteur],['شوت Porteur النهائي',fmt(p.porteurWaste)+'m'],['وصلات Porteur',p.porteurJoints],['Cross 1.20',p.cross120],['Cross 0.60 (راكبة)',p.cross060],['Cross 0.60 (بروفيلات)',p.cross060Stock],['بلاكات كاملة',p.wholeTiles],['بلاكات مقطوعة',p.edgePieces]]:
+function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['شبكة 60×60',p.nL+' × '+p.nW],['عدد البلاكات',p.tiles]]:
  app==='ba13-ceiling'?[['مساحة السقف',fmt(p.area)+'m²'],['خطوط Fourrure',p.positions.length],['Fourrure 3m',p.fourrure],['وصلات (تقديرية)',p.joinCount],['علاقات',p.hangers],['ألواح BA13 النظري',p.boards]]:
  [['صافي المساحة',fmt(p.netArea)+'m²'],['ألواح BA13 النظري',p.boards],['Montants',p.montants],['Rails 3m',p.rails],['تدعيم جنبات',p.extraStuds],['طبقات / وجه',p.layers]];
  $('summary').innerHTML=parts.map(([a,b])=>metric(a,b)).join('');
@@ -118,18 +146,37 @@ const svgH=(p)=>{
  A.push(`<text x="${fmt2(x-20)}" y="${fmt2(y+boxH/2)}" fill="#315d63" text-anchor="middle" font-family="Arial" font-size="15" transform="rotate(-90 ${fmt2(x-20)} ${fmt2(y+boxH/2)})">${fmt(p.type==='wall'?p.H:p.W)} m</text>`);
  A.push('</svg>');return A.join('');
 };
-function showError(e){$('error').textContent=e.message||String(e);$('error').hidden=false;$('approve').disabled=true;$('svg-download').disabled=true;$('plan').innerHTML='<div class="locked">صلّح القياسات باش يظهر المخطط.</div>';$('summary').innerHTML='';}
+function showError(e){$('error').textContent=e.message||String(e);$('error').hidden=false;$('approve').disabled=true;if($('svg-download'))$('svg-download').disabled=true;$('plan').innerHTML='<div class="locked">صلّح القياسات باش يظهر المخطط.</div>';$('summary').innerHTML='';}
 function invalidate(){approved=false;$('result').hidden=true;$('locked').hidden=false;}
-function refresh(){invalidate();$('error').hidden=true;try{optionsUI();plan=createModel();sumSvg(plan);$('plan').innerHTML=svgH(plan);$('approve').disabled=false;$('svg-download').disabled=false;}catch(e){plan=null;showError(e)}}
+function refresh(){invalidate();$('error').hidden=true;try{optionsUI();plan=createModel();sumSvg(plan);$('plan').innerHTML=svgH(plan);$('approve').disabled=false;if($('svg-download'))$('svg-download').disabled=false;}catch(e){plan=null;showError(e)}}
 function save(filename,blob){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500)}
 function renderBom(p){const rows=materials(p);let table='<table><thead><tr><th>المادة</th><th>المحسوب</th><th>الشراء المقترح</th></tr></thead><tbody>';
  for(const r of rows)table+=`<tr><td><b>${escapeText(r.name)}</b><div class="note">${escapeText(r.why||'')}</div></td><td class="qty">${fmt(r.qty)} ${escapeText(r.unit)}</td><td class="qty buy">${fmt(r.buy)} ${escapeText(r.unit)}</td></tr>`;
- $('bom').innerHTML=table+'</tbody></table>';$('note').textContent=p.note;
+ $('bom').innerHTML=table+'</tbody></table>';if($('note'))$('note').textContent=p.note;
 }
 $('approve').addEventListener('click',()=>{if(!plan)return;approved=true;renderBom(plan);$('locked').hidden=true;$('result').hidden=false;$('result').scrollIntoView({behavior:'smooth',block:'start'})});
-$('svg-download').addEventListener('click',()=>{if(plan)save(`ASSASSAT-KHALI_${app}_PLAN.svg`,new Blob([svgH(plan)],{type:'image/svg+xml;charset=utf-8'}))});
-$('csv-download').addEventListener('click',()=>{if(!approved||!plan)return;let rows=materials(plan);let csv='\uFEFFالمادة;المحسوب;الوحدة;الشراء المقترح;ملاحظات\r\n'+rows.map(r=>[r.name,r.qty,r.unit,r.buy,r.why].map(x=>`"${String(x).replaceAll('"','""')}"`).join(';')).join('\r\n');save(`ASSASSAT-KHALI_${app}_MATERIALS.csv`,new Blob([csv],{type:'text/csv;charset=utf-8'}))});
-$('print').addEventListener('click',()=>window.print());
+if($('svg-download'))$('svg-download').addEventListener('click',()=>{if(plan)save(`ASSASSAT-KHALI_${app}_PLAN.svg`,new Blob([svgH(plan)],{type:'image/svg+xml;charset=utf-8'}))});
+if($('csv-download'))$('csv-download').addEventListener('click',()=>{if(!approved||!plan)return;let rows=materials(plan);let csv='\uFEFFالمادة;المحسوب;الوحدة;الشراء المقترح;ملاحظات\r\n'+rows.map(r=>[r.name,r.qty,r.unit,r.buy,r.why].map(x=>`"${String(x).replaceAll('"','""')}"`).join(';')).join('\r\n');save(`ASSASSAT-KHALI_${app}_MATERIALS.csv`,new Blob([csv],{type:'text/csv;charset=utf-8'}))});
+if($('print'))$('print').addEventListener('click',()=>window.print());
+
+if(app==='armstrong-full'){
+ $('copy-materials').addEventListener('click',async()=>{
+  if(!approved||!plan)return;
+  const button=$('copy-materials');
+  const lines=['ASSASSAT KHALI — Armstrong بلا بوردور','السقف: '+fmt(plan.L)+' × '+fmt(plan.W)+' m | النزول: '+fmt(plan.drop)+' cm','لائحة المواد:'];
+  for(const r of materials(plan))lines.push(r.name+': '+fmt(r.qty)+' '+r.unit+' — الشراء: '+fmt(r.buy)+' '+r.unit);
+  const payload=lines.join('\n');
+  try{
+   if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(payload);
+   else{
+    const temp=document.createElement('textarea');temp.value=payload;temp.style.position='fixed';temp.style.opacity='0';document.body.append(temp);temp.select();
+    const copied=document.execCommand('copy');temp.remove();if(!copied)throw Error('Clipboard unavailable');
+   }
+   button.textContent='تم نسخ القائمة ✓';
+  }catch(e){button.textContent='تعذر النسخ: راجع صلاحية الحافظة';}
+  button.blur();
+ });
+}
 $('pdf-download').addEventListener('click',async()=>{if(!approved||!plan)return;const b=$('pdf-download');b.disabled=true;const old=b.textContent;b.textContent='جاري إنشاء PDF...';try{const blob=await createPdf(plan);save(`ASSASSAT-KHALI_${app}_MATERIALS_PLAN.pdf`,blob)}catch(e){alert('تعذر إنشاء PDF: '+e.message)}finally{b.disabled=false;b.textContent=old}});
 for(const el of $('fields').querySelectorAll('input,select'))el.addEventListener('input',()=>{if(app==='armstrong-full')chosen=0;refresh()});
 async function createPdf(p){const rows=materials(p),W=1240,H=1754;
