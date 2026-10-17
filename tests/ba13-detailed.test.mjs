@@ -78,9 +78,10 @@ test('A4 PDF BA13 second page is a dedicated printed drawing with show/hide susp
  const p=calcBA13Ceiling({L:8,W:4,drop:30,mode:'hidden'}),a=fakeCanvas(),b=fakeCanvas();
  drawBA13PrintPage(a.ctx,p,3508,2480,{showHangers:true});
  drawBA13PrintPage(b.ctx,p,3508,2480,{showHangers:false});
- assert.equal(a.paint.circles.length,p.hangers);assert.equal(b.paint.circles.length,0);
- assert.equal(a.paint.lines.filter(v=>v.color==='#2563A6').length,p.positions.length);
- assert.equal(a.paint.lines.filter(v=>v.color==='#D97706').length,p.ring.length);
+ assert.equal(a.paint.circles.length,p.hangers+1); // one extra icon in printed legend
+ assert.equal(b.paint.circles.length,0);
+ assert.equal(a.paint.lines.filter(v=>v.color==='#2563A6').length,p.positions.length+1); // + legend line
+ assert.equal(a.paint.lines.filter(v=>v.color==='#D97706').length,p.ring.length+1); // + legend line
  assert.ok(a.paint.text.some(x=>x.includes('سقف BA13')));
  assert.ok(a.paint.text.some(x=>x.includes('10cm')));
  assert.throws(()=>drawBA13PrintPage(a.ctx,{type:'wall'}),/BA13/);
