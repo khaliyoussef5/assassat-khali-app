@@ -2,12 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const raw=(p)=>readFileSync(new URL('../public/'+p,import.meta.url),'utf8');
-test('All three new calculators share the original Armstrong design skin',()=>{
+test('Approved Armstrong design remains active and other calculator entrances are locked',()=>{
  const style=raw('assets/ak-classic.css');
- for(const route of ['armstrong-full','ba13-ceiling','walls']){
+ const active=raw('calculators/armstrong-full/index.html');
+ assert.match(active,/assets\/ak-classic\.css/);
+ for(const route of ['ba13-ceiling','walls']){
   const html=raw('calculators/'+route+'/index.html');
-  assert.match(html,/assets\/ak-tools\.css/);
-  assert.match(html,/assets\/ak-classic\.css/);
+  assert.match(html,/قيد التطوير/);
+  assert.doesNotMatch(html,/ak-app\.mjs/);
  }
  assert.match(style,/#f3f6f7/);
  assert.match(style,/#112c36/);
