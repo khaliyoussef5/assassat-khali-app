@@ -18,9 +18,18 @@ test('Core calculator is preserved as separate page',()=>{
  assert.match(c,/الخيار 3 — تعديل يدوي/);
 });
 
-test('Three new calculator cards link to implemented routes',()=>{
- for (const route of ['armstrong-full','ba13-ceiling','walls']) {
+test('Only the two approved Armstrong calculator cards are publicly linked',()=>{
+ for(const route of ['armstrong','armstrong-full']){
   assert.match(home,new RegExp('href="calculators/'+route+'/"'));
   assert.ok(existsSync(new URL('../public/calculators/'+route+'/index.html',import.meta.url)));
  }
+ for(const route of ['ba13-ceiling','walls']){
+  assert.doesNotMatch(home,new RegExp('href="calculators/'+route+'/"'));
+  const placeholder=readFileSync(new URL('../public/calculators/'+route+'/index.html',import.meta.url),'utf8');
+  assert.match(placeholder,/قيد التطوير/);
+  assert.doesNotMatch(placeholder,/ak-app\.mjs/);
+  assert.doesNotMatch(placeholder,/data-calculator=/);
+ }
+ assert.equal((home.match(/class="product planned"/g)||[]).length,2);
+ assert.equal((home.match(/class="product live"/g)||[]).length,2);
 });
