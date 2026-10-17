@@ -87,8 +87,8 @@ export function buildArmstrongGrid(L,W,lengthCuts,widthCuts){
   bay060:mains.slice(1).filter((p,i)=>Math.abs(p-mains[i]-.6)<EPS).length
  };
 }
-export function calcArmstrongFull(d){const {L,W}=validateRoom(d.L,d.W);const drop=positive(d.drop,'النزول'),cut=positive(d.cut,'طول قص Tige');
- if(drop<5||drop>120||cut>100)throw Error('النزول بين 5 و120cm، وقص Tige بين 1 و100cm.');
+export function calcArmstrongFull(d){const {L,W}=validateRoom(d.L,d.W);const drop=positive(d.drop,'نزول السقف المستعار'),cut=drop;
+ if(drop<5||drop>100)throw Error('نزول السقف المستعار خاصو يكون بين 5 و100cm في هاد الحاسبة.');
  const nL=Number(d.nL),nW=Number(d.nW);
  if(!Number.isInteger(nL)||!Number.isInteger(nW)||nL<0||nW<0)throw Error('عدد البلاكات الوسطية خاصو يكون عدد صحيح.');
  const edgeL=(L-.6*nL)/2, edgeW=(W-.6*nW)/2;
@@ -109,7 +109,7 @@ export function calcArmstrongFull(d){const {L,W}=validateRoom(d.L,d.W);const dro
  const rods=ceil(hangers/rodPieces),perimeter=2*(L+W);
  return {type:'armstrong-full',L,W,drop,cut,nL,nW,edgeL:round(edgeL,5),edgeW:round(edgeW,5),partsL,partsW,wholeTiles,edgePieces,tiles,area,porteur,cross120,cross060,carrierCount,carrierPositions:mains,hangers,rods,rodPieces,angle:ceil(perimeter/3),wallFix:ceil(perimeter/.5),lengthCuts:boundaryCuts,widthCuts,perimeter,rowIntersections,lateralBays:carrierCount+1,porteurCutPlan,porteurWaste:porteurCutPlan.waste,porteurJoints:porteurCutPlan.joinCount,
  ...grid,
- note:'Porteur 3.60m: شوت كل خط كيتعاود استعماله فبداية الخط اللي بعدو؛ الشوت النهائي غير ديال آخر خط. تأكد من صلاحية الوصلات. كل Cross 0.60 أقل من 30cm محسوبة نصف بروفيل (كل جوج = واحد)؛ 30cm بالضبط أو أكثر محسوبة قطعة كاملة. Cross 1.20 المقطوعة محسوبة قطعة كاملة. ما كنزيدوش Porteur إضافي غير للفراغ الأخير. Cross 1.20 المقطوعة باتجاه الحائط وارتكازها على Cornière خاصهم تحقق من نظام المصنع قبل التنفيذ.'};
+ note:'Tige 1m: طول القص محسوب مؤقتاً على أساس نزول السقف المستعار، خاص القياس الفعلي يتراجع قبل القطع. Porteur 3.60m: شوت كل خط كيتعاود استعماله فبداية الخط اللي بعدو؛ الشوت النهائي غير ديال آخر خط. تأكد من صلاحية الوصلات. كل Cross 0.60 أقل من 30cm محسوبة نصف بروفيل (كل جوج = واحد)؛ 30cm بالضبط أو أكثر محسوبة قطعة كاملة. Cross 1.20 المقطوعة محسوبة قطعة كاملة. ما كنزيدوش Porteur إضافي غير للفراغ الأخير. Cross 1.20 المقطوعة باتجاه الحائط وارتكازها على Cornière خاصهم تحقق من نظام المصنع قبل التنفيذ.'};
 }
 export function calcBA13Ceiling(d){
  const {L,W}=validateRoom(d.L,d.W);
@@ -169,7 +169,7 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  add('Cross 0.60m',p.cross060Stock,'بروفيل',.1,`${p.cross060} قطعة فالمخطط: ${p.cross060RegularCount} محسوبة كاملة + ${p.cross060HalfCount} أقل من 30cm محسوبة نصف بروفيل (كل جوج = واحد). المجموع: ${p.cross060StockEquivalent} بروفيل مكافئ، مدوّر للشراء إلى ${p.cross060Stock}.`);
  add('Cornière محيطية 3m',p.angle,'قطعة',.1,'على الحائط فقط');
  add('Cheville laiton',p.hangers,'قطعة',.1);add('Coulisseau',p.hangers,'قطعة',.1);
- add('Tige 1m',p.rods,'قطعة',.1,`${p.rodPieces} قطع من كل Tige`);add('Cheville à frapper',p.wallFix,'قطعة',.15,'تقدير كل 50cm');
+ add('Tige 1m',p.rods,'قطعة',.1,`${p.rodPieces} قطع من كل Tige بافتراض طول القص = نزول السقف ${p.drop}cm؛ تحقق من القياس الفعلي قبل القطع`);add('Cheville à frapper',p.wallFix,'قطعة',.15,'تقدير كل 50cm');
  } else if(p.type==='ba13-ceiling'){
  add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1,'تقدير بالمساحة');
  add('Fourrure 3m',p.fourrure,'قطعة',.12,`${round(p.totalFourrure,2)}m مركّبة: ${round(p.profileRun,2)}m خطوط + ${round(p.perimeterExtra,2)}m حلقة LED. خطة قصّ 3m: ${p.cutCount} قطعة و${p.joinCount} وصلة، مع إمكانية استغلال القطع المقصوصة؛ راجع المخطط.`);
