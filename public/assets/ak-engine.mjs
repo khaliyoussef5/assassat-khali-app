@@ -1,3 +1,4 @@
+import {ba13Layout} from './ak-ba13-layout.mjs';
 /* ASSASSAT KHALI — calculator logic. Geometry estimates require on-site verification. */
 const EPS=1e-8;
 export const round=(v,d=2)=>Number(v.toFixed(d));
@@ -107,21 +108,22 @@ export function calcArmstrongFull(d){const {L,W}=validateRoom(d.L,d.W);const dro
  ...grid,
  note:'كل Cross 0.60 أقل من 30cm محسوبة نصف بروفيل (كل جوج = واحد)؛ 30cm بالضبط أو أكثر محسوبة قطعة كاملة. Cross 1.20 المقطوعة محسوبة قطعة كاملة. ما كنزيدوش Porteur إضافي غير للفراغ الأخير. Cross 1.20 المقطوعة باتجاه الحائط وارتكازها على Cornière خاصهم تحقق من نظام المصنع قبل التنفيذ.'};
 }
-export function calcBA13Ceiling(d){const {L,W}=validateRoom(d.L,d.W);const type=d.mode==='hidden'?'hidden':'plain';const drop=positive(d.drop,'النزول');if(drop<6||drop>100)throw Error('النزول خاصو يكون بين 6 و100cm.');
- const first=.15,spacing=.50,span=Math.min(L,W),distribution=Math.max(L,W);
- const positions=[];for(let x=first;x<distribution-.04-EPS;x+=spacing)positions.push(round(x,4));
- if(!positions.length)positions.push(round(distribution/2,4));
- // Last profile near the end if the remaining unsupported band exceeds 25cm.
- if(distribution-positions.at(-1)>.25+EPS)positions.push(round(distribution-.10,4));
- const n=positions.length,profileRun=n*span,perimeter=2*(L+W),ledLen=type==='hidden'?perimeter:0;
- const perimeterExtra=type==='hidden'?perimeter:0; // 10cm setback Fourrure around LED perimeter
- const totalFourrure=profileRun+perimeterExtra;
- const fourrure=ceil(totalFourrure/3);
- const hangers=n*ceil(span/1);const suspensionRods=ceil(hangers/Math.floor(100/drop));
- const area=L*W,boards=ceil(area/(1.2*2.8)),cutBoards=ceil(boards*1.1);
- return {type:'ba13-ceiling',mode:type,L,W,drop,span,distribution,area,perimeter,ledLen,first,spacing,positions,profileRun,totalFourrure,perimeterExtra,
- fourrure,hangers,suspensionRods,angle:ceil(perimeter/3),wallFix:ceil(perimeter/.5),boards,cutBoards,vis:ceil(area*25),jointTape:ceil(area*.9),
- note:'Fourrure كل 50cm ابتداءً من 15cm، وفي الإنارة المخفية خط محيطي تقريبي على بعد 10cm من الحائط. مواقع وتعليق Fourrure وتفاصيل الجوانب والإنارة لازم تتراجع حسب النظام المعتمد.'};
+export function calcBA13Ceiling(d){
+ const {L,W}=validateRoom(d.L,d.W);
+ const mode=d.mode==='hidden'?'hidden':'plain';
+ const drop=positive(d.drop,'النزول');if(drop<6||drop>100)throw Error('النزول خاصو يكون بين 6 و100cm.');
+ const layout=ba13Layout(L,W,mode),area=L*W,perimeter=2*(L+W);
+ const hangers=layout.hangerPoints.length,rodParts=Math.floor((100+EPS)/drop);
+ if(rodParts<1)throw Error('طول Tige غير صالح');
+ const suspensionRods=ceil(hangers/rodParts),boards=ceil(area/(1.2*2.8));
+ return {type:'ba13-ceiling',mode,L,W,drop,area,perimeter,
+  ...layout,
+  ledLen:layout.ringLength,ledWallPerimeter:mode==='hidden'?perimeter:0,
+  first:.15,spacing:.5,fourrure:layout.stockBars,
+  hangers,suspensionRods,rodParts,
+  angle:ceil(perimeter/3),wallFix:ceil(perimeter/.5),boards,cutBoards:ceil(boards*1.1),
+  vis:ceil(area*25),jointTape:ceil(area*.9),
+  note:'توزيع Fourrure كل 50cm، أول خط 15cm. الإنارة المخفية فيها حلقة دعم على بعد 10cm من الحائط. طول بروفيل 3m محسوب بخطة قصّ قابلة للتنفيذ نظرياً مع إعادة استعمال القطع، والوصلات والتعليق والمقاسات والتثبيت بحاجة مراجعة تقنية في الورش. ألواح BA13 محسوبة بالمساحة كحد أدنى نظري وليس خطة تقطيع دقيقة.'};
 }
 export function calcWall(d){const L=positive(d.L,'طول الحائط'),H=positive(d.H,'الارتفاع');if(L<.5||L>40||H<1||H>4)throw Error('طول الحائط بين 0.5 و40m، والارتفاع بين 1 و4m.');
  const kind=['cloison','doublage','isolated'].includes(d.kind)?d.kind:'cloison';const layers=Number(d.layers)||1;
@@ -158,13 +160,14 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  add('Tige 1m',p.rods,'قطعة',.1,`${p.rodPieces} قطع من كل Tige`);add('Cheville à frapper',p.wallFix,'قطعة',.15,'تقدير كل 50cm');
  } else if(p.type==='ba13-ceiling'){
  add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1,'تقدير بالمساحة');
- add('Fourrure 3m',p.fourrure,'قطعة',.12,'الطول الإجمالي النظري؛ راجع توزيع القص');
+ add('Fourrure 3m',p.fourrure,'قطعة',.12,`${round(p.totalFourrure,2)}m مركّبة: ${round(p.profileRun,2)}m خطوط + ${round(p.perimeterExtra,2)}m حلقة LED. خطة قصّ 3m: ${p.cutCount} قطعة و${p.joinCount} وصلة، مع إمكانية استغلال القطع المقصوصة؛ راجع المخطط.`);
+ add('Raccord Fourrure (Éclisse) — تقديري',p.joinCount,'وصلة',.12,'كل خط أطول من 3m يحتاج وصلات؛ تأكد من نوع raccord ودعم الوصلات');
  add('Cornière galvanisée 3m',p.angle,'قطعة',.1);
  add('علاقات / نقاط التعليق',p.hangers,'نقطة',.1,'تقريبية حسب النظام');
  add('Tige 1m (للتعليق)',p.suspensionRods,'قطعة',.1,'وفق طول القص المبدئي = النزول');
  add('Cheville à frapper',p.wallFix,'قطعة',.15);
  add('Vis BA13',p.vis,'قطعة',.1,'تقدير حسب المساحة');add('Bande à joint',p.jointTape,'متر',.1,'تقدير أولي');
- if(p.mode==='hidden')add('طول فتحة LED المحيطية',round(p.ledLen,2),'متر',0,'إنارة وتجهيزاتها غير مشمولة');
+ if(p.mode==='hidden')add('طول مسار LED الداخلي على بعد 10cm',round(p.ledLen,2),'متر',0,'محيط الحيط = '+round(p.ledWallPerimeter,2)+'m؛ LED وتجهيزاته غير مشمولة');
  } else if(p.type==='wall'){
  add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1,'بحسب المساحة والطبقات');
  add(`Rails 3m`,p.rails,'قطعة',.12,'يشمل تقدير فتحة الباب والشباك');
