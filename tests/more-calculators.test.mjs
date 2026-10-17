@@ -23,7 +23,8 @@ test('Full Armstrong invalid custom tile counts fail',()=>{
 test('BA13 8x4 simple and hidden light include correct Furure directions and extra perimeter',()=>{
  const base={L:8,W:4,drop:30}; const a=calcBA13Ceiling({...base,mode:'plain'}),b=calcBA13Ceiling({...base,mode:'hidden'});
  assert.equal(a.span,4);assert.equal(a.distribution,8);assert.equal(a.area,32);assert.equal(a.boards,10);assert.equal(a.angle,8);
- assert.equal(b.ledLen,24);assert.equal(b.perimeterExtra,24);assert.equal(b.totalFourrure,a.totalFourrure+24);
+ assert.equal(b.ledWallPerimeter,24);assert.equal(b.ledLen,23.2);assert.equal(b.perimeterExtra,23.2);assert.ok(Math.abs(b.totalFourrure-a.totalFourrure-23.2)<1e-7);
+ assert.ok(b.hangers>a.hangers);assert.equal(a.totalFourrure,a.positions.length*4);assert.equal(b.fourrure,b.stockBars);
  assert.equal(b.first,.15);assert.equal(b.spacing,.5);assert.ok(b.fourrure>a.fourrure);
 });
 test('Wall 5m x 2.8m, door opening, one side doublage and two-face cloison',()=>{
