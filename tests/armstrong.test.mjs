@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../public/calculators/armstrong/index.html', import.meta.url), 'utf8');
-const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+const script = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(body=>body.includes('  function dimOptions('));
 assert.ok(script, 'Armstrong HTML script exists');
 const a = script.indexOf('  function dimOptions(');
 const b = script.indexOf('  function setApproval(');
