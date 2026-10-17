@@ -19,7 +19,7 @@ test('Borderless Armstrong mirrors the approved workflow with drop in measuremen
  assert.match(app,/id="in-drop" type="number"/);
  assert.match(app,/function dims\(\)\{.*if\(app==='armstrong-full'\)out\.drop=field\('drop'\)/);
  assert.match(app,/if\(app==='armstrong-full'\)\$\('in-drop'\)\.addEventListener\('input',refresh\)/);
- assert.match(css,/\.ak-full-flow \.inputs\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\}/);
+ assert.ok(css.includes('.ak-full-flow .inputs{grid-template-columns:repeat(3,minmax(0,1fr))}'));
  assert.match(css,/\.ak-full-flow \.plan svg\[data-diagram="armstrong-full"\]\{display:block;width:100%;max-width:100%;min-width:0;height:auto\}/);
  assert.doesNotMatch(app,/Vue en plan — البروفيلات والمساحات مرسومين بالنسب الصحيحة/);
  assert.doesNotMatch(old,/Vue en plan — البروفيلات والمساحات مرسومين بالنسب الصحيحة/);
