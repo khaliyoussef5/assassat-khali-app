@@ -1,56 +1,83 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-const html=readFileSync(new URL('../public/calculators/armstrong/index.html',import.meta.url),'utf8');
 
-// Confirm real ancestor containment, not just textual ordering of headings.
-function tagsAndAncestors(markup){
- const main=markup.slice(markup.indexOf('<main'),markup.indexOf('</main>')+7),stack=[],ancestors={},tokens=/<\/?[a-z][a-z0-9-]*\b[^>]*>/gi;
- for(const token of main.matchAll(tokens)){
-  const tag=token[0],isClose=tag.startsWith('</'),name=/^<\/?([a-z]+)/.exec(tag)[1];
-  if(isClose){
+const html=readFileSync(new URL('../public/calculators/armstrong/index.html',import.meta.url),'utf8');
+const main=html.slice(html.indexOf('<main'),html.indexOf('</main>')+7);
+
+// Inspect actual div/section ancestry, not just nearby text.
+function elementsWithAncestors(markup){
+ const stack=[],ancestry={},open=/<\/?[a-z][a-z0-9-]*\b[^>]*>/gi;
+ for(const match of markup.matchAll(open)){
+  const tag=match[0],name=/^<\/?([a-z]+)/i.exec(tag)?.[1].toLowerCase(),closing=tag.startsWith('</');
+  if(closing){
    if(name==='div'||name==='section'){
-    const current=stack.pop();
-    assert.equal(current?.name,name,'HTML should be properly nested at '+token.index);
+    const previous=stack.pop();
+    assert.equal(previous?.name,name,'Malformed markup around '+match.index);
    }
    continue;
   }
-  const cls=/\bclass="([^"]+)"/.exec(tag)?.[1]||'';
+  const className=/\bclass="([^"]+)"/.exec(tag)?.[1]||'';
   const id=/\bid="([^"]+)"/.exec(tag)?.[1];
-  const cur={name,id,cls};
-  if(id)ancestors[id]=[...stack.map(x=>x.cls||x.id),cls];
-  if(name==='div'||name==='section')stack.push(cur);
+  if(id)ancestry[id]=[...stack.map(item=>item.cls),className];
+  if(name==='div'||name==='section')stack.push({name,cls:className});
  }
- assert.equal(stack.length,0,'Unclosed div/section elements');
- return ancestors;
+ assert.equal(stack.length,0,'All div and section elements must close');
+ return ancestry;
 }
-test('Interactive Armstrong plan is INSIDE the BA13 border/distribution proposal card',()=>{
- const ancestors=tagsAndAncestors(html);
- for(const id of ['ak-svg-container','ak-plan-state','ak-stat-area','ak-stat-grid','ak-stat-tiles','ak-show-hangers','ak-approve','ak-download-svg','ak-print']){
-  const path=ancestors[id];
-  assert.ok(path,id+' must be present');
-  assert.ok(path.some(x=>x.includes('ak-suggestions-panel')),id+' must be inside suggestions card');
-  assert.ok(path.some(x=>x.includes('ak-embedded-plan')),id+' must belong to embedded schematic');
-  assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1,id+' must not be duplicated');
- }
- assert.ok(ancestors['ak-drop'].some(x=>x.includes('ak-suggestions-panel')));
- assert.ok(!ancestors['ak-results'].some(x=>x.includes('ak-suggestions-panel')));
+
+test('Room measurements including drop come first, live diagram second, layout proposals third',()=>{
+ const a=elementsWithAncestors(main);
+ const L=main.indexOf('id="ak-length"'),W=main.indexOf('id="ak-width"'),drop=main.indexOf('id="ak-drop"');
+ const svg=main.indexOf('id="ak-svg-container"'),choices=main.indexOf('id="ak-options"'),approve=main.indexOf('id="ak-approve"');
+ const materials=main.indexOf('id="ak-results"');
+ assert.ok(L>0&&L<W&&W<drop&&drop<svg&&svg<choices&&choices<approve&&approve<materials);
+ assert.ok(a['ak-svg-container'].some(x=>x.includes('ak-plan-panel')));
+ assert.ok(!a['ak-svg-container'].some(x=>x.includes('ak-suggestions-panel')));
+ assert.ok(a['ak-approve'].some(x=>x.includes('ak-suggestions-panel')));
+ assert.ok(!a['ak-approve'].some(x=>x.includes('ak-plan-panel')));
+ assert.ok(!a['ak-drop'].some(x=>x.includes('ak-suggestions-panel')));
+ assert.equal((html.match(/id="ak-drop"/g)||[]).length,1);
+ assert.equal((html.match(/id="ak-approve"/g)||[]).length,1);
 });
-test('Responsive cards show dimensions then combined suggestions/plan then materials and rules',()=>{
- assert.match(html,/grid-template-areas:"dimensions dimensions" "suggestions suggestions" "results rules"/);
- assert.match(html,/grid-template-areas:"dimensions" "suggestions" "results" "rules"/);
- assert.doesNotMatch(html,/grid-area:plan/);
- assert.match(html,/\.ak-embedded-plan\{scroll-margin-top/);
- assert.match(html,/@media print/);
- assert.match(html,/\.ak-suggestions-panel/);
-});
-test('No Armstrong calculations or plan interaction controls were removed',()=>{
- const source=html.slice(html.indexOf('  function getDimensions()'));
- for(const str of ["$('ak-svg-container').innerHTML=svgPlan","$('ak-approve').addEventListener","$('ak-show-hangers').addEventListener","$('ak-download-svg').addEventListener","$('ak-download-pdf').addEventListener","$('ak-stat-tiles').textContent"]){
-  assert.ok(source.includes(str),str+' remains functional');
+
+test('Live diagram still has its correct statistics and hanger visibility control',()=>{
+ const a=elementsWithAncestors(main);
+ for(const id of ['ak-svg-container','ak-plan-state','ak-stat-area','ak-stat-grid','ak-stat-tiles','ak-show-hangers']){
+  assert.ok(a[id]?.some(x=>x.includes('ak-plan-panel')),id+' must be in plan card');
+  assert.equal((main.match(new RegExp('id="'+id+'"','g'))||[]).length,1);
  }
+ assert.match(html,/ak-plan-header/);
+ assert.match(html,/ak-legend/);
+});
+
+test('Approval is the final action in proposals; after approval only PDF and Copy are visible',()=>{
+ const a=elementsWithAncestors(main);
+ assert.ok(a['ak-download-pdf']?.some(x=>x.includes('ak-result')));
+ assert.ok(a['ak-copy']?.some(x=>x.includes('ak-result')));
+ assert.ok(a['ak-approve']?.some(x=>x.includes('ak-suggestions-panel')));
+ for(const obsolete of ['ak-download-svg','ak-download-csv','ak-print']){
+  assert.doesNotMatch(main,new RegExp('id="'+obsolete+'"'));
+  assert.doesNotMatch(html,new RegExp('\\$\\('+"'"+obsolete+"'"+'\\)\\.addEventListener'));
+ }
+ const actions=main.match(/<div class="ak-actions ak-final-actions">([\s\S]*?)<\/div>/)?.[1];
+ assert.ok(actions,'Final material actions should exist');
+ assert.equal((actions.match(/<button\b/g)||[]).length,2,'Exactly PDF and Copy buttons');
+ assert.match(actions,/id="ak-download-pdf"/);
+ assert.match(actions,/id="ak-copy"/);
+ assert.doesNotMatch(main,/تحميل CSV|تحميل المخطط SVG|طباعة \/ PDF/);
+});
+
+test('Desktop/mobile layout and technical formulas are unchanged',()=>{
+ assert.match(html,/grid-template-areas:"dimensions dimensions" "plan plan" "suggestions suggestions" "results rules"/);
+ assert.match(html,/grid-template-areas:"dimensions" "plan" "suggestions" "results" "rules"/);
  assert.match(html,/function buildPlan\(d,opt\)/);
- assert.match(html,/p.pWaste/);
+ assert.match(html,/p\.pWaste/);
  assert.match(html,/id="ak-drop"/);
  assert.doesNotMatch(html,/id="ak-cut"/);
+ const script=html.slice(html.indexOf('  function getDimensions()'));
+ for(const listener of ["$('ak-svg-container').innerHTML=svgPlan","$('ak-approve').addEventListener","$('ak-show-hangers').addEventListener","$('ak-download-pdf').addEventListener","$('ak-copy').addEventListener","$('ak-stat-tiles').textContent"]){
+  assert.ok(script.includes(listener),listener+' should remain operational');
+ }
+ assert.match(html,/async function pdfReport\(p\)/);
 });
