@@ -40,13 +40,18 @@ test('Wall prevents unsafe stud length and invalid openings',()=>{
  assert.throws(()=>calcWall(d),/طول Montant/);
  assert.throws(()=>calcWall({...d,studLength:4,doorW:6,doorH:2}),/الباب/);
 });
-test('Three independent routes are present and do not replace current Armstrong calculator',()=>{
- for(const p of ['armstrong-full','ba13-ceiling','walls']){
-  assert.ok(existsSync(root+`calculators/${p}/index.html`));
-  const html=readFileSync(root+`calculators/${p}/index.html`,'utf8');assert.match(html,new RegExp(`data-calculator="${p}"`));
+test('Only approved Armstrong calculators are live; BA13 and walls remain development-only',()=>{
+ for(const p of ['armstrong','armstrong-full']){
+  const html=readFileSync(root+'calculators/'+p+'/index.html','utf8');
+  assert.ok(html.includes(p==='armstrong-full'?'data-calculator="armstrong-full"':'id="ak-calculator"'));
+ }
+ for(const p of ['ba13-ceiling','walls']){
+  const html=readFileSync(root+'calculators/'+p+'/index.html','utf8');
+  assert.match(html,/قيد التطوير/);
+  assert.doesNotMatch(html,/data-calculator=/);
+  assert.ok(existsSync(new URL('../development/'+p+'.index.html',import.meta.url)));
  }
 });
-
 
 test('8x4: no extra Porteur at a 1.10m wall remainder and every segment counts as a full tee',()=>{
  const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:5});
