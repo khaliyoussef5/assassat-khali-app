@@ -96,3 +96,18 @@ test('Material results only show the table and the two approved export actions, 
  assert.match(html,/async function pdfReport\(p\)/);
  assert.match(html,/\$\('ak-bom'\)\.innerHTML=/);
 });
+
+test('Mobile Armstrong interactive SVG remains full-size and scrollable horizontally',()=>{
+ const plan=main.match(/<div class="ak-graphic" id="ak-svg-container"[^>]*>/)?.[0];
+ assert.ok(plan,'Interactive SVG holder exists');
+ assert.match(plan,/tabindex="0"/);
+ assert.match(plan,/role="region"/);
+ assert.doesNotMatch(main,/Vue en plan|البروفيلات والمساحات مرسومين بالنسب الصحيحة/);
+ assert.match(html,/@media\(max-width:700px\)/);
+ assert.match(html,/#ak-calculator \.ak-graphic\{overflow-x:auto;overflow-y:hidden/);
+ assert.match(html,/#ak-calculator \.ak-graphic svg\{width:800px;min-width:800px;max-width:none;height:auto\}/);
+ assert.match(main,/حرّك المخطط يمين ويسار باش تشوف التفاصيل بوضوح/);
+ assert.match(html,/@media print\{#ak-calculator \.ak-graphic\{overflow:visible!important\}/);
+ assert.match(html,/function svgPlan\(p,showHangers\)/);
+ assert.match(html,/viewBox="0 0 1100 610"/);
+});
