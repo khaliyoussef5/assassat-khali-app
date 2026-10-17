@@ -1,7 +1,7 @@
 /* ASSASSAT KHALI — dedicated BA13 technical SVG (not a web screenshot). */
 const T=(x,n=2)=>Number(x).toFixed(n).replace(/\.?0+$/,'');
 const cm=x=>T(x*100)+' cm';
-const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;'}[c]));
+const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const col={ink:'#24424A',dim:'#BE702B',main:'#2563A6',ring:'#D97706',hanger:'#0F766E',wall:'#1C4149',light:'#F7E9CE'};
 const tx=(x,y,s,fill=col.ink,size=14,attrs='')=>'<text x="'+T(x)+'" y="'+T(y)+'" fill="'+fill+'" font-size="'+size+'" font-family="Tahoma,Arial,sans-serif" '+attrs+'>'+esc(s)+'</text>';
 const ln=(x1,y1,x2,y2,color,width=1,attrs='')=>'<line x1="'+T(x1)+'" y1="'+T(y1)+'" x2="'+T(x2)+'" y2="'+T(y2)+'" stroke="'+color+'" stroke-width="'+width+'" '+attrs+'/>';
