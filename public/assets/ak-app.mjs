@@ -78,7 +78,7 @@ function createModel(){let d=dims();if(app==='armstrong-full'){const o=chosen===
  if(app==='ba13-ceiling')return calcBA13Ceiling(d);
  return calcWall({...d,rockwool:d.rockwool==='1'});
 }
-function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['Porteur',p.porteur],['Cross 1.20',p.cross120],['Cross 0.60 (راكبة)',p.cross060],['Cross 0.60 (بروفيلات)',p.cross060Stock],['بلاكات كاملة',p.wholeTiles],['بلاكات مقطوعة',p.edgePieces]]:
+function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['Porteur 3.60m',p.porteur],['شوت Porteur النهائي',fmt(p.porteurWaste)+'m'],['وصلات Porteur',p.porteurJoints],['Cross 1.20',p.cross120],['Cross 0.60 (راكبة)',p.cross060],['Cross 0.60 (بروفيلات)',p.cross060Stock],['بلاكات كاملة',p.wholeTiles],['بلاكات مقطوعة',p.edgePieces]]:
  app==='ba13-ceiling'?[['مساحة السقف',fmt(p.area)+'m²'],['خطوط Fourrure',p.positions.length],['Fourrure 3m',p.fourrure],['وصلات (تقديرية)',p.joinCount],['علاقات',p.hangers],['ألواح BA13 النظري',p.boards]]:
  [['صافي المساحة',fmt(p.netArea)+'m²'],['ألواح BA13 النظري',p.boards],['Montants',p.montants],['Rails 3m',p.rails],['تدعيم جنبات',p.extraStuds],['طبقات / وجه',p.layers]];
  $('summary').innerHTML=parts.map(([a,b])=>metric(a,b)).join('');
