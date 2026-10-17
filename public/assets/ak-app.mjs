@@ -23,7 +23,7 @@ const headlines={
 };
 if(!headlines[app])throw Error('Unknown calculator');
 function coreMarkup(){return `
-<header class="top"><div class="topin"><a class="identity" href="../../" aria-label="رجوع للواجهة الرئيسية"><span class="mark">AK</span><span>ASSASSAT KHALI <small style="display:block;font:500 9px Manrope,sans-serif;color:#69807d;letter-spacing:1px">OUTIL TECHNIQUE</small></span></a><a href="../../" class="back">← رجوع للحاسبات</a></div></header>
+<header class="top"><div class="topin"><a class="identity" href="../../" aria-label="رجوع للواجهة الرئيسية"><span class="mark"><img src="../../assets/logo-assassat-khali.webp" width="29" height="32" alt=""></span><span>ASSASSAT KHALI <small style="display:block;font:500 9px Manrope,sans-serif;color:#69807d;letter-spacing:1px">OUTIL TECHNIQUE</small></span></a><a href="../../" class="back">← رجوع للحاسبات</a></div></header>
 <main class="wrap">
 <section class="hero"><div><span class="eyebrow">ASSASSAT KHALI / CALCULATEUR TECHNIQUE</span><h1>${names[app]}</h1><p>${headlines[app].desc}</p></div><div class="hero-mark" aria-hidden="true">${headlines[app].icon}</div></section>
 <div class="stepguide" aria-label="خطوات الحاسبة"><span><b>01</b> القياسات</span><span><b>02</b> الاختيارات</span><span><b>03</b> المخطط</span><span><b>04</b> السلعة وPDF</span></div>

@@ -121,3 +121,7 @@ h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.25;margin:7px 0}
  .plan:has(svg[data-diagram="wall"]){overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
  .plan svg[data-diagram="wall"]{min-width:760px;max-width:none}
 }
+
+/* Official company symbol, cropped from the provided logo. */
+.identity .mark{background:#fff;border:1px solid #dce8e5;color:#173b4e;box-shadow:0 2px 8px #112c3612}
+.identity .mark img{display:block;width:30px;height:33px;object-fit:contain}
