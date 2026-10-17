@@ -1,111 +1,86 @@
 import {suspensionPoints} from './ak-suspensions.mjs';
-/* ASSASSAT KHALI — Armstrong full-room technical plan.
-   Pure SVG rendering only. All geometry, quantities and purchase rules
-   come from calcArmstrongFull() and must not be recalculated here. */
+
+/* Full-room Armstrong uses the same diagram style as Armstrong + BA13:
+ * 1100×610 responsive view, light green 60×60 field, blue Porteur, orange
+ * Cross 1.20, green Cross 0.60, dark suspension points and a bottom tile
+ * count badge. The underlying full-room geometry is NOT changed here.
+ * Pale beige strips are cut ARMSTRONG tiles, never BA13 borders.
+ */
 const F=n=>Number(n).toFixed(2).replace(/\.?0+$/,'');
-const N=n=>Number(Number(n).toFixed(2));
-const cm=n=>F(N(n*100))+' cm';
-const num=n=>Math.round(n*100)/100;
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const C={ink:'#18373E',sub:'#597178',line:'#D5E2DD',teal:'#0F6B60',amber:'#DB9244',porteur:'#2563A6',cross120:'#D97706',cross060:'#7C3AED',pale:'#FFF1DB'};
-const line=(x1,y1,x2,y2,stroke,width=1,extra='')=>'<line x1="'+F(x1)+'" y1="'+F(y1)+'" x2="'+F(x2)+'" y2="'+F(y2)+'" stroke="'+stroke+'" stroke-width="'+width+'" '+extra+'/>';
-const text=(x,y,t,size=13,fill=C.ink,extra='')=>'<text x="'+F(x)+'" y="'+F(y)+'" font-family="Tahoma,Arial,sans-serif" font-size="'+size+'" fill="'+fill+'" '+extra+'>'+esc(t)+'</text>';
-const roundRect=(x,y,w,h,r,fill,stroke='none',width=1)=>'<rect x="'+F(x)+'" y="'+F(y)+'" width="'+F(w)+'" height="'+F(h)+'" rx="'+r+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+width+'"/>';
-const dimTick=(a,b,vertical=false)=>vertical?line(a-5,b,a+5,b,C.amber,1.6):line(a,b-5,a,b+5,C.amber,1.6);
-const clamp=(v,a,b)=>Math.min(Math.max(v,a),b);
+const cm=n=>F(Math.round(n*10000)/100)+' cm';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const C={ink:'#415660',bg:'#f5f9f8',field:'#E0F1EB',offcut:'#E6C69E',border:'#AE885B',porteur:'#1F5D9F',cross120:'#D59428',cross060:'#219A7C',hanger:'#233A44'};
+
 export function armstrongFullPlanSvg(p,{showHangers=true}={}){
  if(p.type!=='armstrong-full')throw Error('Armstrong full diagram requires matching plan');
- const W=1000,H=620,parts=[];
- const maxW=690,maxH=275,aspect=p.L/p.W;
- let gw=maxW,gh=maxW/aspect;
- if(gh>maxH){gh=maxH;gw=maxH*aspect;}
- const x=475-gw/2,y=347-gh/2,right=x+gw,bottom=y+gh;
- const X=n=>x+gw*n/p.L,Y=n=>y+gh*n/p.W;
- const eL=gw*p.edgeL/p.L,eW=gh*p.edgeW/p.W;
- const rightInset=right+23;
- const gridCount=p.nL+' × '+p.nW;
- const name='Armstrong بلا بوردور', edgeText=cm(p.edgeL)+' | '+cm(p.edgeW);
- parts.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" data-diagram="armstrong-full" role="img" aria-label="مخطط Armstrong؛ باقي الطول من الجهتين '+cm(p.edgeL)+'؛ وباقي العرض من الجهتين '+cm(p.edgeW)+'">');
- parts.push('<title>ASSASSAT KHALI — Armstrong Plan</title><desc>المخطط بنفس نسب الطول والعرض، مع القياسات المتبقية على الجوانب، وPorteur أزرق، Cross 1.20 برتقالي، Cross 0.60 بنفسجي.</desc>');
- parts.push('<defs><pattern id="ak-grid-paper" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" stroke="#e8f0ec" stroke-width="1" fill="none"/></pattern><clipPath id="ak-room-clip"><rect x="'+F(x)+'" y="'+F(y)+'" width="'+F(gw)+'" height="'+F(gh)+'"/></clipPath></defs>');
- // Premium technical-document header. Kept vector-only for SVG / exported PDF.
- parts.push(roundRect(0,0,1000,87,0,'#133238'));
- parts.push(roundRect(31,21,46,45,11,'#205154','#346B6A'));
- parts.push(text(54,50,'AK',17,'#EAC18A','font-weight="700" text-anchor="middle" direction="ltr"'));
- parts.push(text(94,37,'ASSASSAT KHALI',17,'#F4F8F6','font-weight="700"'));
- parts.push(text(94,60,'OUTIL TECHNIQUE / PLAN',10,'#A9CBC6','font-weight="700" letter-spacing="1.4"'));
- parts.push(text(965,38,'مخطط توزيع البروفيلات',20,'#FFFFFF','font-weight="700" text-anchor="end" direction="ltr"'));
- parts.push(text(965,62,'ARMSTRONG 60 × 60 — SANS BORDURE',11,'#B2D2C9','font-weight="700" text-anchor="end" direction="ltr"'));
- // Project metrics line; separate from actual four edge labels.
- parts.push(roundRect(35,98,930,43,12,'#F2F7F4','#DDE8E2'));
- parts.push(text(61,124,'LONGUEUR',11,C.sub,'font-weight="700"'));
- parts.push(text(141,124,F(p.L)+' m',15,C.ink,'font-weight="700"'));
- parts.push(text(298,124,'LARGEUR',11,C.sub,'font-weight="700"'));
- parts.push(text(371,124,F(p.W)+' m',15,C.ink,'font-weight="700"'));
- parts.push(text(518,124,'TRAME 60×60',11,C.sub,'font-weight="700"'));
- parts.push(text(620,124,gridCount,15,C.ink,'font-weight="700"'));
- parts.push(text(802,124,'BA13: NON',11,C.teal,'font-weight="700"'));
- // Blueprint panel.
- parts.push(roundRect(35,151,930,370,17,'#FCFDFB','#DBE7E1',1.5));
- parts.push('<rect x="36" y="152" width="928" height="368" rx="16" fill="url(#ak-grid-paper)" opacity=".75"/>');
- parts.push(roundRect(x,y,gw,gh,0,'#FFFFFF','#51736E',1.5));
- // Warm shade: the four trimmed tile strips (NOT BA13).
- parts.push('<g clip-path="url(#ak-room-clip)" fill="#EBC48C" opacity=".24">');
- if(eL>1e-5){parts.push(roundRect(x,y,eL,gh,0,C.pale));parts.push(roundRect(right-eL,y,eL,gh,0,C.pale));}
- if(eW>1e-5){parts.push(roundRect(x,y,gw,eW,0,'#F6DFAE'));parts.push(roundRect(x,bottom-eW,gw,eW,0,'#F6DFAE'));}
- parts.push('</g>');
- for(const v of p.xLines.slice(1,-1))parts.push(line(X(v),y,X(v),bottom,'#B9C9C4',.9));
- for(const v of p.yLines.slice(1,-1))parts.push(line(x,Y(v),right,Y(v),'#B9C9C4',.9));
- for(const piece of p.crossSegments){
-  const clr=piece.kind==='cross120'?C.cross120:C.cross060;
-  parts.push('<line data-profile="'+piece.kind+'" data-cut="'+(piece.cut?'yes':'no')+'" x1="'+F(X(piece.x1))+'" y1="'+F(Y(piece.y1))+'" x2="'+F(X(piece.x2))+'" y2="'+F(Y(piece.y2))+'" stroke="'+clr+'" stroke-width="'+(piece.kind==='cross120'?3.7:2.9)+'" stroke-linecap="butt"/>');
+ const bound={x:98,y:95,w:900,h:405};
+ const scale=Math.min(bound.w/p.L,bound.h/p.W);
+ const wi=p.L*scale,he=p.W*scale;
+ const x=bound.x+(bound.w-wi)/2,y=bound.y+(bound.h-he)/2;
+ const right=x+wi,bottom=y+he;
+ const fx=p.edgeL*scale,fy=p.edgeW*scale;
+ const X=v=>x+v*scale,Y=v=>y+v*scale;
+ const pieces=[];
+ const push=t=>pieces.push(t);
+ const num=v=>F(v);
+ const line=(x1,y1,x2,y2,stroke,width,extra='')=>'<line x1="'+num(x1)+'" y1="'+num(y1)+'" x2="'+num(x2)+'" y2="'+num(y2)+'" stroke="'+stroke+'" stroke-width="'+num(width)+'" '+extra+'/>';
+ const label=(x,y,value,attributes='')=>'<text x="'+num(x)+'" y="'+num(y)+'" '+attributes+'>'+esc(value)+'</text>';
+
+ push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 610" data-diagram="armstrong-full" role="img" aria-label="مخطط سقف Armstrong بلا بوردور، الطول '+esc(F(p.L))+' متر، العرض '+esc(F(p.W))+' متر">');
+ push('<title>ASSASSAT KHALI — Armstrong بلا بوردور</title>');
+ push('<desc>مخطط متناسب: Porteur باللون الأزرق، Cross 1.20 برتقالي، Cross 0.60 أخضر، وأطراف البلاكات المقطوعة باللون البيج وليست BA13. باقي الطول: '+esc(cm(p.edgeL))+' من كل جهة؛ باقي العرض: '+esc(cm(p.edgeW))+' من كل جهة. Porteur 3.60m: '+p.porteur+' بروفيل، '+p.porteurJoints+' وصلات، الشوت النهائي '+F(p.porteurWaste)+'m. Cross 0.60: '+p.cross060+' مقطع، '+p.cross060Stock+' بروفيل للشراء، '+p.cross060HalfCount+' أنصاف أقل من 30cm.</desc>');
+ push('<rect width="1100" height="610" fill="'+C.bg+'"/>');
+ push('<g font-family="Arial,Tahoma,sans-serif" text-anchor="middle" fill="#455B64">');
+ push(label(550,39,F(p.L)+' m — الطول','font-size="23" font-weight="700"'));
+ push(label(38,295,F(p.W)+' m — العرض','font-size="21" font-weight="700" transform="rotate(-90 38 295)"'));
+ push('</g>');
+
+ // One whole-room field, with cut-tile edges shaded like the BA13 diagram
+ // but without suggesting the presence of any BA13 material.
+ push('<rect x="'+num(x)+'" y="'+num(y)+'" width="'+num(wi)+'" height="'+num(he)+'" fill="'+C.field+'" stroke="'+C.border+'" stroke-width="2"/>');
+ push('<g fill="'+C.offcut+'" opacity=".80">');
+ if(fx>1e-6){
+  push('<rect x="'+num(x)+'" y="'+num(y)+'" width="'+num(fx)+'" height="'+num(he)+'"/>');
+  push('<rect x="'+num(right-fx)+'" y="'+num(y)+'" width="'+num(fx)+'" height="'+num(he)+'"/>');
  }
- for(const support of p.carrierPositions)parts.push('<line data-profile="porteur" x1="'+F(x)+'" y1="'+F(Y(support))+'" x2="'+F(right)+'" y2="'+F(Y(support))+'" stroke="'+C.porteur+'" stroke-width="4.5"/>');
- // Hangers are small cyan/white rings over Porteur, distinguishable from Cross junctions.
+ if(fy>1e-6){
+  push('<rect x="'+num(x)+'" y="'+num(y)+'" width="'+num(wi)+'" height="'+num(fy)+'"/>');
+  push('<rect x="'+num(x)+'" y="'+num(bottom-fy)+'" width="'+num(wi)+'" height="'+num(fy)+'"/>');
+ }
+ push('</g>');
+ // Thin module boundaries stay below the load-bearing colored profiles.
+ for(const v of p.xLines.slice(1,-1))push(line(X(v),y,X(v),bottom,'#B9C9C4',1));
+ for(const v of p.yLines.slice(1,-1))push(line(x,Y(v),right,Y(v),'#B9C9C4',1));
+
+ for(const seg of p.crossSegments){
+  const color=seg.kind==='cross120'?C.cross120:C.cross060;
+  const thick=seg.kind==='cross120'?Math.max(2.2,scale*.025):Math.max(2,scale*.021);
+  push(line(X(seg.x1),Y(seg.y1),X(seg.x2),Y(seg.y2),color,thick,'data-profile="'+seg.kind+'" data-cut="'+(seg.cut?'yes':'no')+'"'));
+ }
+ for(const support of p.carrierPositions){
+  push(line(x,Y(support),right,Y(support),C.porteur,Math.max(3.5,scale*.043),'data-profile="porteur"'));
+ }
  if(showHangers){
   for(const pt of suspensionPoints(p)){
-   parts.push('<circle data-hanger="yes" cx="'+F(X(pt.x))+'" cy="'+F(Y(pt.y))+'" r="5.5" fill="#0F766E" stroke="#FFFFFF" stroke-width="2.2"/>');
-   parts.push('<circle cx="'+F(X(pt.x))+'" cy="'+F(Y(pt.y))+'" r="1.6" fill="#FFFFFF"/>');
+   push('<circle data-hanger="yes" cx="'+num(X(pt.x))+'" cy="'+num(Y(pt.y))+'" r="'+num(Math.max(3.1,Math.min(5.5,scale*.055)))+'" fill="'+C.hanger+'" stroke="#ffffff" stroke-width="1.2"/>');
   }
  }
- parts.push(roundRect(x,y,gw,gh,0,'none','#274E53',2.8));
- // Length-edge dimensions: both left/right remain symmetric and explicitly labelled.
- const dimY=y-17;
- parts.push(line(x,dimY,right,dimY,'#B4C5BF',.9));
- for(const k of [x,x+eL,right-eL,right])parts.push(dimTick(k,dimY));
- const topAnchor=gw>225?Math.max(36,eL/2):16;
- const leftTag=gw>225?x+topAnchor:x-17;
- const rightTag=gw>225?right-topAnchor:right+17;
- const labelY=dimY-10;
- parts.push(text(leftTag,labelY,cm(p.edgeL),13,C.amber,'font-weight="700" text-anchor="middle" direction="ltr" data-side="length-start"'));
- parts.push(text(rightTag,labelY,cm(p.edgeL),13,C.amber,'font-weight="700" text-anchor="middle" direction="ltr" data-side="length-end"'));
- if(gw>225)parts.push(text(x+gw/2,labelY,F(p.nL*.6)+' m',12,C.sub,'font-weight="700" text-anchor="middle" direction="ltr"'));
- // Width-edge measurements have their own lines and tags on the right side.
- parts.push(line(rightInset,y,rightInset,bottom,'#B4C5BF',.9));
- for(const k of [y,y+eW,bottom-eW,bottom])parts.push(dimTick(rightInset,k,true));
- if(gh>90){
-  const upper=clamp(y+eW/2,y+15,y+gh/2-12);
-  const lower=clamp(bottom-eW/2,y+gh/2+12,bottom-15);
-  parts.push(text(rightInset+14,upper+5,cm(p.edgeW),13,C.amber,'font-weight="700" direction="ltr" data-side="width-start"'));
-  parts.push(text(rightInset+14,lower+5,cm(p.edgeW),13,C.amber,'font-weight="700" direction="ltr" data-side="width-end"'));
-  if(gh>190)parts.push(text(rightInset+14,y+gh/2+4,F(p.nW*.6)+' m',12,C.sub,'font-weight="700" direction="ltr"'));
- }
- // Small dimension tags stay visible even on extreme aspect ratios via footer labels.
- parts.push(text(58,174,'PLAN / VUE EN PLAFOND',11,C.sub,'font-weight="700" letter-spacing=".6"'));
- parts.push(text(58,499,'باقي الطول: '+cm(p.edgeL)+' × 2',13,C.ink,'font-weight="700" direction="ltr"'));
- parts.push(text(940,499,'باقي العرض: '+cm(p.edgeW)+' × 2',13,C.ink,'font-weight="700" text-anchor="end" direction="ltr"'));
- // Meaningful color legend plus computed installed-vs-purchased quantities.
- parts.push(roundRect(35,530,930,79,15,'#F2F7F4','#DCE7E2'));
- const swatch=(x,clr,label,qty)=>{
-   parts.push(line(x,556,x+31,556,clr,4,'stroke-linecap="round"'));
-   parts.push(text(x+40,561,label+'  '+qty,13,C.ink,'font-weight="700" direction="ltr"'));
- };
- swatch(59,C.porteur,'Porteur',p.porteur);
- swatch(280,C.cross120,'Cross 1.20',p.cross120);
- swatch(525,C.cross060,'Cross 0.60',p.cross060);
- if(showHangers){parts.push('<circle cx="790" cy="556" r="6" fill="#0F766E" stroke="white" stroke-width="2"/>'+text(809,562,'علاقات × '+p.hangers,12,C.ink,'font-weight="700" direction="ltr"'));}
- parts.push(line(56,575,946,575,'#D7E4DE',1));
- parts.push(text(59,589,'Porteur 3.60m: '+p.porteur+' بروفيل • '+p.porteurJoints+' وصلات • الشوت النهائي '+F(p.porteurWaste)+'m (الباقي كيتستعمل في الخط الموالي)',11,C.sub,'font-weight="700" direction="ltr"'));
- parts.push(text(59,605,'Cross 0.60: '+p.cross060+' مقطع  |  '+p.cross060Stock+' بروفيل للشراء  |  '+p.cross060HalfCount+' أنصاف أقل من 30cm',11,C.sub,'font-weight="700" direction="ltr"'));
- parts.push('</svg>');return parts.join('');
+ push('<rect x="'+num(x)+'" y="'+num(y)+'" width="'+num(wi)+'" height="'+num(he)+'" fill="none" stroke="'+C.border+'" stroke-width="2"/>');
+
+ // Label all four sides; cuts of 0cm remain explicitly represented.
+ const cutX1=x+Math.max(18,fx/2),cutX2=right-Math.max(18,fx/2);
+ const cutY1=y+Math.max(16,fy/2),cutY2=bottom-Math.max(16,fy/2);
+ push('<g fill="'+C.ink+'" font-size="16" font-family="Arial,Tahoma,sans-serif" text-anchor="middle" font-weight="700">');
+ push(label(cutX1,y-12,cm(p.edgeL),'direction="ltr" data-side="length-start"'));
+ push(label(cutX2,y-12,cm(p.edgeL),'direction="ltr" data-side="length-end"'));
+ const tagX=right+24;
+ push(label(tagX,cutY1,cm(p.edgeW),'text-anchor="start" direction="ltr" data-side="width-start"'));
+ push(label(tagX,cutY2,cm(p.edgeW),'text-anchor="start" direction="ltr" data-side="width-end"'));
+ push('</g>');
+
+ // Identical center-bottom badge to the approved BA13 diagram.
+ push('<rect x="344" y="535" width="410" height="43" rx="10" fill="#ffffff" stroke="#dce7e4"/>');
+ push(label(549,562,p.nL+' × '+p.nW+' بلاكة 60×60 — '+p.tiles+' بلاكة','fill="#305a58" font-size="19" font-weight="700" text-anchor="middle" font-family="Arial,Tahoma,sans-serif"'));
+ push('</svg>');
+ return pieces.join('');
 }
