@@ -152,12 +152,12 @@ test('Stock rule never changes the diagram coordinates or color for short tees',
  const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:6});
  const svg=armstrongFullPlanSvg(p);
  assert.match(svg,/data-profile="cross060"/);
- assert.match(svg,/stroke="#7C3AED"/);
+ assert.match(svg,/stroke="#219A7C"/);
  assert.match(svg,new RegExp(p.cross060HalfCount+' أنصاف أقل من 30cm'));
  assert.match(svg,new RegExp(p.cross060Stock+' بروفيل'));
 });
 
-test('Premium Armstrong plan labels BOTH length sides and BOTH width sides in centimeters',()=>{
+test('Armstrong full diagram matches BA13 styling and labels all four edges in centimeters',()=>{
  const p=calcArmstrongFull({L:8,W:4,drop:30,cut:30,nL:12,nW:6});
  const svg=armstrongFullPlanSvg(p);
  for(const side of ['length-start','length-end','width-start','width-end']){
@@ -167,7 +167,7 @@ test('Premium Armstrong plan labels BOTH length sides and BOTH width sides in ce
  assert.match(svg,/20 cm/g);
  assert.match(svg,/باقي الطول/);
  assert.match(svg,/باقي العرض/);
- assert.match(svg,/viewBox="0 0 1000 620"/);
+ assert.match(svg,/viewBox="0 0 1100 610"/);
  assert.equal((svg.match(/data-profile="cross120"/g)||[]).length,p.cross120);
  assert.equal((svg.match(/data-profile="cross060"/g)||[]).length,p.cross060);
  assert.equal((svg.match(/data-profile="porteur"/g)||[]).length,p.carrierCount);
