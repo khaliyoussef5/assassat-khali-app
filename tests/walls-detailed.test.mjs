@@ -80,5 +80,5 @@ test('Wall UI exposes the placement and Rockwool controls in Classic calculator'
  assert.match(app,/\['windowBottom','علو أسفل الشباك/);
  assert.match(app,/picker\('woolDensity'/);
  assert.match(app,/picker\('woolThickness'/);
- assert.match(html,/ak-classic.css/);
+ assert.match(html,/قيد التطوير/);assert.doesNotMatch(html,/ak-app\.mjs/);
 });
