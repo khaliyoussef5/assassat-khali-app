@@ -81,3 +81,18 @@ test('Desktop/mobile layout and technical formulas are unchanged',()=>{
  }
  assert.match(html,/async function pdfReport\(p\)/);
 });
+
+test('Material results only show the table and the two approved export actions, not the verbose breakdown/warning',()=>{
+ const start=main.indexOf('<div id="ak-results"');
+ const end=main.indexOf('</section>',start);
+ assert.ok(start>0&&end>start);
+ const section=main.slice(start,end);
+ assert.match(section,/id="ak-bom"/);
+ assert.match(section,/id="ak-download-pdf"/);
+ assert.match(section,/id="ak-copy"/);
+ assert.doesNotMatch(section,/id="ak-formulas"|تفصيل الحساب المعتمد|لائحة Armstrong ما كتغطيش|class="ak-empty"/);
+ assert.doesNotMatch(html,/\$\('ak-formulas'\)/);
+ assert.match(html,/const rows=rowsForBom\(p\)/);
+ assert.match(html,/async function pdfReport\(p\)/);
+ assert.match(html,/\$\('ak-bom'\)\.innerHTML=/);
+});
