@@ -9,8 +9,9 @@ const modern=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url)
 const css=readFileSync(new URL('../public/assets/ak-classic.css',import.meta.url),'utf8');
 
 test('BA13 Armstrong offers accessible back-to-calculators action with correct relative homepage URL',()=>{
- assert.match(ba13,/<a class="ak-back-to-calculators" href="\.\.\/\.\.\/" aria-label="رجوع للحاسبات">← رجوع للحاسبات<\/a>/);
- assert.match(ba13,/#ak-calculator \.ak-back-to-calculators:focus-visible/);
+ assert.match(ba13,/<nav class="ak-calculator-nav" aria-label="التنقل بين الحاسبات">/);
+ assert.match(ba13,/<a class="ak-calculator-nav__back" href="\.\.\/\.\.\/">← رجوع للحاسبات<\/a>/);
+ assert.match(ba13,/assets\/ak-calculator-nav\.css/);
  assert.doesNotMatch(ba13,/Vue en plan — البروفيلات والمساحات مرسومين بالنسب الصحيحة/);
 });
 
