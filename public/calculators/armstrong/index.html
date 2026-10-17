@@ -210,10 +210,8 @@
             <p>راجع البوردور وتوزيع البروفيلات، ومن بعد اضغط «اعتمد المخطط وحسب السلعة».</p>
           </div>
           <div id="ak-results" class="ak-result" hidden>
-            <div id="ak-formulas" class="ak-notice" style="margin:14px 0"></div>
             <div class="ak-table-wrap"><table class="ak-table"><thead><tr><th>السلعة</th><th>الكمية المحسوبة</th><th>الشراء المقترح</th></tr></thead><tbody id="ak-bom"></tbody></table></div>
             <div class="ak-actions ak-final-actions"><button class="ak-button" id="ak-download-pdf" type="button">تحميل لائحة المواد + المخطط PDF</button><button class="ak-outline" id="ak-copy" type="button">نسخ القائمة</button></div>
-            <div class="ak-empty" style="margin-top:14px"><strong>مهم:</strong> لائحة Armstrong ما كتغطيش هيكل BA13 (Fourrure، دعامات، تثبيت الحواف)، حيث خاصو تصميم مستقل. العدد ديال العلاقات تقديري ويخصو التحقق من نوع النظام والحمولة ومواضع وصلات Porteur.</div>
           </div>
         </div>
       </section>
@@ -418,13 +416,7 @@
   }
   function renderResults(p){
     const rows=rowsForBom(p);
-    $('ak-formulas').innerHTML=`<strong>تفصيل الحساب المعتمد:</strong><br>
-      Armstrong = ${fmt(p.fieldL)} × ${fmt(p.fieldW)}m = <b>${fmt(p.armArea)}m²</b>، وBA13 = <b>${fmt(p.ba13Area)}m²</b>.<br>
-      Porteur = ${p.nP} خطوط × ${fmt(p.fieldL)}m = ${fmt(p.pTotalLength)}m ÷ 3.60m = <b>${p.pPieces} بروفيل</b>. الشوت كيتستعمل فالخط الموالي؛ الشوت النهائي <b>${fmt(p.pWaste)}m</b>، والوصلات ${p.pJoints}.<br>
-      Cross 1.20 = ${p.bays12} فراغات 1.20 × (${p.nL}+1) = <b>${p.c12}</b>.<br>
-      Cross 0.60 = (${p.bays12} × ${p.nL}) + (${p.bays06} × ${p.nL+1}) = <b>${p.c06}</b>.<br>
-      العلاقات = ${p.nP} خطوط × ${p.hangsPerLine} = <b>${p.hangs}</b>.<br>
-      Tige = ${p.hangs} ÷ ${p.rodPieces} قطع/متر = <b>${p.rods} Tiges</b> (بالرفع).`;
+
     $('ak-bom').innerHTML=rows.map(r=>`<tr><td>${esc(r.name)}<div style="color:#87979a;font-size:10px;font-weight:400">${esc(r.why)}</div></td><td>${r.base}</td><td>${r.buy}</td></tr>`).join('');
     state.lastCsv=[['المادة','الكمية المحسوبة','كمية الشراء','ملاحظة'],...rows.map(r=>[r.name,r.base,r.buy,r.why])].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
     $('ak-results').hidden=false;
