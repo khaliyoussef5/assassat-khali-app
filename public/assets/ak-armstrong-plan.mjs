@@ -4,12 +4,12 @@ import {suspensionPoints} from './ak-suspensions.mjs';
  * 1100×610 responsive view, light green 60×60 field, blue Porteur, orange
  * Cross 1.20, green Cross 0.60, dark suspension points and a bottom tile
  * count badge. The underlying full-room geometry is NOT changed here.
- * Pale beige strips are cut ARMSTRONG tiles, never BA13 borders.
+ * Cut ARMSTRONG tiles are the SAME pale-green shade as center tiles; no BA13.
  */
 const F=n=>Number(n).toFixed(2).replace(/\.?0+$/,'');
 const cm=n=>F(Math.round(n*10000)/100)+' cm';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const C={ink:'#415660',bg:'#f5f9f8',field:'#E0F1EB',offcut:'#E6C69E',border:'#AE885B',porteur:'#1F5D9F',cross120:'#D59428',cross060:'#219A7C',hanger:'#233A44'};
+const C={ink:'#415660',bg:'#f5f9f8',field:'#E0F1EB',offcut:'#E0F1EB',border:'#AE885B',porteur:'#1F5D9F',cross120:'#D59428',cross060:'#219A7C',hanger:'#233A44'};
 
 export function armstrongFullPlanSvg(p,{showHangers=true}={}){
  if(p.type!=='armstrong-full')throw Error('Armstrong full diagram requires matching plan');
@@ -28,7 +28,7 @@ export function armstrongFullPlanSvg(p,{showHangers=true}={}){
 
  push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 610" data-diagram="armstrong-full" role="img" aria-label="مخطط سقف Armstrong بلا بوردور، الطول '+esc(F(p.L))+' متر، العرض '+esc(F(p.W))+' متر">');
  push('<title>ASSASSAT KHALI — Armstrong بلا بوردور</title>');
- push('<desc>مخطط متناسب: Porteur باللون الأزرق، Cross 1.20 برتقالي، Cross 0.60 أخضر، وأطراف البلاكات المقطوعة باللون البيج وليست BA13. باقي الطول: '+esc(cm(p.edgeL))+' من كل جهة؛ باقي العرض: '+esc(cm(p.edgeW))+' من كل جهة. Porteur 3.60m: '+p.porteur+' بروفيل، '+p.porteurJoints+' وصلات، الشوت النهائي '+F(p.porteurWaste)+'m. Cross 0.60: '+p.cross060+' مقطع، '+p.cross060Stock+' بروفيل للشراء، '+p.cross060HalfCount+' أنصاف أقل من 30cm.</desc>');
+ push('<desc>مخطط متناسب: Porteur باللون الأزرق، Cross 1.20 برتقالي، Cross 0.60 أخضر، والبلاكات المقطوعة بنفس لون البلاكات الوسطية، بلا BA13. باقي الطول: '+esc(cm(p.edgeL))+' من كل جهة؛ باقي العرض: '+esc(cm(p.edgeW))+' من كل جهة. Porteur 3.60m: '+p.porteur+' بروفيل، '+p.porteurJoints+' وصلات، الشوت النهائي '+F(p.porteurWaste)+'m. Cross 0.60: '+p.cross060+' مقطع، '+p.cross060Stock+' بروفيل للشراء، '+p.cross060HalfCount+' أنصاف أقل من 30cm.</desc>');
  if(showHangers)push('<desc>علاقات × '+p.hangers+'</desc>');
  push('<rect width="1100" height="610" fill="'+C.bg+'"/>');
  push('<g font-family="Arial,Tahoma,sans-serif" text-anchor="middle" fill="#455B64">');
@@ -36,8 +36,8 @@ export function armstrongFullPlanSvg(p,{showHangers=true}={}){
  push(label(38,295,F(p.W)+' m — العرض','font-size="21" font-weight="700" transform="rotate(-90 38 295)"'));
  push('</g>');
 
- // One whole-room field, with cut-tile edges shaded like the BA13 diagram
- // but without suggesting the presence of any BA13 material.
+ // Whole-room Armstrong field: cut tiles and center tiles share the exact
+ // same color. Keep the edge shapes for geometry; they are not BA13.
  push('<rect x="'+num(x)+'" y="'+num(y)+'" width="'+num(wi)+'" height="'+num(he)+'" fill="'+C.field+'" stroke="'+C.border+'" stroke-width="2"/>');
  push('<g fill="'+C.offcut+'" opacity=".80">');
  if(fx>1e-6){
