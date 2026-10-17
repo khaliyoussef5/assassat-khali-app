@@ -31,18 +31,17 @@
   #ak-calculator .ak-head p{color:#c3dcd9;font-size:13px;margin:0}
   #ak-calculator .ak-head-icon{display:grid;place-items:center;width:65px;height:65px;flex:none;border:1px solid #ffffff3d;border-radius:18px;background:#ffffff;box-shadow:0 4px 12px #0b26351b}
   #ak-calculator .ak-head-icon img{display:block;object-fit:contain;max-width:90%;max-height:90%}
-  /* Visual workflow follows site use: dimensions → 3 suggestions → diagram → materials. */
-  #ak-calculator .ak-columns{display:grid;grid-template-areas:"dimensions dimensions" "suggestions suggestions" "results rules";grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:18px;align-items:start}
+  /* Visual workflow: room measurements → live drawing → layout choices/approval → materials. */
+  #ak-calculator .ak-columns{display:grid;grid-template-areas:"dimensions dimensions" "plan plan" "suggestions suggestions" "results rules";grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:18px;align-items:start}
   #ak-calculator .ak-left,#ak-calculator .ak-right{display:contents}
   #ak-calculator .ak-left>.ak-panel:nth-child(1){grid-area:dimensions}
-  #ak-calculator .ak-left>.ak-panel:nth-child(2){grid-area:suggestions}
-  #ak-calculator .ak-left>.ak-panel:nth-child(3){grid-area:rules}
+  #ak-calculator .ak-left>.ak-panel:nth-child(2){grid-area:plan}
+  #ak-calculator .ak-left>.ak-panel:nth-child(3){grid-area:suggestions}
+  #ak-calculator .ak-left>.ak-panel:nth-child(4){grid-area:rules}
   #ak-calculator .ak-suggestions-panel{min-width:0}
-  #ak-calculator .ak-suggestions-panel .ak-embedded-plan{min-width:0}
-  #ak-calculator .ak-suggestions-panel .ak-embedded-plan .ak-plan-header{padding-inline:2px}
+  #ak-calculator .ak-plan-panel{min-width:0;scroll-margin-top:16px}
   #ak-calculator .ak-right>.ak-panel:nth-child(1){grid-area:results}
   #ak-calculator .ak-columns .ak-panel{margin:0}
-  #ak-calculator .ak-embedded-plan{scroll-margin-top:16px;margin-top:19px;padding-top:17px;border-top:1px solid #e0e9e7}
 
   #ak-calculator .ak-panel{background:#fff;border:1px solid #e0e7e7;border-radius:18px;padding:20px;box-shadow:0 9px 28px #112c3610;margin-bottom:19px}
   #ak-calculator .ak-panel h2{font-size:18px;margin:0 0 4px;line-height:1.4}
@@ -50,7 +49,7 @@
   #ak-calculator .ak-label-row{display:flex;align-items:center;gap:10px;margin-bottom:15px}
   #ak-calculator .ak-step{flex:none;font-size:12px;font-weight:900;width:30px;height:30px;display:grid;place-items:center;border-radius:10px;background:#e1f4ef;color:#167767}
   #ak-calculator .ak-input-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  #ak-calculator .ak-left>.ak-panel:nth-child(1) .ak-input-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  #ak-calculator .ak-left>.ak-panel:nth-child(1) .ak-input-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   #ak-calculator label.ak-field{font-size:12px;font-weight:800;color:#40555e;display:flex;gap:5px;flex-direction:column}
   #ak-calculator label.ak-field span{font-size:11px;font-weight:400;color:#87959a}
   #ak-calculator input[type=number]{border:1px solid #d8e2e3;background:#fcfefe;border-radius:10px;padding:10px 12px;color:#14313c;direction:ltr;text-align:center;width:100%;font-weight:800;font-size:17px;min-height:46px}
@@ -109,14 +108,25 @@
   #ak-calculator .ak-notes li{padding-bottom:7px}
   #ak-calculator .ak-footer{font-size:11px;color:#7e8f94;margin-top:15px;text-align:center}
   #ak-calculator .ak-empty{background:#fff7ec;border:1px solid #f0dec4;border-radius:10px;padding:12px;font-size:12px;color:#88601c}
-  @media(max-width:800px){#ak-calculator .ak-left>.ak-panel:nth-child(1) .ak-input-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#ak-calculator{padding:12px 10px 30px}#ak-calculator .ak-columns{grid-template-columns:minmax(0,1fr);grid-template-areas:"dimensions" "suggestions" "results" "rules";gap:12px}#ak-calculator .ak-head{padding:21px}#ak-calculator .ak-panel{padding:16px}#ak-calculator .ak-options{gap:7px}#ak-calculator .ak-head-icon{width:52px;height:52px}}
+  @media(max-width:800px){#ak-calculator .ak-left>.ak-panel:nth-child(1) .ak-input-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#ak-calculator{padding:12px 10px 30px}#ak-calculator .ak-columns{grid-template-columns:minmax(0,1fr);grid-template-areas:"dimensions" "plan" "suggestions" "results" "rules";gap:12px}#ak-calculator .ak-head{padding:21px}#ak-calculator .ak-panel{padding:16px}#ak-calculator .ak-options{gap:7px}#ak-calculator .ak-head-icon{width:52px;height:52px}}
   @media(max-width:600px){#ak-calculator .ak-options{grid-template-columns:repeat(2,minmax(0,1fr))}#ak-calculator .ak-option-manual{grid-column:1/-1}}
   @media(max-width:380px){#ak-calculator .ak-options{grid-template-columns:1fr}#ak-calculator .ak-stats{gap:5px}#ak-calculator .ak-stat b{font-size:16px}}
-  @media print{body,#ak-calculator{background:white!important}#ak-calculator{padding:0}#ak-calculator .ak-head{background:#fff;color:#142c35;border:1px solid #a6bbc2}#ak-calculator .ak-head p,#ak-calculator .ak-strap{color:#526c73}#ak-calculator .ak-columns{display:block}#ak-calculator .ak-left>.ak-panel:not(.ak-suggestions-panel),#ak-calculator .ak-suggestions-panel>.ak-label-row,#ak-calculator .ak-suggestions-panel>#ak-options,#ak-calculator .ak-suggestions-panel>.ak-drop-setting,#ak-calculator .ak-suggestions-panel>.ak-custom,#ak-calculator .ak-suggestions-panel>#ak-option-summary,#ak-calculator .ak-suggestions-panel>#ak-border-warning,#ak-calculator .ak-actions,#ak-calculator .ak-small-check,#ak-calculator .ak-hide-print{display:none!important}#ak-calculator .ak-panel{box-shadow:none;break-inside:avoid}#ak-calculator .ak-result{display:block}#ak-calculator .ak-table{min-width:0}#ak-calculator .ak-graphic svg{max-height:520px}}
-  #ak-calculator .ak-drop-setting{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:#f4faf7;border:1px solid #cbded9;border-radius:13px;padding:14px 16px;margin-top:15px}
-  #ak-calculator .ak-drop-setting .ak-field{width:235px;max-width:100%;flex:none}
-  #ak-calculator .ak-drop-setting .ak-sub{flex:1;margin:0;min-width:210px;color:#577376;font-size:12px;line-height:1.85}
-  @media(max-width:600px){#ak-calculator .ak-drop-setting .ak-field{width:100%}#ak-calculator .ak-drop-setting .ak-sub{min-width:100%}}
+  @media print{
+    body,#ak-calculator{background:white!important}
+    #ak-calculator{padding:0}
+    #ak-calculator .ak-head{background:#fff;color:#142c35;border:1px solid #a6bbc2}
+    #ak-calculator .ak-head p,#ak-calculator .ak-strap{color:#526c73}
+    #ak-calculator .ak-columns{display:block}
+    #ak-calculator .ak-left>.ak-panel:not(.ak-plan-panel),#ak-calculator .ak-actions,#ak-calculator .ak-small-check,#ak-calculator .ak-hide-print{display:none!important}
+    #ak-calculator .ak-panel{box-shadow:none;break-inside:avoid}
+    #ak-calculator .ak-table{min-width:0}
+    #ak-calculator .ak-graphic svg{max-height:520px}
+  }
+  #ak-calculator .ak-final-actions{align-items:stretch}
+  #ak-calculator .ak-final-actions .ak-button{flex:2 1 270px}
+  #ak-calculator .ak-final-actions .ak-outline{flex:1 1 170px}
+  #ak-calculator .ak-approve-after-options{min-height:52px;font-size:14px}
+
 </style>
 </head>
 <body>
@@ -133,22 +143,41 @@
     <div class="ak-columns">
       <section class="ak-left">
         <div class="ak-panel">
-          <div class="ak-label-row"><div class="ak-step">1</div><div><h2>المقاسات ديال الغرفة</h2><p class="ak-sub" style="margin:0">دخل الطول والعرض بالمتر، والنزول غادي تختارو فمرحلة التوزيع.</p></div></div>
+          <div class="ak-label-row"><div class="ak-step">1</div><div><h2>المقاسات ديال الغرفة</h2><p class="ak-sub" style="margin:0">دخل الطول والعرض بالمتر، ومعاهم نزول السقف المستعار بالسنتيمتر.</p></div></div>
           <div class="ak-input-grid">
             <label class="ak-field">الطول (m)<input id="ak-length" type="number" min="0.8" max="50" step="0.01" inputmode="decimal" value="8"></label>
             <label class="ak-field">العرض (m)<input id="ak-width" type="number" min="0.8" max="50" step="0.01" inputmode="decimal" value="4"></label>
+            <label class="ak-field" for="ak-drop">نزول السقف المستعار (cm)<input id="ak-drop" type="number" min="5" max="100" step="1" inputmode="decimal" value="30"></label>
           </div>
+          <p class="ak-sub" style="margin:11px 0 0">حساب Tige كيستعمل النزول كطول قصّ تقديري. تأكد من القياس الفعلي مع Porteur وCoulisseau قبل القطع.</p>
           <div id="ak-error" class="ak-error" role="alert" hidden></div>
         </div>
+        <div class="ak-panel ak-plan-panel" aria-label="المخطط التفاعلي">
+              <div class="ak-plan-header">
+                <div><div class="ak-label-row" style="margin:0"><div class="ak-step">2</div><div><div class="ak-plan-title">المخطط التفاعلي</div></div></div></div>
+                <span class="ak-tag" id="ak-plan-state">معاينة قبل الحساب</span>
+              </div>
+              <div class="ak-graphic" id="ak-svg-container" aria-label="رسم تخطيطي لسقف Armstrong"></div>
+              <div class="ak-legend">
+                <span><i style="background:#205fa3"></i>Porteur 3.60</span>
+                <span><i style="background:#d89b3b"></i>Cross 1.20</span>
+                <span><i style="background:#229b80"></i>Cross 0.60</span>
+                <span><i style="background:#e4bd8c;height:12px;width:12px"></i>BA13</span>
+                <span><i style="background:#243540;height:10px;width:10px;border-radius:50%"></i>علاقة</span>
+              </div>
+              <div class="ak-stats">
+                <div class="ak-stat"><b id="ak-stat-area">32</b><span>المساحة m²</span></div>
+                <div class="ak-stat"><b id="ak-stat-grid">12 × 6</b><span>شبكة 60×60</span></div>
+                <div class="ak-stat"><b id="ak-stat-tiles">72</b><span>عدد البلاكات</span></div>
+              </div>
+              <label class="ak-small-check"><input id="ak-show-hangers" type="checkbox" checked> إظهار مواقع العلاقات التقريبية فوق Porteur</label>
+              
+              
+        </div>
         <div class="ak-panel ak-suggestions-panel">
-          <div class="ak-label-row"><div class="ak-step">2</div><div><h2>اقتراحات البوردور وتوزيع السقف</h2><p class="ak-sub" style="margin:0">دائماً بوردور متساوي من الجهتين المتقابلتين.</p></div></div>
+          <div class="ak-label-row"><div class="ak-step">3</div><div><h2>اقتراحات البوردور وتوزيع السقف</h2><p class="ak-sub" style="margin:0">دائماً بوردور متساوي من الجهتين المتقابلتين.</p></div></div>
           <div id="ak-options" class="ak-options" role="group" aria-label="اختيارات البوردور"></div>
-          <div class="ak-drop-setting">
-            <label class="ak-field" for="ak-drop">نزول السقف المستعار (cm)
-              <input id="ak-drop" type="number" min="5" max="100" step="1" inputmode="decimal" value="30">
-            </label>
-            <p class="ak-sub">حساب Tige كيستعمل النزول كطول قصّ تقديري؛ تأكد من القياس الفعلي مع Porteur وCoulisseau قبل القطع.</p>
-          </div>
+
           <div class="ak-custom" id="ak-custom" role="region" aria-label="إعدادات التوزيع اليدوي">
             <p class="ak-sub">حدد عدد بلاكات 60cm كاملة. عرض البوردور غادي يتحسب أوتوماتيكياً.</p>
             <div class="ak-input-grid">
@@ -158,31 +187,9 @@
           </div>
           <p id="ak-option-summary" class="ak-notice" style="margin:13px 0 0"></p>
           <div id="ak-border-warning" class="ak-warning" hidden></div>
-          <section class="ak-embedded-plan" aria-label="المخطط التفاعلي والتوزيع المعتمد">
-            <div class="ak-plan-header">
-              <div><div class="ak-label-row" style="margin:0"><div class="ak-step">3</div><div><div class="ak-plan-title">المخطط التفاعلي</div><div class="ak-sub" style="margin:2px 0 0">Vue en plan — البروفيلات والمساحات مرسومين بالنسب الصحيحة</div></div></div></div>
-              <span class="ak-tag" id="ak-plan-state">معاينة قبل الحساب</span>
-            </div>
-            <div class="ak-graphic" id="ak-svg-container" aria-label="رسم تخطيطي لسقف Armstrong"></div>
-            <div class="ak-legend">
-              <span><i style="background:#205fa3"></i>Porteur 3.60</span>
-              <span><i style="background:#d89b3b"></i>Cross 1.20</span>
-              <span><i style="background:#229b80"></i>Cross 0.60</span>
-              <span><i style="background:#e4bd8c;height:12px;width:12px"></i>BA13</span>
-              <span><i style="background:#243540;height:10px;width:10px;border-radius:50%"></i>علاقة</span>
-            </div>
-            <div class="ak-stats">
-              <div class="ak-stat"><b id="ak-stat-area">32</b><span>المساحة m²</span></div>
-              <div class="ak-stat"><b id="ak-stat-grid">12 × 6</b><span>شبكة 60×60</span></div>
-              <div class="ak-stat"><b id="ak-stat-tiles">72</b><span>عدد البلاكات</span></div>
-            </div>
-            <label class="ak-small-check"><input id="ak-show-hangers" type="checkbox" checked> إظهار مواقع العلاقات التقريبية فوق Porteur</label>
-            <button type="button" id="ak-approve" class="ak-button ak-full" style="margin-top:16px">اعتمد المخطط وحسب السلعة</button>
-            <div class="ak-actions">
-              <button class="ak-outline" id="ak-download-svg" type="button">تحميل المخطط SVG</button>
-              <button class="ak-outline" id="ak-print" type="button">طباعة / PDF</button>
-            </div>
-            </section>
+          <p class="ak-sub" style="margin:14px 0 0">المخطط اللي فوق كيتحدّث مباشرة ملي كتبدّل الاختيار أو عدد البلاكات.</p>
+          <button type="button" id="ak-approve" class="ak-button ak-full ak-approve-after-options" style="margin-top:14px">اعتمد المخطط وحسب السلعة</button>
+
         </div>
         <div class="ak-panel">
           <div class="ak-label-row"><div class="ak-step" aria-hidden="true">✓</div><div><h2>طريقة التركيب المعتمدة</h2><p class="ak-sub" style="margin:0">قواعد الحساب المتفق عليها</p></div></div>
@@ -203,15 +210,13 @@
             <p>راجع البوردور وتوزيع البروفيلات، ومن بعد اضغط «اعتمد المخطط وحسب السلعة».</p>
           </div>
           <div id="ak-results" class="ak-result" hidden>
-            <div id="ak-formulas" class="ak-notice" style="margin:14px 0"></div>
             <div class="ak-table-wrap"><table class="ak-table"><thead><tr><th>السلعة</th><th>الكمية المحسوبة</th><th>الشراء المقترح</th></tr></thead><tbody id="ak-bom"></tbody></table></div>
-            <div class="ak-actions"><button class="ak-button" id="ak-download-pdf" type="button">تحميل لائحة السلعة + المخطط PDF</button><button class="ak-outline" id="ak-download-csv" type="button">تحميل CSV</button><button class="ak-outline" id="ak-copy" type="button">نسخ القائمة</button></div>
-            <div class="ak-empty" style="margin-top:14px"><strong>مهم:</strong> لائحة Armstrong ما كتغطيش هيكل BA13 (Fourrure، دعامات، تثبيت الحواف)، حيث خاصو تصميم مستقل. العدد ديال العلاقات تقديري ويخصو التحقق من نوع النظام والحمولة ومواضع وصلات Porteur.</div>
+            <div class="ak-actions ak-final-actions"><button class="ak-button" id="ak-download-pdf" type="button">تحميل لائحة المواد + المخطط PDF</button><button class="ak-outline" id="ak-copy" type="button">نسخ القائمة</button></div>
           </div>
         </div>
       </section>
     </div>
-    <div class="ak-footer">ASSASSAT KHALI · Calculateur Armstrong V1.4 · PDF + مخطط / CSV · تقديرات الشراء تحتاج مراجعة تقنية قبل التنفيذ</div>
+    <div class="ak-footer">ASSASSAT KHALI · Calculateur Armstrong · PDF + مخطط · تقديرات الشراء تحتاج مراجعة تقنية قبل التنفيذ</div>
   </div>
 </main>
 <script>
@@ -411,13 +416,7 @@
   }
   function renderResults(p){
     const rows=rowsForBom(p);
-    $('ak-formulas').innerHTML=`<strong>تفصيل الحساب المعتمد:</strong><br>
-      Armstrong = ${fmt(p.fieldL)} × ${fmt(p.fieldW)}m = <b>${fmt(p.armArea)}m²</b>، وBA13 = <b>${fmt(p.ba13Area)}m²</b>.<br>
-      Porteur = ${p.nP} خطوط × ${fmt(p.fieldL)}m = ${fmt(p.pTotalLength)}m ÷ 3.60m = <b>${p.pPieces} بروفيل</b>. الشوت كيتستعمل فالخط الموالي؛ الشوت النهائي <b>${fmt(p.pWaste)}m</b>، والوصلات ${p.pJoints}.<br>
-      Cross 1.20 = ${p.bays12} فراغات 1.20 × (${p.nL}+1) = <b>${p.c12}</b>.<br>
-      Cross 0.60 = (${p.bays12} × ${p.nL}) + (${p.bays06} × ${p.nL+1}) = <b>${p.c06}</b>.<br>
-      العلاقات = ${p.nP} خطوط × ${p.hangsPerLine} = <b>${p.hangs}</b>.<br>
-      Tige = ${p.hangs} ÷ ${p.rodPieces} قطع/متر = <b>${p.rods} Tiges</b> (بالرفع).`;
+
     $('ak-bom').innerHTML=rows.map(r=>`<tr><td>${esc(r.name)}<div style="color:#87979a;font-size:10px;font-weight:400">${esc(r.why)}</div></td><td>${r.base}</td><td>${r.buy}</td></tr>`).join('');
     state.lastCsv=[['المادة','الكمية المحسوبة','كمية الشراء','ملاحظة'],...rows.map(r=>[r.name,r.base,r.buy,r.why])].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
     $('ak-results').hidden=false;
@@ -457,9 +456,6 @@
       setApproval();
     }
   }
-  function download(filename,content,type){
-    const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
-  }
   // Self-contained 2-page PDF: the materials sheet plus the exact selected SVG plan.
   // Both pages are drawn in the browser so Arabic remains correctly shaped and
   // the export needs no third-party libraries or network connection.
@@ -469,7 +465,7 @@
     const W=1240,H=1754;
     const c=document.createElement('canvas');c.width=W;c.height=H;
     const g=c.getContext('2d');
-    if(!g)throw Error('المتصفح لا يدعم إنشاء PDF. استعمل طباعة / PDF.');
+    if(!g)throw Error('المتصفح لا يدعم إنشاء PDF. جرّب متصفح آخر.');
     g.fillStyle='#ffffff';g.fillRect(0,0,W,H);
     function rounded(x,y,w,h,r,fill){
       g.beginPath();g.roundRect(x,y,w,h,r);g.fillStyle=fill;g.fill();
@@ -619,9 +615,9 @@
     btn.disabled=true;btn.textContent='جاري تجهيز PDF بالمخطط...';
     try{await pdfReport(state.current)}catch(e){
       console.error(e);
-      alert('تعذر تحميل ملف PDF مباشرة. استعمل زر طباعة / PDF واختر Save as PDF.');
+      alert('تعذر تحميل ملف PDF. حاول مجدداً أو جرّب متصفح آخر.');
     }finally{
-      btn.disabled=false;btn.textContent='تحميل لائحة السلعة + المخطط PDF';
+      btn.disabled=false;btn.textContent='تحميل لائحة المواد + المخطط PDF';
     }
   });
   ['ak-length','ak-width'].forEach(id=>$(id).addEventListener('input',()=>{state.selected='1';setApproval();update()}));
@@ -629,10 +625,7 @@
   ['ak-tilesL','ak-tilesW'].forEach(id=>$(id).addEventListener('input',()=>{state.selected='custom';setApproval();update()}));
   $('ak-show-hangers').addEventListener('change',()=>{state.shownHangers=$('ak-show-hangers').checked;if(state.current)$('ak-svg-container').innerHTML=svgPlan(state.current,state.shownHangers)});
   $('ak-approve').addEventListener('click',()=>{if(!state.current)return;state.approved=true;renderResults(state.current)});
-  $('ak-download-svg').addEventListener('click',()=>{if(!state.current)return;const svg=$('ak-svg-container').querySelector('svg');if(svg)download('ASSASSAT-KHALI-Armstrong-'+fmt(state.current.L)+'x'+fmt(state.current.W)+'.svg','<?xml version="1.0" encoding="UTF-8"?>\n'+svg.outerHTML,'image/svg+xml;charset=utf-8')});
-  $('ak-download-csv').addEventListener('click',()=>{if(state.approved)download('ASSASSAT-KHALI-liste-materiaux.csv','\ufeff'+state.lastCsv,'text/csv;charset=utf-8')});
-  $('ak-print').addEventListener('click',()=>{window.print()});
-  $('ak-copy').addEventListener('click',async()=>{if(!state.approved)return;const str=state.lastCsv.replaceAll('"','').replaceAll(',',' | ');try{await navigator.clipboard.writeText(str);$('ak-copy').textContent='تم النسخ ✓'}catch(e){$('ak-copy').textContent='استعمل تحميل CSV'}setTimeout(()=>$('ak-copy').textContent='نسخ القائمة',2200)});
+  $('ak-copy').addEventListener('click',async()=>{if(!state.approved)return;const str=state.lastCsv.replaceAll('"','').replaceAll(',',' | ');try{await navigator.clipboard.writeText(str);$('ak-copy').textContent='تم النسخ ✓'}catch(e){$('ak-copy').textContent='تعذر النسخ، اسمح بالوصول للحافظة'}setTimeout(()=>$('ak-copy').textContent='نسخ القائمة',2200)});
   window.AK_ARMSTRONG_TEST={getChoices,buildPlan,rowsForBom};
   update();
 })();

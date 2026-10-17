@@ -132,3 +132,28 @@ h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.25;margin:7px 0}
 .option-drop .formfield input{background:#fff;min-height:45px}
 .option-drop p{font-size:12px;color:#61767a;line-height:1.8;margin:0;flex:1;min-width:175px}
 @media(max-width:600px){.option-drop{align-items:stretch;padding:12px}.option-drop .formfield{flex:1 1 100%;max-width:none}.option-drop p{min-width:100%}}
+
+
+/* Approved sequential workflow for Armstrong WITHOUT BA13 border only.
+   Prevent layout changes to the development-only BA13/walls calculators. */
+.ak-full-flow .inputs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ak-full-flow .ak-full-measurement-note{font-size:12px;color:#63757b;line-height:1.75;margin:12px 0 0}
+.ak-full-flow .ak-full-approve{display:block;margin-top:16px;width:100%;min-height:52px;border:0;border-radius:12px;padding:13px 18px;background:#166e65;color:#fff;font-weight:850;font-size:14px;cursor:pointer}
+.ak-full-flow .ak-full-approve:hover{background:#09574f}
+.ak-full-flow .ak-full-approve:disabled{opacity:.45;cursor:not-allowed}
+.ak-full-flow .plan:has(svg[data-diagram="armstrong-full"]){overflow:hidden}
+.ak-full-flow .plan svg[data-diagram="armstrong-full"]{display:block;width:100%;max-width:100%;min-width:0;height:auto}
+.ak-full-flow .ak-armstrong-full-results .actions{align-items:stretch}
+.ak-full-flow .ak-armstrong-full-results .actions .ak-full-pdf{flex:2 1 270px;width:auto;min-height:47px}
+.ak-full-flow .ak-armstrong-full-results .actions .secondary{flex:1 1 170px}
+@media(max-width:800px){
+ .ak-full-flow .inputs{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ak-full-flow .plan:has(svg[data-diagram="armstrong-full"]){overflow:hidden}
+ .ak-full-flow .plan svg[data-diagram="armstrong-full"]{min-width:0;max-width:100%;width:100%;height:auto}
+}
+@media(max-width:600px){
+ .ak-full-flow .inputs .formfield:last-child{grid-column:1/-1}
+}
+@media print{
+ .ak-full-flow .plan svg[data-diagram="armstrong-full"]{width:100%;max-width:100%;min-width:0}
+}

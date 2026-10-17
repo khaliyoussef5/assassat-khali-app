@@ -10,12 +10,13 @@ if(!script)throw Error('Cannot inspect old calculator');
 const a=script.indexOf('  function dimOptions('),b=script.indexOf('  function setApproval(');
 const {buildPlan}=new Function('const M=.6,mainLen=3.6,teeLen=1.2,rodLenCm=100,ceil=Math.ceil;'+script.slice(a,b)+';return {buildPlan};')();
 
-test('Original Armstrong: dimensions have only length and width and drop is inside suggestions',()=>{
+test('Original Armstrong: dimensions show length, width and ceiling drop before the live plan and suggestions',()=>{
  const first=old.indexOf('<h2>المقاسات ديال الغرفة</h2>');
  const second=old.indexOf('<h2>اقتراحات البوردور وتوزيع السقف</h2>');
  const next=old.indexOf('<h2>طريقة التركيب المعتمدة</h2>');
+ const plan=old.indexOf('class="ak-plan-title">المخطط التفاعلي');
  const drop=old.indexOf('id="ak-drop"');
- assert.ok(first<second && second<drop && drop<next);
+ assert.ok(first<drop && drop<plan && plan<second && second<next);
  assert.equal((old.match(/id="ak-drop"/g)||[]).length,1);
  assert.doesNotMatch(old,/id="ak-cut"/);
  assert.match(old,/القياس الفعلي.*قبل القطع/);
@@ -30,8 +31,8 @@ test('Borderless Armstrong: the one drop field is rendered with distribution and
  assert.match(modern,/id="option-drop" class="option-drop"/);
  assert.match(modern,/id="in-drop" type="number"/);
  assert.match(modern,/if\(app==='armstrong-full'\)out\.drop=field\('drop'\)/);
- assert.match(modern,/option-drop'\)\.hidden=false/);
- assert.match(modern,/in-drop'\)\.addEventListener\('input',\(\)=>\{refresh\(\)\}/);
+ assert.match(modern,/document\.getElementById\('option-drop'\)\.remove\(\)/);
+ assert.match(modern,/in-drop'\)\.addEventListener\('input',refresh\)/);
  assert.match(html,/ak-classic\.css/);
 });
 test('Both calculators use drop alone to update rods; supplied obsolete cut has no effect',()=>{
