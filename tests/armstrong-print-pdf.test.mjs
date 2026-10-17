@@ -22,11 +22,11 @@ test('Technical PDF page is drawn directly from Armstrong geometry, not scaled p
  const source=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
  assert.match(source,/import \{drawArmstrongPrintPage\} from '\.\/ak-pdf-print\.mjs'/);
  assert.match(source,/if\(isArmPrint\)\{\s*drawArmstrongPrintPage/);
- assert.match(source,/planCanvas\.width=isArmPrint\?3508:W/);
- assert.match(source,/planCanvas\.height=isArmPrint\?2480:H/);
- assert.match(source,/pdfW:isArmPrint\?841\.89:595\.28/);
- assert.match(source,/pdfH:isArmPrint\?595\.28:841\.89/);
- assert.match(source,/if\(isArmPrint\)\{[\s\S]*?\} else \{/);
+ assert.match(source,/planCanvas\.width=isLandscapePrint\?3508:W/);
+ assert.match(source,/planCanvas\.height=isLandscapePrint\?2480:H/);
+ assert.match(source,/pdfW:isLandscapePrint\?841\.89:595\.28/);
+ assert.match(source,/pdfH:isLandscapePrint\?595\.28:841\.89/);
+ assert.match(source,/if\(isArmPrint\)\{[\s\S]*?\} else if\(isBA13Print\)\{/);
  assert.match(source,/z\.drawImage\(img,80,420,1080,650\)/); // unchanged for other calculators
 });
 test('The print drawing shows four measured edges with proper profile colors and quantities',()=>{
