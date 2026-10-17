@@ -1,6 +1,8 @@
 import {calcArmstrongFull,calcBA13Ceiling,calcWall,fullArmstrongOptions,materials,round} from './ak-engine.mjs';
 import {armstrongFullPlanSvg} from './ak-armstrong-plan.mjs';
 import {drawArmstrongPrintPage} from './ak-pdf-print.mjs';
+import {ba13PlanSvg} from './ak-ba13-plan.mjs';
+import {drawBA13PrintPage} from './ak-ba13-print.mjs';
 const $=id=>document.getElementById(id),fmt=x=>Number(x).toLocaleString('fr-FR',{maximumFractionDigits:2}),escapeText=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const app=document.body.dataset.calculator;let approved=false,plan=null,chosen=0,options=[],showHangers=true;
 const names={'armstrong-full':'Armstrong بلا بوردور','ba13-ceiling':'سقف الجبص بورد BA13','walls':'الحوائط والعزل'};
@@ -30,7 +32,7 @@ function coreMarkup(){return `
 <p class="footer">ASSASSAT KHALI — حساب تقريبي وليس مخطط تنفيذ معتمد. راجع المواصفات التقنية ديال المصنع.</p>
 </main>`;}
 document.body.insertAdjacentHTML('afterbegin',coreMarkup());
-if(app==='armstrong-full'){
+if(app==='armstrong-full'||app==='ba13-ceiling'){
  $('summary').insertAdjacentHTML('afterend','<label class="ak-hanger-toggle" for="show-hangers"><input type="checkbox" id="show-hangers" checked><span class="ak-hanger-icon" aria-hidden="true">●</span><span><strong>إظهار العلاقات فالمخطط</strong><small>نقط التعليق على Porteur، تقريباً كل 1m</small></span></label>');
  $('show-hangers').addEventListener('change',event=>{showHangers=event.target.checked;if(plan)$('plan').innerHTML=svgH(plan);});
 }
@@ -64,7 +66,7 @@ function optionsUI(){
  }else{
    $('option-title').textContent=app==='ba13-ceiling'?'طريقة تركيب السقف':'إعدادات الحائط';
    $('option-subtitle').textContent='بدّل النوع، الطبقات والتباعد من الخانات الفوقانية؛ المخطط كيتحدّث تلقائياً.';
-   const info=app==='ba13-ceiling'?'Fourrure: أول خط بعد 15cm، والباقي كل 50cm. إنارة مخفية: خط إضافي 10cm من الحيط.':'الفتحات كتخصم من المساحة. دعم الأبواب والشبابيك تقريبي ويتراجع فالموقع.';
+   const info=app==='ba13-ceiling'?'Fourrure مع الضلع القصير: أول خط 15cm، والتباعد 50cm. الإنارة المخفية كتزيد حلقة داخلية على بعد 10cm من الحائط، مع نقاط تعليق تقديرية.':'الفتحات كتخصم من المساحة. دعم الأبواب والشبابيك تقريبي ويتراجع فالموقع.';
    $('options').innerHTML=`<div class="hint">${info}</div>`;$('custom').hidden=true;
  }
 }
@@ -73,12 +75,13 @@ function createModel(){let d=dims();if(app==='armstrong-full'){const o=chosen===
  return calcWall({...d,rockwool:d.rockwool==='1'});
 }
 function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['Porteur',p.porteur],['Cross 1.20',p.cross120],['Cross 0.60 (راكبة)',p.cross060],['Cross 0.60 (بروفيلات)',p.cross060Stock],['بلاكات كاملة',p.wholeTiles],['بلاكات مقطوعة',p.edgePieces]]:
- app==='ba13-ceiling'?[['مساحة السقف',fmt(p.area)+'m²'],['عدد خطوط Fourrure',p.positions.length],['ألواح BA13 النظري',p.boards]]:
+ app==='ba13-ceiling'?[['مساحة السقف',fmt(p.area)+'m²'],['خطوط Fourrure',p.positions.length],['Fourrure 3m',p.fourrure],['وصلات (تقديرية)',p.joinCount],['علاقات',p.hangers],['ألواح BA13 النظري',p.boards]]:
  [['صافي المساحة',fmt(p.netArea)+'m²'],['ألواح BA13 النظري',p.boards],['Montants',p.studs]];
  $('summary').innerHTML=parts.map(([a,b])=>metric(a,b)).join('');
 }
 const svgH=(p)=>{
  if(p.type==='armstrong-full')return armstrongFullPlanSvg(p,{showHangers});
+ if(p.type==='ba13-ceiling')return ba13PlanSvg(p,{showHangers});
  const W=900,H=540, sx=80,sy=72, ww=730,hh=385,fmt2=n=>round(n,2),A=[];
  let ratio=p.type==='wall'?p.L/p.H:p.L/p.W;
  let boxW=ww,boxH=hh;if(ratio>ww/hh)boxH=ww/ratio;else boxW=hh*ratio;
@@ -121,7 +124,7 @@ $('pdf-download').addEventListener('click',async()=>{if(!approved||!plan)return;
 for(const el of $('fields').querySelectorAll('input,select'))el.addEventListener('input',()=>{if(app==='armstrong-full')chosen=0;refresh()});
 async function createPdf(p){const rows=materials(p),W=1240,H=1754;
  const page=document.createElement('canvas');page.width=W;page.height=H;const g=page.getContext('2d');if(!g)throw Error('المتصفح لا يدعم canvas');
- const isArmPrint=p.type==='armstrong-full';const planCanvas=document.createElement('canvas');planCanvas.width=isArmPrint?3508:W;planCanvas.height=isArmPrint?2480:H;const z=planCanvas.getContext('2d');if(!z)throw Error('المتصفح لا يدعم canvas');
+ const isArmPrint=p.type==='armstrong-full',isBA13Print=p.type==='ba13-ceiling',isLandscapePrint=isArmPrint||isBA13Print;const planCanvas=document.createElement('canvas');planCanvas.width=isLandscapePrint?3508:W;planCanvas.height=isLandscapePrint?2480:H;const z=planCanvas.getContext('2d');if(!z)throw Error('المتصفح لا يدعم canvas');
  function base(ctx,title,num){ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);ctx.fillStyle='#14333a';ctx.fillRect(0,0,W,190);ctx.fillStyle='#0f8977';ctx.fillRect(0,185,W,6);text(ctx,'ASSASSAT KHALI',78,82,35,'#cee9dd',800,'left');text(ctx,title,1163,108,42,'#fff',800);text(ctx,names[app],1163,156,22,'#bedad5',500);
  ctx.fillStyle='#dce7e3';ctx.fillRect(76,H-104,1090,2);text(ctx,'ASSASSAT KHALI · OUTIL TECHNIQUE',76,H-62,21,'#70858a',700,'left');text(ctx,`${num} / 2`,1163,H-62,24,'#70858a',600)}
  function text(ctx,v,x,y,size=25,color='#243f47',weight=500,align='right'){ctx.font=`${weight} ${size}px Tahoma,Arial,sans-serif`;ctx.textAlign=align;ctx.textBaseline='alphabetic';ctx.direction=align==='left'?'ltr':'rtl';ctx.fillStyle=color;ctx.fillText(String(v),x,y)}
@@ -135,6 +138,8 @@ async function createPdf(p){const rows=materials(p),W=1240,H=1754;
  // Page 2 is now a real, print-layout plan drawn from geometry, not a resized SVG screenshot.
  if(isArmPrint){
    drawArmstrongPrintPage(z,p,planCanvas.width,planCanvas.height,{showHangers});
+ } else if(isBA13Print){
+   drawBA13PrintPage(z,p,planCanvas.width,planCanvas.height,{showHangers});
  } else {
    base(z,'المخطط التقني',2);
    box(z,76,218,1088,112,'#e8f4ed');
@@ -154,7 +159,7 @@ async function createPdf(p){const rows=materials(p),W=1240,H=1754;
  function jpeg(c){const raw=atob(c.toDataURL('image/jpeg',.94).split(',')[1]);return Uint8Array.from(raw,x=>x.charCodeAt(0))}
  const images=[
   {bytes:jpeg(page),w:W,h:H,pdfW:595.28,pdfH:841.89},
-  {bytes:jpeg(planCanvas),w:planCanvas.width,h:planCanvas.height,pdfW:isArmPrint?841.89:595.28,pdfH:isArmPrint?595.28:841.89}
+  {bytes:jpeg(planCanvas),w:planCanvas.width,h:planCanvas.height,pdfW:isLandscapePrint?841.89:595.28,pdfH:isLandscapePrint?595.28:841.89}
  ],enc=new TextEncoder(),chunks=[];let len=0,offsets=[0];
  const put=v=>{const b=typeof v==='string'?enc.encode(v):v;chunks.push(b);len+=b.length};
  const object=(id,fn)=>{offsets[id]=len;put(id+' 0 obj\n');fn();put('\nendobj\n')};
