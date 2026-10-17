@@ -50,6 +50,7 @@ if(app==='armstrong-full'){
  const approve=document.getElementById('approve');
  choices.append(approve);approve.classList.add('ak-full-approve');
  document.getElementById('svg-download').remove();
+ drawing.querySelector('.actions').remove();
  result.querySelector('#csv-download').remove();
  result.querySelector('#print').remove();
  result.querySelector('#note').remove();
