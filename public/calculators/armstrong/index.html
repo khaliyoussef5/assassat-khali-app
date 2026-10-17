@@ -14,12 +14,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" type="image/webp" href="../../assets/logo-assassat-khali.webp">
+<link rel="stylesheet" href="../../assets/ak-calculator-nav.css">
 <title>ASSASSAT KHALI — حاسبة سقف Armstrong</title>
 <style>
   :root{color-scheme:light}
   *{box-sizing:border-box}
   body{margin:0;background:#f3f6f7}
-  #ak-calculator{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:#142c35;background:#f3f6f7;line-height:1.6;min-height:100vh;padding:26px 18px 50px;direction:rtl}
+  #ak-calculator{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:#142c35;background:#f3f6f7;line-height:1.6;min-height:100vh;padding:0 18px 50px;direction:rtl}
   #ak-calculator button,#ak-calculator input{font:inherit}
   #ak-calculator button{cursor:pointer}
   #ak-calculator button:focus-visible,#ak-calculator input:focus-visible{outline:3px solid #62cbbb;outline-offset:2px}
@@ -127,12 +128,10 @@
   #ak-calculator .ak-final-actions .ak-outline{flex:1 1 170px}
   #ak-calculator .ak-approve-after-options{min-height:52px;font-size:14px}
 
-  #ak-calculator .ak-back-to-calculators{display:inline-flex;align-items:center;justify-content:center;margin-top:13px;min-height:41px;padding:8px 14px;border:1px solid #bedbd5;border-radius:11px;background:#ffffff14;color:#fff;font-size:12px;font-weight:800;text-decoration:none;position:relative}
-  #ak-calculator .ak-back-to-calculators:hover{background:#ffffff28}
-  #ak-calculator .ak-back-to-calculators:focus-visible{outline:3px solid #62cbbb;outline-offset:3px}
 </style>
 </head>
 <body>
+<nav class="ak-calculator-nav" aria-label="التنقل بين الحاسبات"><a class="ak-calculator-nav__home" href="../../" aria-label="الرئيسية ASSASSAT KHALI"><img src="../../assets/logo-assassat-khali.webp" alt="" width="34" height="36"><span>ASSASSAT KHALI<small>OUTIL TECHNIQUE</small></span></a><a class="ak-calculator-nav__back" href="../../">← رجوع للحاسبات</a></nav>
 <main id="ak-calculator">
   <div class="ak-wrap">
     <header class="ak-head">
@@ -140,7 +139,6 @@
         <div class="ak-strap">ASSASSAT KHALI — OUTIL TECHNIQUE</div>
         <h1>حاسبة سقف Armstrong</h1>
         <p>قياسات الغرفة ← المخطط التفاعلي ← اقتراحات البوردور ← لائحة المواد</p>
-        <a class="ak-back-to-calculators" href="../../" aria-label="رجوع للحاسبات">← رجوع للحاسبات</a>
       </div>
       <div class="ak-head-icon" aria-hidden="true"><img src="../../assets/logo-assassat-khali.webp" alt="" width="51" height="56"></div>
     </header>
