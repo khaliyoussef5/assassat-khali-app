@@ -44,7 +44,7 @@ test('Borderless Armstrong correctly reduces Porteur stock, but changes no other
  assert.equal(p.hangers,24);
  const row=materials(p).find(x=>x.name==='Porteur T 3.60m');
  assert.equal(row.qty,7);
- assert.match(row.note,/الشوت|الباقي/);
+ assert.match(row.why,/الشوت|الباقي/);
  assert.equal((armstrongFullPlanSvg(p).match(/data-profile="porteur"/g)||[]).length,p.carrierCount);
 });
 test('Original Armstrong BA13 also reuses offcuts between longitudinal Porteur lines',()=>{
