@@ -260,7 +260,26 @@
     const bays12=Math.floor(nW/2),bays06=nW%2;
     const nP=bays12+bays06+1;
     const fieldL=nL*M,fieldW=nW*M;
-    const pPieces=nP*ceil((fieldL-1e-9)/mainLen);
+    // قصّ Porteur بالتسلسل: الباقي من كل خط نستعملوه في بداية الخط التالي.
+    // الحساب بالميكرومتر للحفاظ على الدقة مع المقاسات العشرية.
+    const scale=1e6,nominal=Math.round(mainLen*scale),run=Math.round(fieldL*scale);
+    let pPieces=0,unused=0,pJoints=0;
+    const pLineCuts=[];
+    for(let line=0;line<nP;line++){
+      let missing=run;
+      const cuts=[];
+      while(missing>0){
+        if(!unused){pPieces++;unused=nominal;}
+        const used=Math.min(unused,missing);
+        cuts.push(used/scale);
+        unused-=used;
+        missing-=used;
+      }
+      pJoints+=cuts.length-1;
+      pLineCuts.push(cuts);
+    }
+    const pWaste=unused/scale;
+    const pTotalLength=nP*fieldL;
     const c12=bays12*(nL+1);
     const c06=bays12*nL+bays06*(nL+1);
     const hangsPerLine=ceil(fieldL/1);
@@ -273,7 +292,7 @@
     const wallFix=ceil(wallPerimeter/0.50);
     const roomArea=L*W,armArea=fieldL*fieldW,ba13Area=roomArea-armArea;
     const boards=ceil((ba13Area-1e-8)/(1.2*2.8));
-    return {L,W,drop,cut,nL,nW,bL,bW,bays12,bays06,nP,fieldL,fieldW,pPieces,c12,c06,hangsPerLine,hangs,rodPieces,rods,wallPerimeter,angle,wallFix,roomArea,armArea,ba13Area,boards,tiles:nL*nW};
+    return {L,W,drop,cut,nL,nW,bL,bW,bays12,bays06,nP,fieldL,fieldW,pPieces,pWaste,pJoints,pTotalLength,pLineCuts,c12,c06,hangsPerLine,hangs,rodPieces,rods,wallPerimeter,angle,wallFix,roomArea,armArea,ba13Area,boards,tiles:nL*nW};
   }
   function setApproval(no){state.approved=false;$('ak-results').hidden=true;$('ak-before-results').hidden=false;$('ak-calculation-status').textContent='مازال ما تعمدش';$('ak-calculation-status').style.background='#f1f4f5';$('ak-calculation-status').style.color='#7a8c91';$('ak-plan-state').textContent='معاينة قبل الحساب'}
   function renderOptions(d){
@@ -369,7 +388,7 @@
     const add=(name,base,buy,why='')=>({name,base,buy,why});
     return [
       add('بلاكات Armstrong 60×60',p.tiles,ceil(p.tiles*1.05),'احتياط ≈ 5%'),
-      add('Porteur T 3.60m',p.pPieces,p.pPieces+1,'فالاتجاه الطولي فقط'),
+      add('Porteur T 3.60m',p.pPieces,p.pPieces+1,`باقي القص كيتنقل للخط اللي بعدو. الشوت ديال آخر خط فقط: ${fmt(p.pWaste)}m؛ وصلات: ${p.pJoints}`),
       add('Cross-tee 1.20m',p.c12,p.c12+ceil(p.c12*.10),'شامل البداية والنهاية'),
       add('Cross-tee 0.60m',p.c06,p.c06+ceil(p.c06*.10),'شامل فراغ 0.60 إذا وجد'),
       add('Cornière 3m للحائط',p.angle,p.angle+1,'الجدران فقط'),
@@ -385,7 +404,7 @@
     const rows=rowsForBom(p);
     $('ak-formulas').innerHTML=`<strong>تفصيل الحساب المعتمد:</strong><br>
       Armstrong = ${fmt(p.fieldL)} × ${fmt(p.fieldW)}m = <b>${fmt(p.armArea)}m²</b>، وBA13 = <b>${fmt(p.ba13Area)}m²</b>.<br>
-      Porteur = ${p.nP} خطوط × ${ceil(p.fieldL/3.6-1e-9)} قطع لكل خط = <b>${p.pPieces}</b>.<br>
+      Porteur = ${p.nP} خطوط × ${fmt(p.fieldL)}m = ${fmt(p.pTotalLength)}m ÷ 3.60m = <b>${p.pPieces} بروفيل</b>. الشوت كيتستعمل فالخط الموالي؛ الشوت النهائي <b>${fmt(p.pWaste)}m</b>، والوصلات ${p.pJoints}.<br>
       Cross 1.20 = ${p.bays12} فراغات 1.20 × (${p.nL}+1) = <b>${p.c12}</b>.<br>
       Cross 0.60 = (${p.bays12} × ${p.nL}) + (${p.bays06} × ${p.nL+1}) = <b>${p.c06}</b>.<br>
       العلاقات = ${p.nP} خطوط × ${p.hangsPerLine} = <b>${p.hangs}</b>.<br>
