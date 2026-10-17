@@ -23,7 +23,7 @@ const headlines={
 };
 if(!headlines[app])throw Error('Unknown calculator');
 function coreMarkup(){return `
-<header class="top"><div class="topin"><a class="identity" href="../../" aria-label="رجوع للواجهة الرئيسية"><span class="mark"><img src="../../assets/logo-assassat-khali.webp" width="29" height="32" alt=""></span><span>ASSASSAT KHALI <small style="display:block;font:500 9px Manrope,sans-serif;color:#69807d;letter-spacing:1px">OUTIL TECHNIQUE</small></span></a><a href="../../" class="back">← رجوع للحاسبات</a></div></header>
+<nav class="ak-calculator-nav" aria-label="التنقل بين الحاسبات"><a class="ak-calculator-nav__home" href="../../" aria-label="الرئيسية ASSASSAT KHALI"><img src="../../assets/logo-assassat-khali.webp" alt="" width="34" height="36"><span>ASSASSAT KHALI<small>OUTIL TECHNIQUE</small></span></a><a class="ak-calculator-nav__back" href="../../">← رجوع للحاسبات</a></nav>
 <main class="wrap">
 <section class="hero"><div><span class="eyebrow">ASSASSAT KHALI / CALCULATEUR TECHNIQUE</span><h1>${names[app]}</h1><p>${headlines[app].desc}</p></div><div class="hero-mark" aria-hidden="true">${headlines[app].icon}</div></section>
 <div class="stepguide" aria-label="خطوات الحاسبة"><span><b>01</b> القياسات</span><span><b>02</b> الاختيارات</span><span><b>03</b> المخطط</span><span><b>04</b> السلعة وPDF</span></div>
@@ -47,6 +47,16 @@ if(app==='armstrong-full'){
  drawing.querySelector('.step').textContent='02';
  choices.querySelector('.step').textContent='03';
  drawing.querySelector('.panelheader p').remove();
+
+ drawing.querySelector('#plan').insertAdjacentHTML('afterend',[
+  '<div class="ak-full-legend" aria-label="ألوان بروفيلات المخطط">',
+  '<span><i style="background:#1F5D9F"></i>Porteur 3.60</span>',
+  '<span><i style="background:#D59428"></i>Cross 1.20</span>',
+  '<span><i style="background:#219A7C"></i>Cross 0.60</span>',
+  '<span><i style="background:#E0F1EB;height:12px;width:12px;border:1px solid #AE885B"></i>بلاكات مقطوعة</span>',
+  '<span><i style="background:#233A44;height:10px;width:10px;border-radius:50%"></i>علاقة</span>',
+  '</div>'
+ ].join(''));
  const approve=document.getElementById('approve');
  choices.append(approve);approve.classList.add('ak-full-approve');
  document.getElementById('svg-download').remove();

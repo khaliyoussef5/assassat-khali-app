@@ -23,7 +23,7 @@ test('Both available calculators and both locked pages show updated brand icon',
  const old=get('calculators/armstrong/index.html');
  assert.match(old,/<div class="ak-head-icon" aria-hidden="true"><img src="\.\.\/\.\.\/assets\/logo-assassat-khali\.webp"/);
  const live=get('assets/ak-app.mjs');
- assert.match(live,/<span class="mark"><img src="\.\.\/\.\.\/assets\/logo-assassat-khali\.webp"/);
+ assert.match(live,/<a class="ak-calculator-nav__home" href="\.\.\/\.\.\/"[^>]*><img src="\.\.\/\.\.\/assets\/logo-assassat-khali\.webp"/);
  for(const route of ['armstrong','armstrong-full','ba13-ceiling','walls']){
   const html=get('calculators/'+route+'/index.html');
   assert.match(html,/rel="icon" type="image\/webp" href="\.\.\/\.\.\/assets\/logo-assassat-khali\.webp"/);
