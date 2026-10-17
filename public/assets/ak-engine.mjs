@@ -134,7 +134,7 @@ export function calcWall(d){
  const spacing=Number(d.spacing)||.6;
  if(![.4,.6].includes(spacing))throw Error('اختار تباعد Montants 40cm أو 60cm.');
  const stock=Number(d.studLength)||3;
- if(![3,4].includes(stock)||H>stock+EPS)throw Error('خاص Montant 3m أو 4m مناسب للارتفاع.');
+ if(![3,4].includes(stock)||H>stock+EPS)throw Error('طول Montant المختار (3m أو 4m) خاصو يناسب ارتفاع الحائط.');
  const number=(v,name)=>{const n=Number(v??0);if(!Number.isFinite(n)||n<0)throw Error(name+': أدخل قيمة صحيحة وماشي سالبة.');return n;};
  const doorW=number(d.doorW,'عرض الباب'),doorH=number(d.doorH,'ارتفاع الباب');
  const windowW=number(d.windowW,'عرض الشباك'),windowH=number(d.windowH,'ارتفاع الشباك');
