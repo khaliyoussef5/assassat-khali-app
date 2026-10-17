@@ -1,4 +1,5 @@
 import {wallLayout} from './ak-wall-layout.mjs';
+import {planPorteurCuts} from './ak-porteur-cut.mjs';
 import {ba13Layout} from './ak-ba13-layout.mjs';
 /* ASSASSAT KHALI — calculator logic. Geometry estimates require on-site verification. */
 const EPS=1e-8;
@@ -101,13 +102,14 @@ export function calcArmstrongFull(d){const {L,W}=validateRoom(d.L,d.W);const dro
  // Count exactly the Cross segments that the SVG draws.
  const grid=buildArmstrongGrid(L,W,boundaryCuts,widthCuts);
  const {carrierCount,carrierPositions:mains,cross120,cross060,rowIntersections}=grid;
- const porteur=carrierCount*ceil(L/3.6);
+ const porteurCutPlan=planPorteurCuts(L,carrierCount);
+ const porteur=porteurCutPlan.bars;
  const hangersPerCarrier=ceil(L/1);const hangers=carrierCount*hangersPerCarrier;
  const rodPieces=Math.floor((100+EPS)/cut);if(rodPieces<1)throw Error('طول قص Tige أكثر من متر.');
  const rods=ceil(hangers/rodPieces),perimeter=2*(L+W);
- return {type:'armstrong-full',L,W,drop,cut,nL,nW,edgeL:round(edgeL,5),edgeW:round(edgeW,5),partsL,partsW,wholeTiles,edgePieces,tiles,area,porteur,cross120,cross060,carrierCount,carrierPositions:mains,hangers,rods,rodPieces,angle:ceil(perimeter/3),wallFix:ceil(perimeter/.5),lengthCuts:boundaryCuts,widthCuts,perimeter,rowIntersections,lateralBays:carrierCount+1,
+ return {type:'armstrong-full',L,W,drop,cut,nL,nW,edgeL:round(edgeL,5),edgeW:round(edgeW,5),partsL,partsW,wholeTiles,edgePieces,tiles,area,porteur,cross120,cross060,carrierCount,carrierPositions:mains,hangers,rods,rodPieces,angle:ceil(perimeter/3),wallFix:ceil(perimeter/.5),lengthCuts:boundaryCuts,widthCuts,perimeter,rowIntersections,lateralBays:carrierCount+1,porteurCutPlan,porteurWaste:porteurCutPlan.waste,porteurJoints:porteurCutPlan.joinCount,
  ...grid,
- note:'كل Cross 0.60 أقل من 30cm محسوبة نصف بروفيل (كل جوج = واحد)؛ 30cm بالضبط أو أكثر محسوبة قطعة كاملة. Cross 1.20 المقطوعة محسوبة قطعة كاملة. ما كنزيدوش Porteur إضافي غير للفراغ الأخير. Cross 1.20 المقطوعة باتجاه الحائط وارتكازها على Cornière خاصهم تحقق من نظام المصنع قبل التنفيذ.'};
+ note:'Porteur 3.60m: شوت كل خط كيتعاود استعماله فبداية الخط اللي بعدو؛ الشوت النهائي غير ديال آخر خط. تأكد من صلاحية الوصلات. كل Cross 0.60 أقل من 30cm محسوبة نصف بروفيل (كل جوج = واحد)؛ 30cm بالضبط أو أكثر محسوبة قطعة كاملة. Cross 1.20 المقطوعة محسوبة قطعة كاملة. ما كنزيدوش Porteur إضافي غير للفراغ الأخير. Cross 1.20 المقطوعة باتجاه الحائط وارتكازها على Cornière خاصهم تحقق من نظام المصنع قبل التنفيذ.'};
 }
 export function calcBA13Ceiling(d){
  const {L,W}=validateRoom(d.L,d.W);
@@ -162,7 +164,7 @@ export function calcWall(d){
 export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',reserve=.05,why='')=>{const buy=Number.isInteger(qty)?Math.ceil(qty*(1+reserve)):round(qty*(1+reserve),2);rows.push({name,qty,unit,buy,why});};
  if(p.type==='armstrong-full'){
  add('بلاكات Armstrong 60×60 (قبل تحسين القصّات)',p.tiles,'بلاكة',.05,'كامل + مقطوع؛ تقدير متحفظ');
- add('Porteur T 3.60m',p.porteur,'قطعة',.1,'مع اتجاه طول الغرفة');
+ add('Porteur T 3.60m',p.porteur,'قطعة',.1,`${p.carrierCount} خطوط × ${round(p.L,2)}m = ${round(p.porteurCutPlan.installedLength,2)}m؛ كنبدأو كل خط بشوت الخط اللي قبل، والباقي النهائي ${round(p.porteurWaste,2)}m فقط. وصلات Porteur: ${p.porteurJoints} (تحقق من نظام التركيب).`);
  add('Cross 1.20m',p.cross120,'قطعة',.1,`${p.cross120Full} بدون قص + ${p.cross120Cut} قصيرة ومقصوصة، وكل وحدة محسوبة بروفيل 1.20 كامل`);
  add('Cross 0.60m',p.cross060Stock,'بروفيل',.1,`${p.cross060} قطعة فالمخطط: ${p.cross060RegularCount} محسوبة كاملة + ${p.cross060HalfCount} أقل من 30cm محسوبة نصف بروفيل (كل جوج = واحد). المجموع: ${p.cross060StockEquivalent} بروفيل مكافئ، مدوّر للشراء إلى ${p.cross060Stock}.`);
  add('Cornière محيطية 3m',p.angle,'قطعة',.1,'على الحائط فقط');
