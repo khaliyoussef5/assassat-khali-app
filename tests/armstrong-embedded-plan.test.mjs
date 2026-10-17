@@ -97,17 +97,14 @@ test('Material results only show the table and the two approved export actions, 
  assert.match(html,/\$\('ak-bom'\)\.innerHTML=/);
 });
 
-test('Mobile Armstrong interactive SVG remains full-size and scrollable horizontally',()=>{
+test('Restore original fit-to-width Armstrong diagram on phones without redundant subtitle',()=>{
  const plan=main.match(/<div class="ak-graphic" id="ak-svg-container"[^>]*>/)?.[0];
- assert.ok(plan,'Interactive SVG holder exists');
- assert.match(plan,/tabindex="0"/);
- assert.match(plan,/role="region"/);
+ assert.ok(plan,'Interactive diagram holder exists');
+ assert.match(plan,/aria-label="رسم تخطيطي لسقف Armstrong"/);
  assert.doesNotMatch(main,/Vue en plan|البروفيلات والمساحات مرسومين بالنسب الصحيحة/);
- assert.match(html,/@media\(max-width:700px\)/);
- assert.match(html,/#ak-calculator \.ak-graphic\{overflow-x:auto;overflow-y:hidden/);
- assert.match(html,/#ak-calculator \.ak-graphic svg\{width:800px;min-width:800px;max-width:none;height:auto\}/);
- assert.match(main,/حرّك المخطط يمين ويسار باش تشوف التفاصيل بوضوح/);
- assert.match(html,/@media print\{#ak-calculator \.ak-graphic\{overflow:visible!important\}/);
+ assert.match(html,/#ak-calculator \.ak-graphic\{background:#f5f9f8;border:1px solid #e7eded;border-radius:14px;overflow:hidden;line-height:0\}/);
+ assert.match(html,/#ak-calculator \.ak-graphic svg\{width:100%;height:auto;display:block\}/);
+ assert.doesNotMatch(html,/ak-mobile-diagram-hint|width:800px;min-width:800px|touch-action:pan-x pan-y/);
  assert.match(html,/function svgPlan\(p,showHangers\)/);
  assert.match(html,/viewBox="0 0 1100 610"/);
 });
