@@ -35,9 +35,15 @@ test('Invalid tile counts are rejected',()=>{
   assert.throws(()=>buildPlan(room,{nL:14,nW:6}),/BA13/);
   assert.throws(()=>buildPlan(room,{nL:12.5,nW:6}),/عدد البلاكات/);
 });
-test('Tige cut length changes rod count',()=>{
-  assert.equal(buildPlan(room,{nL:12,nW:6}).rodPieces,3);
-  assert.equal(buildPlan({...room,cut:40},{nL:12,nW:6}).rods,16);
+test('Ceiling drop alone determines estimated Tige cut and rod quantity',()=>{
+  const p=buildPlan(room,{nL:12,nW:6});
+  assert.equal(p.cut,30);
+  assert.equal(p.rodPieces,3);
+  assert.equal(p.rods,11);
+  const changed=buildPlan({...room,drop:40,cut:30},{nL:12,nW:6});
+  assert.equal(changed.cut,40);
+  assert.equal(changed.rodPieces,2);
+  assert.equal(changed.rods,16);
 });
 test('Manual choice, SVG and two-page PDF remain available',()=>{
   assert.match(html,/الخيار 3 — تعديل يدوي/);
