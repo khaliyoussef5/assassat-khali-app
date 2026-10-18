@@ -207,3 +207,33 @@ h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.25;margin:7px 0}
  .ak-walls-flow .ak-wall-preview-warning{display:none}
  .ak-walls-flow .plan svg[data-diagram="wall"]{width:100%;min-width:0;max-width:100%}
 }
+
+/* Cloison project opening controls: hidden until the user explicitly adds one. */
+.ak-walls-flow .ak-wall-opening-toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:15px 0 0}
+.ak-walls-flow .ak-wall-opening-toolbar button{
+ display:inline-flex;align-items:center;justify-content:center;min-height:45px;
+ padding:10px 16px;background:#eaf8f3;border:1px solid #96cfc1;
+ border-radius:11px;color:#166e65;font-size:13px;font-weight:850;cursor:pointer
+}
+.ak-walls-flow .ak-wall-opening-toolbar button:hover{background:#d9f1e8}
+.ak-walls-flow .ak-wall-opening-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.ak-walls-flow .ak-wall-opening-fields:empty{display:none}
+.ak-walls-flow .ak-wall-opening-card{padding:14px;border:1px solid #cde4dc;border-radius:13px;background:#fafdfb;min-width:0}
+.ak-walls-flow .ak-wall-opening-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.ak-walls-flow .ak-wall-opening-card-head strong{color:#174951;font-size:14px}
+.ak-walls-flow .ak-wall-opening-card-head button{border:1px solid #e7c9c5;background:#fff4f3;color:#9c3d38;padding:5px 11px;border-radius:8px;min-height:34px}
+.ak-walls-flow .ak-wall-opening-dimensions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ak-walls-flow .ak-wall-opening-dimensions label{font-weight:800;font-size:11px;color:#40555e}
+.ak-walls-flow .ak-wall-opening-dimensions input{display:block;margin-top:5px;min-height:44px;width:100%;background:#fff;border:1px solid #d8e2e3;border-radius:9px;color:#142c35;padding:9px 10px;text-align:center;font-size:15px;font-weight:800;direction:ltr}
+.ak-walls-flow .ak-wall-opening-position{font-size:11px;color:#587078;margin:9px 0 0}
+.ak-walls-flow .ak-wall-drag-help{font-size:12px;color:#52696f;margin:9px 0;line-height:1.8}
+.ak-walls-flow .ak-wall-opening-message{font-size:12px;color:#974c2f;background:#fff4eb;border:1px solid #efd7c7;padding:10px 12px;border-radius:9px}
+.ak-walls-flow .ak-wall-opening-message[hidden]{display:none}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]{cursor:grab;touch-action:none;outline:none}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]:active{cursor:grabbing}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]:focus-visible rect{stroke:#146f60;stroke-width:4}
+@media(max-width:600px){
+ .ak-walls-flow .ak-wall-opening-fields{grid-template-columns:1fr}
+ .ak-walls-flow .ak-wall-opening-toolbar button{flex:1 1 120px}
+}
+@media print{.ak-walls-flow .ak-wall-opening-toolbar,.ak-walls-flow .ak-wall-drag-help{display:none}}
