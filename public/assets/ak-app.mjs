@@ -7,7 +7,7 @@ import {wallPlanSvg} from './ak-wall-plan.mjs';
 import {drawWallPrintPage} from './ak-wall-print.mjs';
 const $=id=>document.getElementById(id),fmt=x=>Number(x).toLocaleString('fr-FR',{maximumFractionDigits:2}),escapeText=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const app=document.body.dataset.calculator;let approved=false,plan=null,chosen=0,options=[],showHangers=true;
-const names={'armstrong-full':'Armstrong بلا بوردور','ba13-ceiling':'سقف الجبص بورد BA13','walls':'الحوائط والعزل'};
+const names={'armstrong-full':'Armstrong بلا بوردور','ba13-ceiling':'سقف الجبص بورد BA13','walls':'Cloison BA13 — الحائط الفاصل'};
 const fields={
  'armstrong-full':[
  ['L','الطول (m)',8],['W','العرض (m)',4]
@@ -19,7 +19,7 @@ const fields={
 const headlines={
  'armstrong-full':{desc:'Armstrong على المساحة كاملة، بلا BA13. اختر توزيع البلاكات المقطوعة على حواف الغرفة.',icon:'<svg viewBox="0 0 46 46" fill="none" aria-hidden="true"><rect x="4" y="7" width="38" height="30" rx="3" stroke-width="2"/><path d="M16.7 7v30M29.3 7v30M4 17h38M4 27h38" stroke-width="1.5"/><path d="M4 37l5 5h28l5-5" stroke="#6BBDAF" stroke-width="1.5"/></svg>'},
  'ba13-ceiling':{desc:'سقف عادي أو إنارة مخفية، مع توزيع Fourrure والألواح واللوازم التقديرية.',icon:'<svg viewBox="0 0 46 46" fill="none" aria-hidden="true"><rect x="5" y="8" width="36" height="28" rx="3" stroke-width="2"/><path d="M5 17h36M14 8v28M32 8v28M5 27h36" stroke-width="1.5"/></svg>'},
- 'walls':{desc:'Cloison وDoublage والعزل، مع حساب Rails وMontants وBA13 حسب الفتحات.',icon:'<svg viewBox="0 0 46 46" fill="none" aria-hidden="true"><rect x="7" y="5" width="32" height="36" rx="2" stroke-width="2"/><path d="M18 5v36M29 5v36M7 18h32M7 29h32" stroke-width="1.5"/></svg>'}
+ 'walls':{desc:'حساب Cloison BA13 بوجهين: Rails وMontants والألواح مع الباب والشباك.',icon:'<svg viewBox="0 0 46 46" fill="none" aria-hidden="true"><rect x="7" y="5" width="32" height="36" rx="2" stroke-width="2"/><path d="M18 5v36M29 5v36M7 18h32M7 29h32" stroke-width="1.5"/></svg>'}
 };
 if(!headlines[app])throw Error('Unknown calculator');
 function coreMarkup(){return `
@@ -90,13 +90,9 @@ const metric=(lab,val)=>`<div class="metric"><small>${lab}</small><strong>${esca
 const picker=(id,label,options)=>`<div class="formfield"><label for="in-${id}">${label}</label><select id="in-${id}">${options.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select></div>`;
 if(app==='ba13-ceiling')$('fields').insertAdjacentHTML('beforeend',picker('mode','نوع السقف',[['plain','سقف BA13 عادي'],['hidden','إنارة مخفية محيطية']]));
 if(app==='walls')$('fields').insertAdjacentHTML('beforeend',[
- picker('kind','نوع الحائط',[['cloison','Cloison — وجهين BA13'],['doublage','Doublage — وجه واحد'],['isolated','Cloison + Rockwool']]),
  picker('layers','طبقات BA13 / وجه',[['1','طبقة واحدة'],['2','جوج طبقات']]),
  picker('spacing','تباعد Montants',[['0.6','60cm'],['0.4','40cm']]),
- picker('studLength','طول Montant',[['3','3m'],['4','4m']]),
- picker('rockwool','العزل Rockwool',[['0','بلا عزل'],['1','مع Rockwool']]),
- picker('woolDensity','كثافة Rockwool',[['30','30kg/m³'],['50','50kg/m³'],['70','70kg/m³']]),
- picker('woolThickness','سماكة Rockwool',[['50','50mm'],['70','70mm']])
+ picker('studLength','طول Montant',[['3','3m'],['4','4m']])
 ].join(''));
 
 /* Wall calculator preview: same approved sequence as Armstrong.
@@ -111,10 +107,10 @@ if(app==='walls'){
  drawing.querySelector('.step').textContent='02';
  choices.querySelector('.step').textContent='03';
  drawing.querySelector('.panelheader p').remove();
- choices.querySelector('#option-title').textContent='نوع الحائط، العزل والفتحات';
- choices.querySelector('#option-subtitle').textContent='راجع مواد التركيب وأبعاد الباب والشباك قبل اعتماد المخطط.';
+ choices.querySelector('#option-title').textContent='إعدادات Cloison BA13 والفتحات';
+ choices.querySelector('#option-subtitle').textContent='حائط فاصل بوجهين BA13؛ راجع الهيكل وأبعاد الباب والشباك قبل اعتماد المخطط.';
  const fieldGroups=[
-  ['التركيب والمواد',['kind','layers','spacing','studLength','rockwool','woolDensity','woolThickness']],
+  ['الهيكل وطبقات BA13',['layers','spacing','studLength']],
   ['الباب والشباك',['doorW','doorH','doorX','windowW','windowH','windowX','windowBottom']]
  ];
  const fieldsContainer=document.getElementById('fields');
@@ -148,9 +144,9 @@ if(app==='walls'){
  const copy=document.createElement('button');
  copy.type='button';copy.id='copy-materials';copy.className='secondary';copy.textContent='نسخ القائمة';
  results.querySelector('#result .actions').append(copy);
- results.insertAdjacentHTML('beforeend','<p class="ak-wall-preview-warning">نسخة تجريبية غير معتمدة للتنفيذ: تدعيم الفتحات، خطة تقطيع BA13، نظام العزل وثبات الهيكل خاصهم مراجعة تقنية قبل الشراء أو التركيب.</p>');
+ results.insertAdjacentHTML('beforeend','<p class="ak-wall-preview-warning">نسخة تجريبية غير معتمدة للتنفيذ: تدعيم الفتحات، خطة تقطيع BA13 وثبات الهيكل خاصهم مراجعة تقنية قبل الشراء أو التركيب.</p>');
 }
-function dims(){let out={};for(const [id] of fields[app])out[id]=field(id);if(app==='armstrong-full')out.drop=field('drop');for(const id of ['mode','kind','layers','spacing','studLength','rockwool','woolDensity','woolThickness'])if($('in-'+id))out[id]=$('in-'+id).value;return out;}
+function dims(){let out={};for(const [id] of fields[app])out[id]=field(id);if(app==='armstrong-full')out.drop=field('drop');for(const id of ['mode','layers','spacing','studLength'])if($('in-'+id))out[id]=$('in-'+id).value;return out;}
 function optionsUI(){
  if(app==='armstrong-full'){
    const d=dims();options=fullArmstrongOptions(d.L,d.W);
@@ -174,7 +170,7 @@ function optionsUI(){
 }
 function createModel(){let d=dims();if(app==='armstrong-full'){const o=chosen===2?{nL:field('nL'),nW:field('nW')}:options[chosen]||options[0];return calcArmstrongFull({...d,...o});}
  if(app==='ba13-ceiling')return calcBA13Ceiling(d);
- return calcWall({...d,rockwool:d.rockwool==='1'});
+ return calcWall({...d,kind:'cloison'});
 }
 function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['شبكة 60×60',p.nL+' × '+p.nW],['عدد البلاكات',p.tiles]]:
  app==='ba13-ceiling'?[['مساحة السقف',fmt(p.area)+'m²'],['خطوط Fourrure',p.positions.length],['Fourrure 3m',p.fourrure],['وصلات (تقديرية)',p.joinCount],['علاقات',p.hangers],['ألواح BA13 النظري',p.boards]]:
@@ -247,9 +243,9 @@ if(app==='walls'){
  $('copy-materials').addEventListener('click',async()=>{
   if(!approved||!plan)return;
   const button=$('copy-materials');
-  const lines=['ASSASSAT KHALI — الحوائط والعزل',
+  const lines=['ASSASSAT KHALI — Cloison BA13',
    'الحائط: '+fmt(plan.L)+' × '+fmt(plan.H)+' m',
-   'النوع: '+(plan.kind==='doublage'?'Doublage':plan.kind==='isolated'?'Cloison + Rockwool':'Cloison'),
+   'النوع: Cloison BA13 بوجهين',
    'لائحة المواد:'];
   for(const item of materials(plan))
    lines.push(item.name+': '+fmt(item.qty)+' '+item.unit+' — الشراء: '+fmt(item.buy)+' '+item.unit);
