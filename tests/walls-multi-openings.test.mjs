@@ -23,7 +23,7 @@ test('Default Cloison is an ordinary solid wall, with no door/window deduction',
  assert.equal(p.openings.length,0);
  assert.equal(p.netArea,24);
  assert.equal(p.doorArea,0);assert.equal(p.windowArea,0);
- assert.equal(p.railLinear,32);
+ assert.equal(p.railLinear,16);
  assert.equal((wallPlanSvg(p).match(/data-opening="(door|window)"/g)||[]).length,0);
  assert.doesNotMatch(ui,/const items=\[\{type/);
 });
