@@ -20,7 +20,7 @@ test('Door opening uses user-defined offset and actual rail segments',()=>{
  assert.equal(materials(a).find(r=>r.name==='Rails 3m').qty,a.rails);
 });
 test('Door and window openings deduct areas and show actual placements',()=>{
- const p=make({windowW:1,windowH:1.2,windowX:3.2,windowBottom:.9,kind:'isolated',woolDensity:70,woolThickness:50,layers:2});
+ const p=make({windowW:1,windowH:1.2,windowX:3.2,windowBottom:.9,kind:'cloison',layers:2});
  assert.equal(p.openings.length,2);
  assert.ok(Math.abs(p.netArea-(14-1.89-1.2))<1e-7);
  assert.equal(p.openings[1].x,3.2);assert.equal(p.openings[1].top,.7);
@@ -28,7 +28,8 @@ test('Door and window openings deduct areas and show actual placements',()=>{
  assert.ok(p.rails>=Math.ceil(p.railLinear/3));
  assert.ok(p.railJoins>=0);
  assert.equal(materials(p).find(r=>r.name.startsWith('Raccord Rails')).qty,p.railJoins);
- assert.ok(materials(p).some(r=>r.name.includes('Rockwool 70kg/m³')));
+ assert.ok(materials(p).every(r=>!r.name.includes('Rockwool')));
+ assert.equal(p.insulated,undefined);
 });
 test('Rejects windows beyond wall, overlapping openings and negative positions',()=>{
  assert.throws(()=>make({doorX:4.5}),/الباب/);
@@ -72,13 +73,13 @@ test('Wall PDF page 2 is a separate direct landscape drawing and retains positio
  assert.match(app,/drawWallPrintPage\(z,p,planCanvas.width,planCanvas.height\)/);
  assert.match(app,/isLandscapePrint=isArmPrint\|\|isBA13Print\|\|isWallPrint/);
 });
-test('Wall UI exposes the placement and Rockwool controls in Classic calculator',()=>{
+test('Cloison preview exposes openings and excludes insulation controls',()=>{
  const app=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
  const html=readFileSync(new URL('../public/calculators/walls/index.html',import.meta.url),'utf8');
  assert.match(app,/\['doorX','بداية الباب/);
  assert.match(app,/\['windowX','بداية الشباك/);
  assert.match(app,/\['windowBottom','علو أسفل الشباك/);
- assert.match(app,/picker\('woolDensity'/);
- assert.match(app,/picker\('woolThickness'/);
+ assert.doesNotMatch(app,/picker\('(rockwool|woolDensity|woolThickness)'/);
+ assert.doesNotMatch(app,/picker\('(rockwool|woolDensity|woolThickness)'/);
  assert.match(html,/قيد التطوير/);assert.doesNotMatch(html,/ak-app\.mjs/);
 });
