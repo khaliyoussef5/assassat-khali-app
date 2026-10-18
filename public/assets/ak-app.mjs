@@ -98,6 +98,58 @@ if(app==='walls')$('fields').insertAdjacentHTML('beforeend',[
  picker('woolDensity','كثافة Rockwool',[['30','30kg/m³'],['50','50kg/m³'],['70','70kg/m³']]),
  picker('woolThickness','سماكة Rockwool',[['50','50mm'],['70','70mm']])
 ].join(''));
+
+/* Wall calculator preview: same approved sequence as Armstrong.
+ * Scope this to the walls app; the published /calculators/walls/ stays locked. */
+if(app==='walls'){
+ document.body.classList.add('ak-walls-flow');
+ const panels=[...document.querySelectorAll('main.wrap > section.panel')];
+ if(panels.length!==4)throw Error('Wall layout unavailable');
+ const [dimensions,choices,drawing,results]=panels;
+ dimensions.after(drawing);
+ dimensions.querySelector('.panelheader p').textContent='دخل طول الحائط وارتفاعه بالمتر؛ المخطط كيتبدل مباشرة.';
+ drawing.querySelector('.step').textContent='02';
+ choices.querySelector('.step').textContent='03';
+ drawing.querySelector('.panelheader p').remove();
+ choices.querySelector('#option-title').textContent='نوع الحائط، العزل والفتحات';
+ choices.querySelector('#option-subtitle').textContent='راجع مواد التركيب وأبعاد الباب والشباك قبل اعتماد المخطط.';
+ const fieldGroups=[
+  ['التركيب والمواد',['kind','layers','spacing','studLength','rockwool','woolDensity','woolThickness']],
+  ['الباب والشباك',['doorW','doorH','doorX','windowW','windowH','windowX','windowBottom']]
+ ];
+ const fieldsContainer=document.getElementById('fields');
+ for(const [title,keys] of fieldGroups){
+  const group=document.createElement('fieldset');
+  group.className='ak-wall-setting-group';
+  const legend=document.createElement('legend');legend.textContent=title;group.append(legend);
+  const grid=document.createElement('div');grid.className='ak-wall-setting-grid';group.append(grid);
+  for(const key of keys){
+   const control=document.getElementById('in-'+key)?.closest('.formfield');
+   if(!control)throw Error('Missing wall control: '+key);
+   grid.append(control);
+  }
+  choices.append(group);
+  for(const control of grid.querySelectorAll('input,select')){
+   control.addEventListener('input',refresh);
+   if(control.tagName==='SELECT')control.addEventListener('change',refresh);
+  }
+ }
+ if(fieldsContainer.querySelectorAll('.formfield').length!==2)throw Error('Wall dimensions should only show length and height');
+ const approve=document.getElementById('approve');
+ choices.append(approve);
+ approve.classList.add('ak-wall-approve');
+ const svgDownload=document.getElementById('svg-download');svgDownload.remove();
+ drawing.querySelector('.actions').remove();
+ results.querySelector('#csv-download').remove();
+ results.querySelector('#print').remove();
+ results.querySelector('#note').remove();
+ const pdf=document.getElementById('pdf-download');
+ pdf.textContent='تحميل لائحة المواد + المخطط PDF';pdf.classList.add('ak-wall-pdf');
+ const copy=document.createElement('button');
+ copy.type='button';copy.id='copy-materials';copy.className='secondary';copy.textContent='نسخ القائمة';
+ results.querySelector('#result .actions').append(copy);
+ results.insertAdjacentHTML('beforeend','<p class="ak-wall-preview-warning">نسخة تجريبية غير معتمدة للتنفيذ: تدعيم الفتحات، خطة تقطيع BA13، نظام العزل وثبات الهيكل خاصهم مراجعة تقنية قبل الشراء أو التركيب.</p>');
+}
 function dims(){let out={};for(const [id] of fields[app])out[id]=field(id);if(app==='armstrong-full')out.drop=field('drop');for(const id of ['mode','kind','layers','spacing','studLength','rockwool','woolDensity','woolThickness'])if($('in-'+id))out[id]=$('in-'+id).value;return out;}
 function optionsUI(){
  if(app==='armstrong-full'){
@@ -184,6 +236,30 @@ if(app==='armstrong-full'){
    else{
     const temp=document.createElement('textarea');temp.value=payload;temp.style.position='fixed';temp.style.opacity='0';document.body.append(temp);temp.select();
     const copied=document.execCommand('copy');temp.remove();if(!copied)throw Error('Clipboard unavailable');
+   }
+   button.textContent='تم نسخ القائمة ✓';
+  }catch(e){button.textContent='تعذر النسخ: راجع صلاحية الحافظة';}
+  button.blur();
+ });
+}
+
+if(app==='walls'){
+ $('copy-materials').addEventListener('click',async()=>{
+  if(!approved||!plan)return;
+  const button=$('copy-materials');
+  const lines=['ASSASSAT KHALI — الحوائط والعزل',
+   'الحائط: '+fmt(plan.L)+' × '+fmt(plan.H)+' m',
+   'النوع: '+(plan.kind==='doublage'?'Doublage':plan.kind==='isolated'?'Cloison + Rockwool':'Cloison'),
+   'لائحة المواد:'];
+  for(const item of materials(plan))
+   lines.push(item.name+': '+fmt(item.qty)+' '+item.unit+' — الشراء: '+fmt(item.buy)+' '+item.unit);
+  const payload=lines.join('\n');
+  try{
+   if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(payload);
+   else{
+    const el=document.createElement('textarea');el.value=payload;el.style.position='fixed';el.style.opacity='0';
+    document.body.append(el);el.select();const ok=document.execCommand('copy');el.remove();
+    if(!ok)throw Error('Clipboard unavailable');
    }
    button.textContent='تم نسخ القائمة ✓';
   }catch(e){button.textContent='تعذر النسخ: راجع صلاحية الحافظة';}
