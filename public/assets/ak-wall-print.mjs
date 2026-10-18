@@ -9,7 +9,7 @@ export function drawWallPrintPage(ctx,p,width=3508,height=2480){
  ctx.save();ctx.setTransform(width/1200,0,0,height/848,0,0);
  rect(ctx,0,0,1200,848,'#fff');
  lab(ctx,'ASSASSAT KHALI',65,45,23);lab(ctx,'OUTIL TECHNIQUE / PLAN 02',65,76,12,C.sub);
- lab(ctx,p.kind==='doublage'?'Doublage BA13':p.insulated?'Cloison + Rockwool':'Cloison BA13',1135,45,26,C.ink,'right');
+ lab(ctx,'Cloison BA13',1135,45,26,C.ink,'right');
  lab(ctx,'PLAN CLOISON / ÉLÉVATION',1135,76,13,C.sub,'right');
  lin(ctx,65,97,1135,97,'#ccdad5',1.5);
  rect(ctx,65,113,1070,77,'#f1f7f3','#dce8e2');
@@ -20,7 +20,7 @@ export function drawWallPrintPage(ctx,p,width=3508,height=2480){
  rect(ctx,65,207,1070,478,'#fff','#dce8e2');
  let ww=875,hh=875*p.H/p.L;if(hh>370){hh=370;ww=370*p.L/p.H;}
  const x=564-ww/2,y=448-hh/2,X=v=>x+ww*v/p.L,Y=v=>y+hh*v/p.H;
- rect(ctx,x,y,ww,hh,p.insulated?'#fff6e6':'#f8fbfa',C.rail);
+ rect(ctx,x,y,ww,hh,'#f8fbfa',C.rail);
  for(const o of p.openings)rect(ctx,X(o.x),Y(o.top),ww*o.w/p.L,hh*o.h/p.H,o.type==='door'?'#fff':'#e6f3f4',C.open);
  for(const pos of p.studPositions){
   let bottom=0;for(const o of p.openings.filter(o=>pos>o.x+1e-7&&pos<o.right-1e-7).sort((a,b)=>a.top-b.top)){
@@ -41,7 +41,7 @@ export function drawWallPrintPage(ctx,p,width=3508,height=2480){
  lin(ctx,87,739,125,739,C.rail,5);lab(ctx,'Rails 3m × '+p.rails,138,739,17);
  lin(ctx,373,739,410,739,C.stud,4);lab(ctx,'Montants '+p.stock+'m × '+p.montants,423,739,17);
  lin(ctx,785,739,820,739,C.jamb,4);lab(ctx,'Renforts',835,739,17);
- lab(ctx,'BA13 '+p.boards+' plaques (théorique)  |  Raccords Rails '+p.railJoins+'  |  '+(p.insulated?'Rockwool '+p.woolDensity+'kg/m³ / '+p.woolThickness+'mm':'Sans isolation'),87,769,15,C.sub);
- lab(ctx,'مخطط تقديري، تدعيم الفتحات ونظام الجبس والعزل يحتاجان للمراجعة التقنية قبل التنفيذ.',65,825,14,C.sub,'left','600','rtl');
+ lab(ctx,'BA13 '+p.boards+' plaques (théorique)  |  Raccords Rails '+p.railJoins+'  |  '+'Cloison BA13 / deux faces',87,769,15,C.sub);
+ lab(ctx,'مخطط تقديري، تدعيم الفتحات ونظام الجبس يحتاجان للمراجعة التقنية قبل التنفيذ.',65,825,14,C.sub,'left','600','rtl');
  ctx.restore();
 }
