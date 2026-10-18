@@ -4,9 +4,10 @@ import {drawArmstrongPrintPage} from './ak-pdf-print.mjs';
 import {ba13PlanSvg} from './ak-ba13-plan.mjs';
 import {drawBA13PrintPage} from './ak-ba13-print.mjs';
 import {wallPlanSvg} from './ak-wall-plan.mjs';
+import {initWallOpenings} from './ak-wall-interactions.mjs';
 import {drawWallPrintPage} from './ak-wall-print.mjs';
 const $=id=>document.getElementById(id),fmt=x=>Number(x).toLocaleString('fr-FR',{maximumFractionDigits:2}),escapeText=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const app=document.body.dataset.calculator;let approved=false,plan=null,chosen=0,options=[],showHangers=true;
+const app=document.body.dataset.calculator;let approved=false,plan=null,chosen=0,options=[],showHangers=true,wallControls=null;
 const names={'armstrong-full':'Armstrong بلا بوردور','ba13-ceiling':'سقف الجبص بورد BA13','walls':'Cloison BA13 — الحائط الفاصل'};
 const fields={
  'armstrong-full':[
@@ -14,7 +15,7 @@ const fields={
  ],'ba13-ceiling':[
  ['L','الطول (m)',8],['W','العرض (m)',4],['drop','النزول (cm)',30]
  ],'walls':[
- ['L','طول الحائط (m)',5],['H','ارتفاع الحائط (m)',2.8],['doorW','عرض الباب (m)',.9],['doorH','ارتفاع الباب (m)',2.1],['doorX','بداية الباب من يسار المخطط (m)',.2],['windowW','عرض الشباك (m)',0],['windowH','ارتفاع الشباك (m)',0],['windowX','بداية الشباك من اليسار (m)',3.2],['windowBottom','علو أسفل الشباك عن الأرض (m)',.9]
+ ['L','طول الحائط (m)',5],['H','ارتفاع الحائط (m)',2.8]
  ]};
 const headlines={
  'armstrong-full':{desc:'Armstrong على المساحة كاملة، بلا BA13. اختر توزيع البلاكات المقطوعة على حواف الغرفة.',icon:'<svg viewBox="0 0 46 46" fill="none" aria-hidden="true"><rect x="4" y="7" width="38" height="30" rx="3" stroke-width="2"/><path d="M16.7 7v30M29.3 7v30M4 17h38M4 27h38" stroke-width="1.5"/><path d="M4 37l5 5h28l5-5" stroke="#6BBDAF" stroke-width="1.5"/></svg>'},
@@ -103,15 +104,14 @@ if(app==='walls'){
  if(panels.length!==4)throw Error('Wall layout unavailable');
  const [dimensions,choices,drawing,results]=panels;
  dimensions.after(drawing);
- dimensions.querySelector('.panelheader p').textContent='دخل طول الحائط وارتفاعه بالمتر؛ المخطط كيتبدل مباشرة.';
+ dimensions.querySelector('.panelheader p').textContent='الحائط بلا فتحات افتراضياً. أضف الباب أو النافذة وحدد المقاسات هنا، وحرّكها داخل المخطط.';
  drawing.querySelector('.step').textContent='02';
  choices.querySelector('.step').textContent='03';
  drawing.querySelector('.panelheader p').remove();
  choices.querySelector('#option-title').textContent='إعدادات Cloison BA13 والفتحات';
- choices.querySelector('#option-subtitle').textContent='حائط فاصل بوجهين BA13؛ راجع الهيكل وأبعاد الباب والشباك قبل اعتماد المخطط.';
+ choices.querySelector('#option-subtitle').textContent='حائط فاصل بوجهين BA13؛ راجع الهيكل والتباعد قبل اعتماد المخطط.';
  const fieldGroups=[
-  ['الهيكل وطبقات BA13',['layers','spacing','studLength']],
-  ['الباب والشباك',['doorW','doorH','doorX','windowW','windowH','windowX','windowBottom']]
+  ['الهيكل وطبقات BA13',['layers','spacing','studLength']]
  ];
  const fieldsContainer=document.getElementById('fields');
  for(const [title,keys] of fieldGroups){
@@ -145,8 +145,9 @@ if(app==='walls'){
  copy.type='button';copy.id='copy-materials';copy.className='secondary';copy.textContent='نسخ القائمة';
  results.querySelector('#result .actions').append(copy);
  results.insertAdjacentHTML('beforeend','<p class="ak-wall-preview-warning">نسخة تجريبية غير معتمدة للتنفيذ: تدعيم الفتحات، خطة تقطيع BA13 وثبات الهيكل خاصهم مراجعة تقنية قبل الشراء أو التركيب.</p>');
+ wallControls=initWallOpenings({fieldElement:fieldsContainer,planElement:drawing.querySelector('#plan'),onChange:()=>refresh(),fmt});
 }
-function dims(){let out={};for(const [id] of fields[app])out[id]=field(id);if(app==='armstrong-full')out.drop=field('drop');for(const id of ['mode','layers','spacing','studLength'])if($('in-'+id))out[id]=$('in-'+id).value;return out;}
+function dims(){let out={};for(const [id] of fields[app])out[id]=field(id);if(app==='armstrong-full')out.drop=field('drop');for(const id of ['mode','layers','spacing','studLength'])if($('in-'+id))out[id]=$('in-'+id).value;if(app==='walls')out.openings=wallControls.getOpenings();return out;}
 function optionsUI(){
  if(app==='armstrong-full'){
    const d=dims();options=fullArmstrongOptions(d.L,d.W);
@@ -209,7 +210,7 @@ const svgH=(p)=>{
 };
 function showError(e){$('error').textContent=e.message||String(e);$('error').hidden=false;$('approve').disabled=true;if($('svg-download'))$('svg-download').disabled=true;$('plan').innerHTML='<div class="locked">صلّح القياسات باش يظهر المخطط.</div>';$('summary').innerHTML='';}
 function invalidate(){approved=false;$('result').hidden=true;$('locked').hidden=false;}
-function refresh(){invalidate();$('error').hidden=true;try{optionsUI();plan=createModel();sumSvg(plan);$('plan').innerHTML=svgH(plan);$('approve').disabled=false;if($('svg-download'))$('svg-download').disabled=false;}catch(e){plan=null;showError(e)}}
+function refresh(){invalidate();$('error').hidden=true;try{optionsUI();plan=createModel();sumSvg(plan);$('plan').innerHTML=svgH(plan);if(app==='walls')wallControls.bindSvg(plan);$('approve').disabled=false;if($('svg-download'))$('svg-download').disabled=false;}catch(e){plan=null;showError(e)}}
 function save(filename,blob){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500)}
 function renderBom(p){const rows=materials(p);let table='<table><thead><tr><th>المادة</th><th>المحسوب</th><th>الشراء المقترح</th></tr></thead><tbody>';
  for(const r of rows)table+=`<tr><td><b>${escapeText(r.name)}</b><div class="note">${escapeText(r.why||'')}</div></td><td class="qty">${fmt(r.qty)} ${escapeText(r.unit)}</td><td class="qty buy">${fmt(r.buy)} ${escapeText(r.unit)}</td></tr>`;
