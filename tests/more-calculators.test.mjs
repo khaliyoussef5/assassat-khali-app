@@ -29,11 +29,13 @@ test('BA13 8x4 simple and hidden light include correct Furure directions and ext
 });
 test('Wall 5m x 2.8m, door opening, one side doublage and two-face cloison',()=>{
  const d={L:5,H:2.8,doorW:.9,doorH:2.1,windowW:0,windowH:0,spacing:.6,studLength:3,layers:1};
- const c=calcWall({...d,kind:'cloison',rockwool:false}),f=calcWall({...d,kind:'doublage'});
+ const c=calcWall({...d,kind:'cloison'}),f=calcWall({...d,kind:'doublage'});
  assert.ok(Math.abs(c.netArea-(14-1.89))<1e-7);assert.equal(c.faces,2);assert.equal(f.faces,1);
  assert.equal(c.boardArea,f.boardArea*2);assert.ok(c.studs>Math.ceil(5/.6)+1);
- assert.equal(c.insulated,false);
- const a=calcWall({...d,kind:'isolated'});assert.equal(a.insulated,true);assert.ok(a.woolUnits>0);
+ assert.equal(c.insulated,undefined);
+ assert.equal(c.woolUnits,undefined);
+ assert.ok(materials(c).every(r=>!r.name.includes('Rockwool')));
+ assert.equal(calcWall({...d,kind:'isolated'}).kind,'cloison');
 });
 test('Wall prevents unsafe stud length and invalid openings',()=>{
  const d={L:5,H:3.6,kind:'cloison',layers:1,spacing:.6,studLength:3};
