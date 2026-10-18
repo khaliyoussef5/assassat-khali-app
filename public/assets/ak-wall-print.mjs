@@ -21,7 +21,13 @@ export function drawWallPrintPage(ctx,p,width=3508,height=2480){
  let ww=875,hh=875*p.H/p.L;if(hh>370){hh=370;ww=370*p.L/p.H;}
  const x=564-ww/2,y=448-hh/2,X=v=>x+ww*v/p.L,Y=v=>y+hh*v/p.H;
  rect(ctx,x,y,ww,hh,'#f8fbfa',C.rail);
- for(const o of p.openings)rect(ctx,X(o.x),Y(o.top),ww*o.w/p.L,hh*o.h/p.H,o.type==='door'?'#fff':'#e6f3f4',C.open);
+ for(const [i,o] of p.openings.entries()){
+  const ox=X(o.x),oy=Y(o.top),ow=ww*o.w/p.L,oh=hh*o.h/p.H;
+  rect(ctx,ox,oy,ow,oh,o.type==='door'?'#fff':'#e6f3f4',C.open);
+  // Numbered labels keep all openings identifiable even if the footer is short.
+  lab(ctx,(o.type==='door'?'P':'F')+(i+1)+' '+fmt(o.w)+'×'+fmt(o.h),
+   ox+ow/2,oy+oh/2,Math.min(12,Math.max(8,ow/11)),C.open,'center','700');
+ }
  for(const pos of p.studPositions){
   let bottom=0;for(const o of p.openings.filter(o=>pos>o.x+1e-7&&pos<o.right-1e-7).sort((a,b)=>a.top-b.top)){
    if(o.top>bottom)lin(ctx,X(pos),Y(bottom),X(pos),Y(o.top),C.stud,3);
@@ -36,7 +42,7 @@ export function drawWallPrintPage(ctx,p,width=3508,height=2480){
  lin(ctx,x+ww+27,y,x+ww+27,y+hh,'#a8bdb6',1.2);lab(ctx,fmt(p.H)+' m',x+ww+35,y+hh/2,17,C.ink,'left','800');
  lab(ctx,'Montants '+fmt(p.spacing*100)+'cm  |  '+p.baseStuds+' profils réguliers + '+p.extraStuds+' renforts de baie',85,648,17,C.ink);
  const openingLabels=p.openings.map(o=>(o.type==='door'?'Porte ':'Fenêtre ')+fmt(o.w)+'×'+fmt(o.h)+'m / X='+fmt(o.x)+'m').join('   |   ');
- if(openingLabels)lab(ctx,openingLabels,1130,675,15,C.open,'right','700');
+ if(openingLabels)lab(ctx,p.openings.length<=2?openingLabels:('Portes: '+p.openings.filter(o=>o.type==='door').length+' | Fenêtres: '+p.openings.filter(o=>o.type==='window').length+' — كل فتحة مرقمة في المخطط'),1130,675,15,C.open,'right','700');
  rect(ctx,65,714,1070,74,'#eff6f2','#dce8e2');
  lin(ctx,87,739,125,739,C.rail,5);lab(ctx,'Rails 3m × '+p.rails,138,739,17);
  lin(ctx,373,739,410,739,C.stud,4);lab(ctx,'Montants '+p.stock+'m × '+p.montants,423,739,17);
