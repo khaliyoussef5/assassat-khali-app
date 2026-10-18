@@ -34,9 +34,10 @@ test('Preview follows Armstrong: dimensions, plan, wall settings and approval, t
  assert.match(section,/const fieldGroups=\[/);
  assert.doesNotMatch(section,/\b(rockwool|woolDensity|woolThickness|isolated)\b/i);
  assert.match(app,/return calcWall\(\{\.\.\.d,kind:'cloison'\}\)/);
+ assert.match(app,/wallControls\.getOpenings\(\)/);
+ assert.match(app,/initWallOpenings/);
 
- for(const id of ['layers','spacing','studLength',
- 'doorW','doorH','doorX','windowW','windowH','windowX','windowBottom']){
+ for(const id of ['layers','spacing','studLength']){
   assert.ok(section.includes("'"+id+"'"),id+' setting needs to be in wall options');
  }
  assert.match(section,/choices\.append\(approve\)/);
