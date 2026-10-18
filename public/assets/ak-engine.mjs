@@ -131,7 +131,7 @@ export function calcBA13Ceiling(d){
 export function calcWall(d){
  const L=positive(d.L,'طول الحائط'),H=positive(d.H,'الارتفاع');
  if(L<.5||L>40||H<1||H>4)throw Error('طول الحائط بين 0.5 و40m، والارتفاع بين 1 و4m.');
- const kind=['cloison','doublage','isolated'].includes(d.kind)?d.kind:'cloison',layers=Number(d.layers)||1;
+ const kind=['cloison','doublage'].includes(d.kind)?d.kind:'cloison',layers=Number(d.layers)||1;
  if(![1,2].includes(layers))throw Error('عدد طبقات BA13 خاصو يكون 1 أو 2.');
  const spacing=Number(d.spacing)||.6;
  if(![.4,.6].includes(spacing))throw Error('اختار تباعد Montants 40cm أو 60cm.');
@@ -150,16 +150,12 @@ export function calcWall(d){
  if(netArea<=.01)throw Error('صافي مساحة الحائط غير صالح.');
  const faces=kind==='doublage'?1:2,boardArea=netArea*faces*layers;
  const boards=ceil(boardArea/(1.2*2.8)),purchaseBoards=ceil(boards*1.1);
- const insulated=kind==='isolated'||!!d.rockwool;
- const woolDensity=Number(d.woolDensity??50),woolThickness=Number(d.woolThickness??50);
- if(![30,50,70].includes(woolDensity)||![50,70].includes(woolThickness))throw Error('اختار كثافة وسُمك Rockwool من القائمة.');
- const insulationArea=insulated?netArea:0,woolUnits=insulated?ceil(insulationArea/.72):0;
  return {type:'wall',kind,L,H,area,netArea,faces,layers,spacing,stock,
   doorW,doorH,doorX,windowW,windowH,windowX,windowBottom,doorArea,windowArea,
   boardArea,boards,purchaseBoards,
-  ...geometry,montants:geometry.studs,insulated,insulationArea,woolUnits,woolDensity,woolThickness,
+  ...geometry,montants:geometry.studs,
   screwCount:ceil(boardArea*25),jointTape:ceil(netArea*faces*1.1),
-  note:'مواقع الباب والشباك مرسومة حسب المسافات المدخلة من بداية الحائط، وRails مقسّمة على 3m مع استغلال القصّات نظرياً. تدعيم الفتحات، الوصلات، مقاومة الحريق، العزل الصوتي، ونوع الـMontants والـRails خاصهم مراجعة تقنية. ألواح BA13 محسوبة نظرياً بالمساحة وليس خطة تقطيع.'};
+  note:'مواقع الباب والشباك مرسومة حسب المسافات المدخلة من بداية الحائط، وRails مقسّمة على 3m مع استغلال القصّات نظرياً. تدعيم الفتحات، الوصلات، ومتطلبات مقاومة الحريق ونوع الـMontants والـRails خاصهم مراجعة تقنية. ألواح BA13 محسوبة نظرياً بالمساحة وليس خطة تقطيع.'};
 }
 export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',reserve=.05,why='')=>{const buy=Number.isInteger(qty)?Math.ceil(qty*(1+reserve)):round(qty*(1+reserve),2);rows.push({name,qty,unit,buy,why});};
  if(p.type==='armstrong-full'){
@@ -186,7 +182,6 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  add('Raccord Rails (تقديري)',p.railJoins,'وصلة',.12,'الوصلات تعتمد على نظام التثبيت وبروفيل Rails المستعمل');
  add(`Montants ${p.stock}m`,p.montants,'قطعة',.1,`${p.baseStuds} خطوط رئيسية بتباعد ${p.spacing*100}cm + ${p.extraStuds} تدعيم جانبي تقديري للفتحات`);
  add('Vis BA13',p.screwCount,'قطعة',.1);add('Bande à joint',p.jointTape,'متر',.1);
- if(p.insulated){add(`Rockwool ${p.woolDensity}kg/m³ — ${p.woolThickness}mm (0.60×1.20)`,p.woolUnits,'وحدة',.1,'العدد بالمساحة الصافية؛ راجع مقاس المنتج والحشو المحيطي');}
  }
  return rows;
 }
