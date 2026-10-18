@@ -159,3 +159,51 @@ h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.25;margin:7px 0}
 @media print{
  .ak-full-flow .plan svg[data-diagram="armstrong-full"]{width:100%;max-width:100%;min-width:0}
 }
+
+
+/* Review-only walls flow: follows Armstrong dimensions -> diagram -> options -> materials. */
+.ak-walls-flow .inputs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ak-walls-flow .plan:has(svg[data-diagram="wall"]){overflow:hidden;padding:0}
+.ak-walls-flow .plan svg[data-diagram="wall"]{display:block;width:100%;height:auto;min-width:0;max-width:100%}
+.ak-walls-flow .ak-wall-setting-group{
+ min-width:0;border:1px solid #e0e8e7;border-radius:14px;margin:16px 0 0;padding:15px;background:#fbfdfc
+}
+.ak-walls-flow .ak-wall-setting-group legend{
+ font-size:14px;font-weight:850;color:#174951;padding-inline:10px
+}
+.ak-walls-flow .ak-wall-setting-grid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px
+}
+.ak-walls-flow .ak-wall-setting-grid .formfield{
+ display:flex;flex-direction:column;gap:5px;min-width:0
+}
+.ak-walls-flow .ak-wall-setting-grid label{font-size:12px;color:#40555e;font-weight:800}
+.ak-walls-flow .ak-wall-setting-grid input,
+.ak-walls-flow .ak-wall-setting-grid select{
+ width:100%;min-height:46px;border-radius:10px;border:1px solid #d8e2e3;
+ background:#fcfefe;padding:10px 11px;color:#14313c;font-weight:800;font-size:14px
+}
+.ak-walls-flow .ak-wall-approve{
+ display:block;margin-top:16px;width:100%;min-height:52px;border:0;border-radius:12px;
+ padding:13px 18px;background:#166e65;color:#fff;font-weight:850;font-size:14px;cursor:pointer
+}
+.ak-walls-flow .ak-wall-approve:hover{background:#09574f}
+.ak-walls-flow .ak-wall-approve:disabled{opacity:.45;cursor:not-allowed}
+.ak-walls-flow .result .actions{align-items:stretch}
+.ak-walls-flow .result .actions .ak-wall-pdf{width:auto;flex:2 1 270px;min-height:47px}
+.ak-walls-flow .result .actions .secondary{flex:1 1 170px}
+.ak-walls-flow .ak-wall-preview-warning{
+ font-size:12px;line-height:1.8;color:#856226;background:#fff9eb;
+ border:1px solid #efe0be;border-radius:11px;padding:12px;margin:16px 0 0
+}
+@media(max-width:800px){
+ .ak-walls-flow .ak-wall-setting-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ak-walls-flow .plan svg[data-diagram="wall"]{min-width:0;max-width:100%;width:100%;height:auto}
+}
+@media(max-width:420px){
+ .ak-walls-flow .ak-wall-setting-grid{grid-template-columns:1fr}
+}
+@media print{
+ .ak-walls-flow .ak-wall-preview-warning{display:none}
+ .ak-walls-flow .plan svg[data-diagram="wall"]{width:100%;min-width:0;max-width:100%}
+}
