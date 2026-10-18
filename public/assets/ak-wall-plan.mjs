@@ -18,6 +18,7 @@ export function wallPlanSvg(p){
  A.push('<rect x="35" y="155" width="930" height="379" rx="16" fill="#fff" stroke="#dce8e2"/>');
  let ww=720,hh=720*p.H/p.L;if(hh>266){hh=266;ww=266*p.L/p.H;}
  const x=455-ww/2,y=345-hh/2,X=v=>x+ww*v/p.L,Y=v=>y+hh*v/p.H;
+ A[0]=A[0].replace('data-diagram="wall"','data-diagram="wall" data-wall-x="'+T(x)+'" data-wall-y="'+T(y)+'" data-wall-w="'+T(ww)+'" data-wall-h="'+T(hh)+'"');
  A.push('<rect x="'+T(x)+'" y="'+T(y)+'" width="'+T(ww)+'" height="'+T(hh)+'" fill="'+'#f8fbfa'+'" stroke="'+C.rail+'" stroke-width="2.5"/>');
  for(const o of p.openings){
   A.push('<rect data-opening="'+o.type+'" x="'+T(X(o.x))+'" y="'+T(Y(o.top))+'" width="'+T(ww*o.w/p.L)+'" height="'+T(hh*o.h/p.H)+'" fill="'+(o.type==='door'?'#fff':'#e5f3f4')+'" stroke="'+C.open+'" stroke-width="2.6"/>');
@@ -29,11 +30,25 @@ export function wallPlanSvg(p){
  }
  for(const run of p.railSegments)A.push(line(X(run.x1),Y(run.y1),X(run.x2),Y(run.y2),C.rail,4.1,'data-profile="rail"'));
  for(const pos of p.reinforcements)A.push(line(X(pos),Y(0),X(pos),Y(p.H),C.jamb,3.8,'data-profile="jamb"'));
+
+ // Drag overlays sit above Rails/Montants, so touch and mouse can move every
+ // individual door/window; the underlying engineering drawing stays authoritative.
+ const byType={door:0,window:0};
+ for(const o of p.openings){
+  const label=(o.type==='door'?'باب ':'نافذة ')+(++byType[o.type]);
+  const ox=X(o.x),oy=Y(o.top),ow=ww*o.w/p.L,oh=hh*o.h/p.H;
+  const eid=esc(o.id);
+  A.push('<g data-drag-id="'+eid+'" data-drag-type="'+o.type+'" tabindex="0" role="button" aria-label="'+esc(label)+'، حرّك بالماوس أو اللمس، أو الأسهم" style="cursor:grab;touch-action:none">');
+  A.push('<rect data-drag-opening="'+eid+'" x="'+T(ox)+'" y="'+T(oy)+'" width="'+T(ow)+'" height="'+T(oh)+'" fill="'+(o.type==='door'?'#effaf7':'#dff0f7')+'" fill-opacity=".55" stroke="#0F766E" stroke-dasharray="5 3" stroke-width="2.5" rx="2"/>');
+  A.push(text(ox+ow/2,oy+Math.max(12,oh/2),label,13,C.ink,'text-anchor="middle" font-weight="800" pointer-events="none"'));
+  A.push('</g>');
+ }
+
  A.push(line(x,y-24,x+ww,y-24,'#9db7b1',1.2),text(x+ww/2,y-35,F(p.L)+' m',16,C.ink,'font-weight="800" text-anchor="middle"'));
  A.push(line(x+ww+22,y,x+ww+22,y+hh,'#9db7b1',1.2),text(x+ww+32,y+hh/2,F(p.H)+' m',15,C.ink,'font-weight="800"'));
  A.push(text(54,178,'ÉLÉVATION / VUE DU MUR',11,C.muted,'font-weight="800"'));
  A.push(text(57,503,'Montants: كل '+F(p.spacing*100)+'cm  •  '+p.baseStuds+' خطوط رئيسية + '+p.extraStuds+' تدعيم جنبات',13,C.ink,'font-weight="700"'));
- if(p.openings.length)A.push(text(944,483,p.openings.map(o=>(o.type==='door'?'باب ':'شباك ')+F(o.w)+'×'+F(o.h)+'m عند '+F(o.x)+'m').join(' / '),12,C.open,'font-weight="700" text-anchor="end"'));
+ if(p.openings.length)A.push(text(944,483,'الأبواب: '+p.openings.filter(o=>o.type==='door').length+' | النوافذ: '+p.openings.filter(o=>o.type==='window').length+' — حرّك الفتحات مباشرة في الرسم',12,C.open,'font-weight="700" text-anchor="end"'));
  A.push('<rect x="35" y="547" width="930" height="60" rx="12" fill="#edf5f1" stroke="#dce8e2"/>');
  A.push(line(54,570,90,570,C.rail,4),text(99,575,'Rails × '+p.rails,13,C.ink,'font-weight="700"'),line(265,570,300,570,C.stud,3),text(312,575,'Montants × '+p.montants,13,C.ink,'font-weight="700"'));
  A.push(line(580,570,610,570,C.jamb,4),text(620,575,'تدعيم الفتحات',13,C.ink,'font-weight="700"'));
