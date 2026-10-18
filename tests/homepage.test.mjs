@@ -6,7 +6,7 @@ test('Homepage presents four calculator categories',()=>{
  assert.match(home,/Armstrong مع بوردور BA13/);
  assert.match(home,/Armstrong بلا بوردور/);
  assert.match(home,/أسقف الجبص بورد BA13/);
- assert.match(home,/الحوائط والعزل/);
+ assert.match(home,/Cloison BA13/);
 });
 test('Only available calculator links to a working relative path',()=>{
  assert.match(home,/href="calculators\/armstrong\/"/);
