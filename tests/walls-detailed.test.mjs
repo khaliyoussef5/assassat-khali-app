@@ -10,7 +10,7 @@ function mock(){const painted={texts:[],lines:[]};let v=null;const ctx={save(){}
 test('Door opening uses user-defined offset and actual rail segments',()=>{
  const a=make();
  assert.equal(a.openings.length,1);
- assert.deepEqual(a.openings[0],{type:'door',x:.2,top:.7,w:.9,h:2.1,right:1.1,bottom:2.8});
+ assert.deepEqual(a.openings[0],{id:'door-legacy',type:'door',x:.2,top:.7,w:.9,h:2.1,right:1.1,bottom:2.8,sill:0});
  assert.equal(a.railSegments.length,4);
  assert.ok(Math.abs(a.railLinear-10)<1e-6);
  assert.equal(a.extraStuds,2);
@@ -73,13 +73,18 @@ test('Wall PDF page 2 is a separate direct landscape drawing and retains positio
  assert.match(app,/drawWallPrintPage\(z,p,planCanvas.width,planCanvas.height\)/);
  assert.match(app,/isLandscapePrint=isArmPrint\|\|isBA13Print\|\|isWallPrint/);
 });
-test('Cloison preview exposes openings and excludes insulation controls',()=>{
+test('Cloison preview uses add controls rather than fixed door/window position inputs',()=>{
  const app=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
+ const module=readFileSync(new URL('../public/assets/ak-wall-interactions.mjs',import.meta.url),'utf8');
  const html=readFileSync(new URL('../public/calculators/walls/index.html',import.meta.url),'utf8');
- assert.match(app,/\['doorX','بداية الباب/);
- assert.match(app,/\['windowX','بداية الشباك/);
- assert.match(app,/\['windowBottom','علو أسفل الشباك/);
- assert.doesNotMatch(app,/picker\('(rockwool|woolDensity|woolThickness)'/);
- assert.doesNotMatch(app,/picker\('(rockwool|woolDensity|woolThickness)'/);
+ assert.match(app,/initWallOpenings/);
+ assert.match(app,/wallControls\.getOpenings\(\)/);
+ assert.match(app,/wallControls\.bindSvg\(plan\)/);
+ assert.doesNotMatch(app,/(\['doorX'|\['windowX'|\['windowBottom')/);
+ assert.match(module,/wall-add-door/);
+ assert.match(module,/wall-add-window/);
+ assert.match(module,/data-size-id/);
+ assert.match(module,/data-drag-id/);
+ assert.doesNotMatch(module,/(rockwool|woolDensity|woolThickness)/);
  assert.match(html,/قيد التطوير/);assert.doesNotMatch(html,/ak-app\.mjs/);
 });
