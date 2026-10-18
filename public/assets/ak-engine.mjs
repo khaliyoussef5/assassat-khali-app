@@ -140,13 +140,20 @@ export function calcWall(d){
  const number=(v,name)=>{const n=Number(v??0);if(!Number.isFinite(n)||n<0)throw Error(name+': أدخل قيمة صحيحة وماشي سالبة.');return n;};
  const doorW=number(d.doorW,'عرض الباب'),doorH=number(d.doorH,'ارتفاع الباب');
  const windowW=number(d.windowW,'عرض الشباك'),windowH=number(d.windowH,'ارتفاع الشباك');
- if((doorW>0&&(!doorH||doorH>H||doorW>=L))||(!doorW&&doorH>0))throw Error('أبعاد الباب غير مناسبة للحائط.');
- if((windowW>0&&(!windowH||windowH>H||windowW>=L))||(!windowW&&windowH>0))throw Error('أبعاد الشباك غير مناسبة للحائط.');
- const doorX=number(d.doorX===undefined ? 0.2 : d.doorX,'موضع الباب');
+ const hasOpenings=d.openings!==undefined;
+ if(!hasOpenings){
+  if((doorW>0&&(!doorH||doorH>H||doorW>=L))||(!doorW&&doorH>0))throw Error('أبعاد الباب غير مناسبة للحائط.');
+  if((windowW>0&&(!windowH||windowH>H||windowW>=L))||(!windowW&&windowH>0))throw Error('أبعاد الشباك غير مناسبة للحائط.');
+ }
+ const doorX=number(d.doorX===undefined? .2:d.doorX,'موضع الباب');
  const windowX=number(d.windowX===undefined?Math.max(0,L-windowW-.2):d.windowX,'موضع الشباك');
- const windowBottom=number(d.windowBottom===undefined ? 0.9 : d.windowBottom,'ارتفاع بداية الشباك');
- const geometry=wallLayout({L,H,doorW,doorH,doorX,windowW,windowH,windowX,windowBottom,spacing});
- const area=L*H,doorArea=doorW*doorH,windowArea=windowW*windowH,netArea=area-doorArea-windowArea;
+ const windowBottom=number(d.windowBottom===undefined? .9:d.windowBottom,'ارتفاع بداية الشباك');
+ const geometry=wallLayout({L,H,doorW,doorH,doorX,windowW,windowH,windowX,windowBottom,spacing,
+  ...(hasOpenings?{openings:d.openings}:{})});
+ const area=L*H;
+ const doorArea=geometry.openings.filter(o=>o.type==='door').reduce((sum,o)=>sum+o.w*o.h,0);
+ const windowArea=geometry.openings.filter(o=>o.type==='window').reduce((sum,o)=>sum+o.w*o.h,0);
+ const netArea=area-doorArea-windowArea;
  if(netArea<=.01)throw Error('صافي مساحة الحائط غير صالح.');
  const faces=kind==='doublage'?1:2,boardArea=netArea*faces*layers;
  const boards=ceil(boardArea/(1.2*2.8)),purchaseBoards=ceil(boards*1.1);
@@ -155,7 +162,7 @@ export function calcWall(d){
   boardArea,boards,purchaseBoards,
   ...geometry,montants:geometry.studs,
   screwCount:ceil(boardArea*25),jointTape:ceil(netArea*faces*1.1),
-  note:'مواقع الباب والشباك مرسومة حسب المسافات المدخلة من بداية الحائط، وRails مقسّمة على 3m مع استغلال القصّات نظرياً. تدعيم الفتحات، الوصلات، ومتطلبات مقاومة الحريق ونوع الـMontants والـRails خاصهم مراجعة تقنية. ألواح BA13 محسوبة نظرياً بالمساحة وليس خطة تقطيع.'};
+  note:'مواقع الأبواب والشبابيك مرسومة حسب الفتحات الموضوعة في المخطط التفاعلي، وRails مقسّمة على 3m مع استغلال القصّات نظرياً. تدعيم الفتحات، الوصلات، ومتطلبات مقاومة الحريق ونوع الـMontants والـRails خاصهم مراجعة تقنية. ألواح BA13 محسوبة نظرياً بالمساحة وليس خطة تقطيع.'};
 }
 export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',reserve=.05,why='')=>{const buy=Number.isInteger(qty)?Math.ceil(qty*(1+reserve)):round(qty*(1+reserve),2);rows.push({name,qty,unit,buy,why});};
  if(p.type==='armstrong-full'){
