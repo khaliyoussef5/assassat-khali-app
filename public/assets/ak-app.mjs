@@ -162,8 +162,8 @@ function optionsUI(){
    $('custom').hidden=chosen!==2;
    $('options').querySelectorAll('[data-choice]').forEach(x=>x.addEventListener('click',()=>{const id=Number(x.dataset.choice);if(id===2&&chosen!==2){const prev=options[Math.min(chosen,1)]||options[0];$('in-nL').value=prev.nL;$('in-nW').value=prev.nW;}chosen=id;refresh()}));
  }else{
-   $('option-title').textContent=app==='ba13-ceiling'?'طريقة تركيب السقف':'إعدادات الحائط';
-   $('option-subtitle').textContent='بدّل النوع، الطبقات والتباعد من الخانات الفوقانية؛ المخطط كيتحدّث تلقائياً.';
+   $('option-title').textContent=app==='ba13-ceiling'?'طريقة تركيب السقف':'إعدادات Cloison BA13';
+   $('option-subtitle').textContent=app==='walls'?'اختار طبقات BA13 وتباعد Montants؛ المخطط كيتحدّث تلقائياً.':'اختار طريقة التركيب؛ المخطط كيتحدّث تلقائياً.';
    const info=app==='ba13-ceiling'?'Fourrure مع الضلع القصير: أول خط 15cm، والتباعد 50cm. الإنارة المخفية كتزيد حلقة داخلية على بعد 10cm من الحائط، مع نقاط تعليق تقديرية.':'دخل بداية الباب والشباك من يسار المخطط، وعلو أسفل الشباك عن الأرض. لا يمكن تكون الفتحات خارج الحائط أو متداخلة. التدعيم تقديري ويتراجع في الورش.';
    $('options').innerHTML=`<div class="hint">${info}</div>`;$('custom').hidden=true;
  }
