@@ -43,6 +43,8 @@ test('Arbitrary multiple doors and windows update walls, Rails, studs, materials
  assert.equal(p.railSegments.filter(s=>s.kind==='window-header').length,3);
  assert.equal(p.railSegments.filter(s=>s.kind==='window-sill').length,3);
  assert.equal(materials(p).find(r=>r.name==='Rails 3m').qty,p.rails);
+ assert.ok(materials(p).every(r=>!r.name.includes('Raccord Rails')));
+ assert.ok(materials(p).find(r=>r.name==='Rails 3m').qty>0);
  const svg=wallPlanSvg(p);
  assert.equal((svg.match(/data-opening="door"/g)||[]).length,2);
  assert.equal((svg.match(/data-opening="window"/g)||[]).length,3);
