@@ -158,10 +158,16 @@ export function calcWall(d){
  if(netArea<=.01)throw Error('صافي مساحة الحائط غير صالح.');
  const faces=kind==='doublage'?1:2,boardArea=netArea*faces*layers;
  const boards=ceil(boardArea/(1.2*2.8)),purchaseBoards=ceil(boards*1.1);
+ // PR 8 is joint compound, NOT a full-wall coating: 0.33kg/m²
+ // of exposed finished face, per Placo's 03/2026 technical sheet.
+ // Additional hidden-layer joint treatment needs separate specification.
+ const pr8Area=round(netArea*faces,6);
+ const pr8Kg=round(pr8Area*.33,3);
+ const pr8Bags=ceil(pr8Kg/25);
  const montantCuts=planWallMontantCuts({height:H,count:geometry.studs,stockLength:stock,sleeveLength:.5});
  return {type:'wall',kind,L,H,area,netArea,faces,layers,spacing,stock,
   doorW,doorH,doorX,windowW,windowH,windowX,windowBottom,doorArea,windowArea,
-  boardArea,boards,purchaseBoards,
+  boardArea,boards,purchaseBoards,pr8Area,pr8Kg,pr8Bags,
   ...geometry,montants:geometry.studs,montantCuts,
   montantStockBars:montantCuts.stockBars,montantSplices:montantCuts.spliceCount,
   montantSleeves:montantCuts.sleeveCount,montantExtensionLength:montantCuts.extraTotalLength,
@@ -188,10 +194,12 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  add('Vis BA13',p.vis,'قطعة',.1,'تقدير حسب المساحة');add('Bande à joint',p.jointTape,'متر',.1,'تقدير أولي');
  if(p.mode==='hidden')add('طول مسار LED الداخلي على بعد 10cm',round(p.ledLen,2),'متر',0,'محيط الحيط = '+round(p.ledWallPerimeter,2)+'m؛ LED وتجهيزاته غير مشمولة');
  } else if(p.type==='wall'){
- add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1,'بحسب المساحة والطبقات');
- add('Rails 3m',p.rails,'قطعة',.12,`${round(p.railLinear,2)}m مركبة / ${p.railCutPieces.length} مقاطع في خطة القص؛ تحقق من القص فالموقع`);
- add(`Montants ${p.stock}m`,p.montantStockBars,'بروفيل',.1,`${p.montants} خطوط Montant (${p.baseStuds} رئيسية + ${p.extraStuds} تدعيم فتحات)، طول ${round(p.H,2)}m لكل خط، تمديد ${round(p.montantExtensionLength,2)}m، وعدد وصلات ${p.montantSplices}، منها ${p.montantSleeves} قطع ربط ×50cm = ${round(p.montantCuts.sleeveTotalLength,2)}m. جميع قطع الربط محسوبة من نفس Montants مع استغلال الشوت؛ الباقي ${round(p.montantCuts.offcut,2)}m قبل احتياطي الشراء. تقدير يحتاج مراجعة تركيبية.`);
- add('Vis BA13',p.screwCount,'قطعة',.1);add('Bande à joint',p.jointTape,'متر',.1);
+ add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1);
+ add('Rails 3m',p.rails,'قطعة',.12);
+ add(`Montants ${p.stock}m`,p.montantStockBars,'بروفيل',.1);
+ add('Vis BA13',p.screwCount,'قطعة',.1);
+ add('Bande à joint',p.jointTape,'متر',.1);
+ add('Placojoint PR 8 de Placo — sac 25 kg',p.pr8Bags,'كيس',0);
  }
  return rows;
 }
