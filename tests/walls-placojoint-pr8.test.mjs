@@ -55,7 +55,7 @@ test('Wall takeoff has material names and quantities only, no why descriptions',
  'ألواح BA13 (1.20×2.80m)',
  'Rails 3m',
  'Montants 3m',
- 'Vis BA13',
+ 'VPT 25 MM',
  'Bande à joint',
  'Placojoint PR 8 de Placo — sac 25 kg'
  ]);
