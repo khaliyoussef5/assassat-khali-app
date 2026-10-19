@@ -158,10 +158,12 @@ export function calcWall(d){
  if(netArea<=.01)throw Error('صافي مساحة الحائط غير صالح.');
  const faces=kind==='doublage'?1:2,boardArea=netArea*faces*layers;
  const boards=ceil(boardArea/(1.2*2.8)),purchaseBoards=ceil(boards*1.1);
- // Screw length follows the actual BA13 layer: 25mm for layer 1,
- // 35mm for layer 2 only. 25 screws/m² on each exposed face per layer.
- const screw25Count=ceil(netArea*faces*25);
- const screw35Count=layers===2?ceil(netArea*faces*25):0;
+ // Cloison: single layer uses the full VPT 25mm allowance (25/m² of each face).
+ // For double BA13, layer one uses HALF that quantity (round UP to full pieces);
+ // the outer second layer keeps the full VPT 35mm allowance.
+ const fullLayerScrews=ceil(netArea*faces*25);
+ const screw25Count=layers===2?ceil(fullLayerScrews/2):fullLayerScrews;
+ const screw35Count=layers===2?fullLayerScrews:0;
  // PR 8 is joint compound, NOT a full-wall coating: 0.33kg/m²
  // of exposed finished face, per Placo's 03/2026 technical sheet.
  // Additional hidden-layer joint treatment needs separate specification.
@@ -207,7 +209,7 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  addVpt('VPT 25 MM',p.screw25Count);
  if(p.layers===2)addVpt('VPT 35 MM',p.screw35Count);
  add('Bande à joint',p.jointTape,'متر',.1);
- add('Placojoint PR 8 de Placo — sac 25 kg',p.pr8Bags,'كيس',0);
+ add('ENDUIT POUR JOINT',p.pr8Bags,'كيس',0);
  }
  return rows;
 }
