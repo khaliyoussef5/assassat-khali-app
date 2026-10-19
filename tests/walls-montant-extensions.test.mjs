@@ -46,8 +46,8 @@ test('4m wall = 3m Montant + 1m extension + extra 50cm sleeve PER vertical line'
  assert.equal(p.montantCuts.sleeveTotalLength,5);
  const svg=wallPlanSvg(p);
  assert.equal((svg.match(/data-stud-splice="50cm"/g)||[]).length,10);
- assert.match(svg,/Montants 3m: 15/);
- assert.match(svg,/10 قطع وصل × 50cm/);
+ assert.match(svg,/class="ak-wall-splice-mark"/);
+ assert.doesNotMatch(svg,/Montants 3m: 15|قطع وصل × 50cm/);
  const pdf=mock();
  drawWallPrintPage(pdf.c,p,3508,2480);
  assert.ok(pdf.txt.some(t=>t.includes('10 jonctions avec renfort de 50cm')));
