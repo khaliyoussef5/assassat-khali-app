@@ -55,6 +55,17 @@ test('Round up per screw size independently and preserve earlier PDF/material pa
  assert.equal(materials(p).find(x=>x.name==='ENDUIT POUR JOINT').qty,p.pr8Bags);
 });
 
+test('Double BA13 first-layer screws round UP when the full allowance is odd',()=>{
+ const p=calcWall({...base,L:3.13,H:2.6,layers:2});
+ const full=Math.ceil(p.netArea*p.faces*25-1e-8);
+ assert.equal(full%2,1);
+ assert.equal(p.screw25Count,Math.ceil(full/2));
+ assert.equal(p.screw35Count,full);
+ assert.equal(row(p,'VPT 25 MM').qty,Math.ceil(full/2));
+ assert.equal(row(p,'VPT 35 MM').qty,full);
+ assert.equal(row(p,'ENDUIT POUR JOINT').qty,p.pr8Bags);
+ assert.equal(row(p,'Placojoint PR 8 de Placo — sac 25 kg'),undefined);
+});
 test('Ceiling calculators are not renamed or changed by Cloison screw specification',()=>{
  const ceiling=calcBA13Ceiling({L:5,W:4,drop:30,mode:'plain'});
  const screws=materials(ceiling).find(x=>x.name==='Vis BA13');
