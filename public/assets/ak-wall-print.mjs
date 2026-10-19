@@ -46,6 +46,11 @@ export function drawWallPrintPage(ctx,p,width=3508,height=2480){
  }
  for(const run of p.railSegments)lin(ctx,X(run.x1),Y(run.y1),X(run.x2),Y(run.y2),C.rail,5);
  for(const pos of p.reinforcements)lin(ctx,X(pos),Y(0),X(pos),Y(p.H),C.jamb,4);
+ for(const pin of p.fixings?.points||[]){
+  const px=X(pin.x),py=Y(pin.y);
+  lin(ctx,px-2,py,px+2,py,'#A85632',2);
+ }
+
  ctx.strokeStyle='#244c51';ctx.lineWidth=2;ctx.strokeRect(x,y,ww,hh);
  lin(ctx,x,y-27,x+ww,y-27,'#a8bdb6',1.2);lab(ctx,fmt(p.L)+' m',x+ww/2,y-45,19,C.ink,'center','800');
  lin(ctx,x+ww+27,y,x+ww+27,y+hh,'#a8bdb6',1.2);lab(ctx,fmt(p.H)+' m',x+ww+35,y+hh/2,17,C.ink,'left','800');
@@ -56,7 +61,7 @@ export function drawWallPrintPage(ctx,p,width=3508,height=2480){
  lin(ctx,87,739,125,739,C.rail,5);lab(ctx,'Rails 3m × '+p.rails,138,739,17);
  lin(ctx,373,739,410,739,C.stud,4);lab(ctx,'Montants '+p.stock+'m × '+p.montantStockBars,423,739,17);
  lin(ctx,785,739,820,739,C.jamb,4);lab(ctx,'Renforts',835,739,17);
- lab(ctx,'BA13 '+p.boards+' plaques (théorique)  |  '+p.montantSleeves+' renforts Montant 50cm inclus dans les barres de 3m',87,769,15,C.sub);
+ lab(ctx,'BA13 '+p.boards+' plaques  |  Cheville à frapper '+p.chevilleCount+'  |  '+p.montantSleeves+' raccords Montant 50cm inclus',87,769,15,C.sub);
  lab(ctx,'مخطط تقديري، تدعيم الفتحات ونظام الجبس يحتاجان للمراجعة التقنية قبل التنفيذ.',65,825,14,C.sub,'left','600','rtl');
  ctx.restore();
 }
