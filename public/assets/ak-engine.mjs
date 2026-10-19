@@ -202,8 +202,10 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1);
  add('Rails 3m',p.rails,'قطعة',.12);
  add(`Montants ${p.stock}m`,p.montantStockBars,'بروفيل',.1);
- add('VPT 25 MM',p.screw25Count,'قطعة',.1);
- if(p.layers===2)add('VPT 35 MM',p.screw35Count,'قطعة',.1);
+ // Round screw purchase amounts precisely at +10% without floating-point overcounts.
+ const addVpt=(name,qty)=>rows.push({name,qty,unit:'قطعة',buy:ceil(qty*1.1),why:''});
+ addVpt('VPT 25 MM',p.screw25Count);
+ if(p.layers===2)addVpt('VPT 35 MM',p.screw35Count);
  add('Bande à joint',p.jointTape,'متر',.1);
  add('Placojoint PR 8 de Placo — sac 25 kg',p.pr8Bags,'كيس',0);
  }
