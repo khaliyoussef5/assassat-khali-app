@@ -14,7 +14,7 @@ export function wallPlanSvg(p){
  A.push('<rect x="35" y="99" width="930" height="47" rx="11" fill="#edf5f1" stroke="#dce8e2"/>',
  text(56,129,'الطول '+F(p.L)+'m   •   الارتفاع '+F(p.H)+'m',15,C.ink,'font-weight="800"'),
  text(470,129,'صافي: '+F(p.netArea)+'m² × '+p.faces+' وجه × '+p.layers+' طبقة',14,C.ink,'font-weight="700"'),
- text(943,129,'Montants × '+p.montants,15,C.stud,'font-weight="800" text-anchor="end"'));
+ text(943,129,'Montants 3m × '+p.montantStockBars,15,C.stud,'font-weight="800" text-anchor="end"'));
  A.push('<rect x="35" y="155" width="930" height="379" rx="16" fill="#fff" stroke="#dce8e2"/>');
  let ww=720,hh=720*p.H/p.L;if(hh>266){hh=266;ww=266*p.L/p.H;}
  const x=455-ww/2,y=345-hh/2,X=v=>x+ww*v/p.L,Y=v=>y+hh*v/p.H;
@@ -27,6 +27,20 @@ export function wallPlanSvg(p){
   let y0=0;const slots=p.openings.filter(o=>pos>o.x+1e-7&&pos<o.right-1e-7).sort((a,b)=>a.top-b.top);
   for(const gap of slots){if(gap.top>y0)A.push(line(X(pos),Y(y0),X(pos),Y(gap.top),C.stud,2.6,'data-profile="montant"'));y0=Math.max(y0,gap.bottom);}
   if(y0<p.H)A.push(line(X(pos),Y(y0),X(pos),Y(p.H),C.stud,2.6,'data-profile="montant"'));
+ }
+
+ // Each stud splice joins two 3m stock pieces using a 50cm sleeve.
+ // The orange marks visualize the joints (counted separately in cutting BOM).
+ if(p.montantCuts?.splicesPerLine){
+  for(const pos of [...p.studPositions,...p.reinforcements]){
+   for(let splice=1;splice<=p.montantCuts.splicesPerLine;splice++){
+    const h=p.H-splice*p.stock;
+    if(h>0&&h<p.H){
+     const cx=X(pos),cy=Y(h);
+     A.push(line(cx-5,cy,cx+5,cy,'#DB8A20',3,'data-stud-splice="50cm"'));
+    }
+   }
+  }
  }
  for(const run of p.railSegments)A.push(line(X(run.x1),Y(run.y1),X(run.x2),Y(run.y2),C.rail,4.1,'data-profile="rail"'));
  for(const pos of p.reinforcements)A.push(line(X(pos),Y(0),X(pos),Y(p.H),C.jamb,3.8,'data-profile="jamb"'));
@@ -52,6 +66,6 @@ export function wallPlanSvg(p){
  A.push('<rect x="35" y="547" width="930" height="60" rx="12" fill="#edf5f1" stroke="#dce8e2"/>');
  A.push(line(54,570,90,570,C.rail,4),text(99,575,'Rails × '+p.rails,13,C.ink,'font-weight="700"'),line(265,570,300,570,C.stud,3),text(312,575,'Montants × '+p.montants,13,C.ink,'font-weight="700"'));
  A.push(line(580,570,610,570,C.jamb,4),text(620,575,'تدعيم الفتحات',13,C.ink,'font-weight="700"'));
- A.push(text(54,594,'ألواح BA13: '+p.boards+' (حد أدنى بالمساحة)  •  Rails 3m: '+p.rails+'  •  Cloison BA13 بوجهين',12,C.muted,'font-weight="700"'));
+ A.push(text(54,594,'Montants '+p.stock+'m: '+p.montantStockBars+' بروفيل من بينها '+p.montantSleeves+' قطع وصل × 50cm  •  BA13: '+p.boards,12,C.muted,'font-weight="700"'));
  A.push('</svg>');return A.join('');
 }
