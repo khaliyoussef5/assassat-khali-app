@@ -8,6 +8,15 @@ import {initWallOpenings} from './ak-wall-interactions.mjs';
 import {drawWallPrintPage} from './ak-wall-print.mjs';
 const $=id=>document.getElementById(id),fmt=x=>Number(x).toLocaleString('fr-FR',{maximumFractionDigits:2}),escapeText=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const app=document.body.dataset.calculator;let approved=false,plan=null,chosen=0,options=[],showHangers=true,wallControls=null;
+const wallDiagramOptions={fixings:false,splices:false};
+function applyWallDiagramOptions(){
+ if(app!=='walls')return;
+ const svg=$('plan')?.querySelector('svg[data-diagram="wall"]');
+ if(!svg)return;
+ svg.classList.toggle('ak-wall-show-fixings',wallDiagramOptions.fixings);
+ svg.classList.toggle('ak-wall-show-splices',wallDiagramOptions.splices);
+}
+
 const names={'armstrong-full':'Armstrong بلا بوردور','ba13-ceiling':'سقف الجبص بورد BA13','walls':'Cloison BA13 — الحائط الفاصل'};
 const fields={
  'armstrong-full':[
@@ -109,6 +118,34 @@ if(app==='walls'){
  drawing.querySelector('.panelheader p').remove();
  choices.querySelector('#option-title').textContent='إعدادات Cloison BA13 والفتحات';
  choices.querySelector('#option-subtitle').textContent='نستعمل Montants 3m؛ إذا كان ارتفاع الحائط أكثر من 3m، نزيدو قطع التمديد وقطعة وصل 50cm لكل وصلة مع استغلال بقايا القص.';
+
+ // The SVG is only the wall itself; all visual legends and optional details
+ // live outside, so it no longer looks like a card inside another card.
+ const wallPlan=document.getElementById('plan');
+ wallPlan.insertAdjacentHTML('beforebegin',
+  '<div class="ak-wall-plan-tools" aria-label="تفاصيل المخطط">'+
+  '<span class="ak-wall-plan-kicker">عرض أمامي للحائط</span>'+
+  '<div class="ak-wall-plan-switches">'+
+  '<button type="button" data-wall-overlay="fixings" aria-pressed="false">نقاط Cheville</button>'+
+  '<button type="button" data-wall-overlay="splices" aria-pressed="false">وصلات Montants</button>'+
+  '</div></div>');
+ wallPlan.insertAdjacentHTML('afterend',
+  '<div class="ak-wall-plan-legend" aria-label="مفتاح ألوان المخطط">'+
+  '<span><i class="ak-wall-legend-rail"></i>Rails</span>'+
+  '<span><i class="ak-wall-legend-stud"></i>Montants</span>'+
+  '<span><i class="ak-wall-legend-jamb"></i>تدعيم الفتحات</span>'+
+  '<span><i class="ak-wall-legend-door"></i>باب</span>'+
+  '<span><i class="ak-wall-legend-window"></i>نافذة</span>'+
+  '</div>');
+ for(const button of drawing.querySelectorAll('[data-wall-overlay]')){
+  button.addEventListener('click',()=>{
+   const key=button.dataset.wallOverlay;
+   wallDiagramOptions[key]=!wallDiagramOptions[key];
+   button.setAttribute('aria-pressed',String(wallDiagramOptions[key]));
+   applyWallDiagramOptions();
+  });
+ }
+
  const fieldGroups=[
   ['الهيكل وطبقات BA13',['layers','spacing']]
  ];
@@ -209,7 +246,7 @@ const svgH=(p)=>{
 };
 function showError(e){$('error').textContent=e.message||String(e);$('error').hidden=false;$('approve').disabled=true;if($('svg-download'))$('svg-download').disabled=true;$('plan').innerHTML='<div class="locked">صلّح القياسات باش يظهر المخطط.</div>';$('summary').innerHTML='';}
 function invalidate(){approved=false;$('result').hidden=true;$('locked').hidden=false;}
-function refresh(){invalidate();$('error').hidden=true;try{optionsUI();plan=createModel();sumSvg(plan);$('plan').innerHTML=svgH(plan);if(app==='walls')wallControls.bindSvg(plan);$('approve').disabled=false;if($('svg-download'))$('svg-download').disabled=false;}catch(e){plan=null;showError(e)}}
+function refresh(){invalidate();$('error').hidden=true;try{optionsUI();plan=createModel();sumSvg(plan);$('plan').innerHTML=svgH(plan);if(app==='walls'){wallControls.bindSvg(plan);applyWallDiagramOptions();}$('approve').disabled=false;if($('svg-download'))$('svg-download').disabled=false;}catch(e){plan=null;showError(e)}}
 function save(filename,blob){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500)}
 function renderBom(p){const rows=materials(p);let table='<table><thead><tr><th>المادة</th><th>المحسوب</th><th>الشراء المقترح</th></tr></thead><tbody>';
  for(const r of rows)table+=`<tr><td><b>${escapeText(r.name)}</b>${p.type==='wall'?'':`<div class="note">${escapeText(r.why||'')}</div>`}</td><td class="qty">${fmt(r.qty)} ${escapeText(r.unit)}</td><td class="qty buy">${fmt(r.buy)} ${escapeText(r.unit)}</td></tr>`;
