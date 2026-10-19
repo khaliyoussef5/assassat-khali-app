@@ -6,7 +6,7 @@ import {calcWall,materials,calcArmstrongFull,fullArmstrongOptions} from '../publ
 const app=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
 const source=readFileSync(new URL('../public/assets/ak-engine.mjs',import.meta.url),'utf8');
 const basic={L:5,H:2.8,spacing:.6,studLength:3,layers:1,kind:'cloison',openings:[]};
-const row=p=>materials(p).find(x=>x.name==='Placojoint PR 8 de Placo — sac 25 kg');
+const row=p=>materials(p).find(x=>x.name==='ENDUIT POUR JOINT');
 
 test('Placo PR8 25kg uses manufacturer rate 330g/m² of net finished faces',()=>{
  const a=calcWall(basic);
@@ -57,7 +57,7 @@ test('Wall takeoff has material names and quantities only, no why descriptions',
  'Montants 3m',
  'VPT 25 MM',
  'Bande à joint',
- 'Placojoint PR 8 de Placo — sac 25 kg'
+ 'ENDUIT POUR JOINT'
  ]);
  assert.ok(rows.every(r=>r.why===''));
  assert.ok(rows.every(r=>r.buy>=r.qty));
