@@ -16,7 +16,7 @@ export function drawWallPrintPage(ctx,p,width=3508,height=2480){
  lab(ctx,'LONGUEUR',89,134,13,C.sub);lab(ctx,fmt(p.L)+' m',90,162,22);
  lab(ctx,'HAUTEUR',335,134,13,C.sub);lab(ctx,fmt(p.H)+' m',337,162,22);
  lab(ctx,'SURFACE NETTE',570,134,13,C.sub);lab(ctx,fmt(p.netArea)+' m²',570,162,22);
- lab(ctx,'MONTANTS',867,134,13,C.sub);lab(ctx,String(p.montants),869,162,22,C.stud);
+ lab(ctx,'MONTANTS 3m',867,134,13,C.sub);lab(ctx,String(p.montantStockBars),869,162,22,C.stud);
  rect(ctx,65,207,1070,478,'#fff','#dce8e2');
  let ww=875,hh=875*p.H/p.L;if(hh>370){hh=370;ww=370*p.L/p.H;}
  const x=564-ww/2,y=448-hh/2,X=v=>x+ww*v/p.L,Y=v=>y+hh*v/p.H;
@@ -35,19 +35,28 @@ export function drawWallPrintPage(ctx,p,width=3508,height=2480){
   }
   if(bottom<p.H)lin(ctx,X(pos),Y(bottom),X(pos),Y(p.H),C.stud,3);
  }
+ // Mark Montant splices (and their 50cm joint sleeves) on each vertical line.
+ if(p.montantCuts?.splicesPerLine){
+  for(const pos of [...p.studPositions,...p.reinforcements]){
+   for(let joint=1;joint<=p.montantCuts.splicesPerLine;joint++){
+    const h=p.H-joint*p.stock;
+    if(h>0&&h<p.H)lin(ctx,X(pos)-5,Y(h),X(pos)+5,Y(h),'#DB8A20',3);
+   }
+  }
+ }
  for(const run of p.railSegments)lin(ctx,X(run.x1),Y(run.y1),X(run.x2),Y(run.y2),C.rail,5);
  for(const pos of p.reinforcements)lin(ctx,X(pos),Y(0),X(pos),Y(p.H),C.jamb,4);
  ctx.strokeStyle='#244c51';ctx.lineWidth=2;ctx.strokeRect(x,y,ww,hh);
  lin(ctx,x,y-27,x+ww,y-27,'#a8bdb6',1.2);lab(ctx,fmt(p.L)+' m',x+ww/2,y-45,19,C.ink,'center','800');
  lin(ctx,x+ww+27,y,x+ww+27,y+hh,'#a8bdb6',1.2);lab(ctx,fmt(p.H)+' m',x+ww+35,y+hh/2,17,C.ink,'left','800');
- lab(ctx,'Montants '+fmt(p.spacing*100)+'cm  |  '+p.baseStuds+' profils réguliers + '+p.extraStuds+' renforts de baie',85,648,17,C.ink);
+ lab(ctx,'Montants '+fmt(p.spacing*100)+'cm  |  '+p.montants+' lignes  |  '+p.montantSleeves+' jonctions avec renfort de 50cm',85,648,17,C.ink);
  const openingLabels=p.openings.map(o=>(o.type==='door'?'Porte ':'Fenêtre ')+fmt(o.w)+'×'+fmt(o.h)+'m / X='+fmt(o.x)+'m').join('   |   ');
  if(openingLabels)lab(ctx,p.openings.length<=2?openingLabels:('Portes: '+p.openings.filter(o=>o.type==='door').length+' | Fenêtres: '+p.openings.filter(o=>o.type==='window').length+' — كل فتحة مرقمة في المخطط'),1130,675,15,C.open,'right','700');
  rect(ctx,65,714,1070,74,'#eff6f2','#dce8e2');
  lin(ctx,87,739,125,739,C.rail,5);lab(ctx,'Rails 3m × '+p.rails,138,739,17);
- lin(ctx,373,739,410,739,C.stud,4);lab(ctx,'Montants '+p.stock+'m × '+p.montants,423,739,17);
+ lin(ctx,373,739,410,739,C.stud,4);lab(ctx,'Montants '+p.stock+'m × '+p.montantStockBars,423,739,17);
  lin(ctx,785,739,820,739,C.jamb,4);lab(ctx,'Renforts',835,739,17);
- lab(ctx,'BA13 '+p.boards+' plaques (théorique)  |  Raccords Rails '+p.railJoins+'  |  '+'Cloison BA13 / deux faces',87,769,15,C.sub);
+ lab(ctx,'BA13 '+p.boards+' plaques (théorique)  |  '+p.montantSleeves+' renforts Montant 50cm inclus dans les barres de 3m',87,769,15,C.sub);
  lab(ctx,'مخطط تقديري، تدعيم الفتحات ونظام الجبس يحتاجان للمراجعة التقنية قبل التنفيذ.',65,825,14,C.sub,'left','600','rtl');
  ctx.restore();
 }
