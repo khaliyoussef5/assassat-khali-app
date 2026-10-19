@@ -189,8 +189,7 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  if(p.mode==='hidden')add('طول مسار LED الداخلي على بعد 10cm',round(p.ledLen,2),'متر',0,'محيط الحيط = '+round(p.ledWallPerimeter,2)+'m؛ LED وتجهيزاته غير مشمولة');
  } else if(p.type==='wall'){
  add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1,'بحسب المساحة والطبقات');
- add('Rails 3m',p.rails,'قطعة',.12,`${round(p.railLinear,2)}m مركبة / ${p.railCutPieces.length} مقاطع في خطة القص / ${p.railJoins} وصلات؛ تحقق من القص فالموقع`);
- add('Raccord Rails (تقديري)',p.railJoins,'وصلة',.12,'الوصلات تعتمد على نظام التثبيت وبروفيل Rails المستعمل');
+ add('Rails 3m',p.rails,'قطعة',.12,`${round(p.railLinear,2)}m مركبة / ${p.railCutPieces.length} مقاطع في خطة القص؛ تحقق من القص فالموقع`);
  add(`Montants ${p.stock}m`,p.montantStockBars,'بروفيل',.1,`${p.montants} خطوط Montant (${p.baseStuds} رئيسية + ${p.extraStuds} تدعيم فتحات)، طول ${round(p.H,2)}m لكل خط، تمديد ${round(p.montantExtensionLength,2)}m، وعدد وصلات ${p.montantSplices}، منها ${p.montantSleeves} قطع ربط ×50cm = ${round(p.montantCuts.sleeveTotalLength,2)}m. جميع قطع الربط محسوبة من نفس Montants مع استغلال الشوت؛ الباقي ${round(p.montantCuts.offcut,2)}m قبل احتياطي الشراء. تقدير يحتاج مراجعة تركيبية.`);
  add('Vis BA13',p.screwCount,'قطعة',.1);add('Bande à joint',p.jointTape,'متر',.1);
  }
