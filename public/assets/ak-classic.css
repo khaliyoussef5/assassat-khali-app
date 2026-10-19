@@ -159,3 +159,41 @@ h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.25;margin:7px 0}
 @media print{
  .ak-full-flow .plan svg[data-diagram="armstrong-full"]{width:100%;max-width:100%;min-width:0}
 }
+
+
+/* Mobile plan presentation aligned with the responsive Armstrong calculator.
+   UI only: never alters plan geometry, materials or exported PDF. */
+@media(max-width:800px){
+  body[data-calculator="ba13-ceiling"] .plan:has(svg[data-diagram="ba13-ceiling"]),
+  body[data-calculator="walls"] .plan:has(svg[data-diagram="wall"]){
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    padding:0;
+    overflow:hidden;
+    border-radius:12px;
+    background:#fff;
+    scrollbar-width:none;
+  }
+  body[data-calculator="ba13-ceiling"] .plan svg[data-diagram="ba13-ceiling"],
+  body[data-calculator="walls"] .plan svg[data-diagram="wall"]{
+    display:block;
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    height:auto;
+    max-height:none;
+    border-radius:10px;
+  }
+}
+@media(max-width:600px){
+  body[data-calculator="ba13-ceiling"] .plan,
+  body[data-calculator="walls"] .plan{
+    margin-inline:0;
+    box-shadow:none;
+  }
+  body[data-calculator="ba13-ceiling"] .panel:has(.plan),
+  body[data-calculator="walls"] .panel:has(.plan){
+    min-width:0;
+  }
+}
