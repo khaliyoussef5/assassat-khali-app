@@ -50,14 +50,15 @@ test('PR8 purchase rounds UP to whole 25kg sacks, no double safety reserve',()=>
 test('Wall takeoff has material names and quantities only, no why descriptions',()=>{
  const p=calcWall({...basic,H:4});
  const rows=materials(p);
- assert.equal(rows.length,6);
+ assert.equal(rows.length,7);
  assert.deepEqual(rows.map(r=>r.name),[
  'ألواح BA13 (1.20×2.80m)',
  'Rails 3m',
  'Montants 3m',
  'VPT 25 MM',
  'Bande à joint',
- 'ENDUIT POUR JOINT'
+ 'ENDUIT POUR JOINT',
+ 'Cheville à frapper'
  ]);
  assert.ok(rows.every(r=>r.why===''));
  assert.ok(rows.every(r=>r.buy>=r.qty));
