@@ -58,8 +58,9 @@ test('Wall SVG draws only actual openings, reinforcement and rail segments',()=>
  assert.equal((svg.match(/data-opening="window"/g)||[]).length,1);
  assert.equal((svg.match(/data-profile="jamb"/g)||[]).length,p.extraStuds);
  assert.equal((svg.match(/data-profile="rail"/g)||[]).length,p.railSegments.length);
- assert.match(svg,/Montants × /);
- assert.match(svg,/Rails × /);
+ assert.match(svg,/data-wall-surface="true"/);
+ assert.doesNotMatch(svg,/PLAN TECHNIQUE|<rect x="35" y="155"/);
+ assert.match(svg,/data-wall-w=/);
  assert.match(svg,/data-profile="montant"/);
 });
 test('Wall PDF page 2 is a separate direct landscape drawing and retains positions',()=>{
