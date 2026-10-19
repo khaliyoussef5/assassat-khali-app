@@ -237,3 +237,96 @@ h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.25;margin:7px 0}
  .ak-walls-flow .ak-wall-opening-toolbar button{flex:1 1 120px}
 }
 @media print{.ak-walls-flow .ak-wall-opening-toolbar,.ak-walls-flow .ak-wall-drag-help{display:none}}
+
+
+/* Cloison drawing V2 — clear elevation, not a "card inside a card".
+ * This is intentionally scoped to the review-only Cloison calculator.
+ */
+.ak-walls-flow #plan.plan{
+ display:block;background:transparent;border:0;border-radius:0;box-shadow:none;
+ padding:0;margin:0;overflow-x:auto;overflow-y:hidden;
+ scrollbar-width:thin;scrollbar-color:#b4d2c9 transparent;
+ overscroll-behavior-x:contain;line-height:0;
+}
+.ak-walls-flow #plan svg[data-diagram="wall"]{
+ display:block;width:100%;max-width:100%;min-width:0;height:auto;
+ border-radius:0;background:transparent;
+}
+.ak-walls-flow .ak-wall-plan-tools{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+ gap:10px;padding:0 0 10px;margin-top:0;
+}
+.ak-walls-flow .ak-wall-plan-kicker{
+ color:#597278;font-size:12px;font-weight:750;letter-spacing:.1px;
+}
+.ak-walls-flow .ak-wall-plan-switches{
+ display:flex;gap:7px;align-items:center;flex-wrap:wrap;
+}
+.ak-walls-flow .ak-wall-plan-switches button{
+ min-height:35px;padding:7px 12px;background:#f8fbfa;
+ border:1px solid #dde9e6;border-radius:18px;color:#536d74;
+ font:750 11px system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
+ cursor:pointer;transition:background .16s,border-color .16s,color .16s;
+}
+.ak-walls-flow .ak-wall-plan-switches button:hover{background:#eaf6f1;border-color:#9dcbbf}
+.ak-walls-flow .ak-wall-plan-switches button[aria-pressed="true"]{
+ color:#0e6a5f;background:#e3f5ee;border-color:#92cbb8;
+}
+.ak-walls-flow .ak-wall-plan-legend{
+ display:flex;align-items:center;justify-content:flex-start;gap:14px;
+ flex-wrap:wrap;padding:9px 0 0;border-top:1px solid #eff3f2;
+ color:#536e76;font-size:11px;font-weight:700;line-height:1.7;
+}
+.ak-walls-flow .ak-wall-plan-legend span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.ak-walls-flow .ak-wall-plan-legend i{display:inline-block;width:17px;height:4px;border-radius:3px;flex:none}
+.ak-walls-flow .ak-wall-legend-rail{background:#234B53}
+.ak-walls-flow .ak-wall-legend-stud{background:#91B1BB}
+.ak-walls-flow .ak-wall-legend-jamb{background:#168779}
+.ak-walls-flow .ak-wall-plan-legend .ak-wall-legend-door{
+ background:#fff6e9;border:1.5px solid #a86938;border-radius:2px;height:11px;width:14px;
+}
+.ak-walls-flow .ak-wall-plan-legend .ak-wall-legend-window{
+ background:#dff4f0;border:1.5px solid #117c72;border-radius:2px;height:11px;width:14px;
+}
+.ak-walls-flow svg[data-diagram="wall"] .ak-wall-fixing-mark,
+.ak-walls-flow svg[data-diagram="wall"] .ak-wall-splice-mark{
+ opacity:0;pointer-events:none;transition:opacity .16s;
+}
+.ak-walls-flow svg[data-diagram="wall"].ak-wall-show-fixings .ak-wall-fixing-mark{opacity:1}
+.ak-walls-flow svg[data-diagram="wall"].ak-wall-show-splices .ak-wall-splice-mark{opacity:1}
+.ak-walls-flow .summary{
+ display:flex;flex-wrap:wrap;gap:0;border-top:1px solid #e8efee;
+ margin:10px 0 4px;padding-top:11px;
+}
+.ak-walls-flow .summary .metric{
+ flex:1 1 146px;min-width:100px;max-width:none;
+ background:transparent;border:0;border-inline-end:1px solid #e9eeee;
+ border-radius:0;padding:8px 11px;text-align:center;
+}
+.ak-walls-flow .summary .metric small{font-size:10px;color:#73868b}
+.ak-walls-flow .summary .metric strong{font-size:16px;color:#214b53}
+.ak-walls-flow .ak-wall-drag-help{
+ margin:0 0 10px;padding:1px 0;
+ color:#6b8388;font-size:11px;line-height:1.7;
+}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]{cursor:grab;touch-action:none}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]:active{cursor:grabbing}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]:focus-visible [data-drag-opening]{
+ stroke:#074f48;stroke-width:4;stroke-dasharray:4 2;
+}
+@media(max-width:720px){
+ /* Keep real drag targets readable rather than shrinking them to tiny icons.
+  * The drawing alone scrolls; measurements and surrounding UI do not. */
+ .ak-walls-flow #plan svg[data-diagram="wall"]{
+  width:700px;min-width:700px;max-width:none;height:auto;
+ }
+ .ak-walls-flow .ak-wall-plan-tools{align-items:flex-start}
+ .ak-walls-flow .ak-wall-plan-kicker{flex:1 1 100%}
+ .ak-walls-flow .ak-wall-plan-switches button{min-height:38px}
+ .ak-walls-flow .ak-wall-plan-legend{gap:10px}
+ .ak-walls-flow .summary .metric{flex-basis:105px;min-width:95px}
+}
+@media print{
+ .ak-walls-flow #plan svg[data-diagram="wall"]{width:100%;max-width:100%;min-width:0}
+ .ak-walls-flow .ak-wall-plan-tools{display:none}
+}
