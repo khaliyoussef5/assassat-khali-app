@@ -41,8 +41,9 @@ test('4m wall = 3m Montant + 1m extension + extra 50cm sleeve PER vertical line'
  assert.ok(m.bars.every(bar=>bar.reduce((n,x)=>n+x.length,0)<=3+1e-6));
  const qty=materials(p).find(r=>r.name==='Montants 3m');
  assert.equal(qty.qty,15); // no 50cm sleeves purchased again as independent profiles
- assert.match(qty.why,/قطع ربط ×50cm/);
- assert.match(qty.why,/استغلال الشوت/);
+ assert.equal(qty.why,''); // no explanatory notes in Cloison supply list
+ assert.equal(p.montantSleeves,10);
+ assert.equal(p.montantCuts.sleeveTotalLength,5);
  const svg=wallPlanSvg(p);
  assert.equal((svg.match(/data-stud-splice="50cm"/g)||[]).length,10);
  assert.match(svg,/Montants 3m: 15/);
