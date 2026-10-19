@@ -212,7 +212,7 @@ function invalidate(){approved=false;$('result').hidden=true;$('locked').hidden=
 function refresh(){invalidate();$('error').hidden=true;try{optionsUI();plan=createModel();sumSvg(plan);$('plan').innerHTML=svgH(plan);if(app==='walls')wallControls.bindSvg(plan);$('approve').disabled=false;if($('svg-download'))$('svg-download').disabled=false;}catch(e){plan=null;showError(e)}}
 function save(filename,blob){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500)}
 function renderBom(p){const rows=materials(p);let table='<table><thead><tr><th>المادة</th><th>المحسوب</th><th>الشراء المقترح</th></tr></thead><tbody>';
- for(const r of rows)table+=`<tr><td><b>${escapeText(r.name)}</b><div class="note">${escapeText(r.why||'')}</div></td><td class="qty">${fmt(r.qty)} ${escapeText(r.unit)}</td><td class="qty buy">${fmt(r.buy)} ${escapeText(r.unit)}</td></tr>`;
+ for(const r of rows)table+=`<tr><td><b>${escapeText(r.name)}</b>${p.type==='wall'?'':`<div class="note">${escapeText(r.why||'')}</div>`}</td><td class="qty">${fmt(r.qty)} ${escapeText(r.unit)}</td><td class="qty buy">${fmt(r.buy)} ${escapeText(r.unit)}</td></tr>`;
  $('bom').innerHTML=table+'</tbody></table>';if($('note'))$('note').textContent=p.note;
 }
 $('approve').addEventListener('click',()=>{if(!plan)return;approved=true;renderBom(plan);$('locked').hidden=true;$('result').hidden=false;$('result').scrollIntoView({behavior:'smooth',block:'start'})});
@@ -274,7 +274,7 @@ async function createPdf(p){const rows=materials(p),W=1240,H=1754;
  base(g,'لائحة السلعة',1);box(g,76,220,1088,122,'#e8f4ed');text(g,app==='walls'?`الحائط: ${fmt(p.L)} × ${fmt(p.H)} m`:`السقف: ${fmt(p.L)} × ${fmt(p.W)} m`,1127,275,31,'#204951',800);
  text(g,`مساحة العمل: ${fmt(p.type==='wall'?p.netArea:p.area)} m²`,1127,318,24,'#477478',600);
  box(g,76,370,1088,69,'#1d5a5b');text(g,'المادة',1123,413,25,'#fff',800);text(g,'محسوب',540,413,24,'#fff',800);text(g,'الشراء',268,413,24,'#fff',800);
- const rowH=74;let off=439;rows.forEach((r,i)=>{const y=off+i*rowH;if(i%2===0){g.fillStyle='#f3f9f5';g.fillRect(76,y,1088,rowH)}g.fillStyle='#e2ebe8';g.fillRect(76,y+rowH-1,1088,1);text(g,r.name,1127,y+35,21,'#1c4148',700);if(r.why)text(g,r.why,1127,y+63,16,'#718489',400);text(g,`${fmt(r.qty)} ${r.unit}`,550,y+46,23,'#23545b',700);text(g,`${fmt(r.buy)} ${r.unit}`,266,y+46,24,'#167762',800);});
+ const rowH=74;let off=439;rows.forEach((r,i)=>{const y=off+i*rowH;if(i%2===0){g.fillStyle='#f3f9f5';g.fillRect(76,y,1088,rowH)}g.fillStyle='#e2ebe8';g.fillRect(76,y+rowH-1,1088,1);text(g,r.name,1127,y+35,21,'#1c4148',700);if(!isWallPrint&&r.why)text(g,r.why,1127,y+63,16,'#718489',400);text(g,`${fmt(r.qty)} ${r.unit}`,550,y+46,23,'#23545b',700);text(g,`${fmt(r.buy)} ${r.unit}`,266,y+46,24,'#167762',800);});
  const noteY=Math.min(off+rows.length*rowH+32,H-282);box(g,76,noteY,1088,155,'#fff4e4');text(g,'تنبيه مهم',1127,noteY+41,26,'#976822',800);
  const note='الكميات تقديرية وتحتاج مراجعة التوزيع، الوصلات ونظام التثبيت بالموقع.';text(g,note,1127,noteY+86,21,'#866325',500);text(g,'اعتمد المقاسات النهائية قبل شراء السلعة.',1127,noteY+124,21,'#866325',500);
  // Page 2 is now a real, print-layout plan drawn from geometry, not a resized SVG screenshot.
