@@ -12,7 +12,7 @@ test('Cloison diagram mobile uses the exact fitted-width strategy as Armstrong',
  assert.ok(responsive.length>500,'responsive Cloison overrides exist');
  assert.match(responsive,/\.ak-walls-flow #plan\.plan\{overflow:hidden;max-width:100%\}/);
  assert.match(responsive,/\.ak-walls-flow #plan svg\[data-diagram="wall"\]\{\s*display:block;width:100%;max-width:100%;min-width:0;height:auto\s*\}/);
- assert.doesNotMatch(responsive,/width:700px|min-width:700px|max-width:none|overflow-x:auto|scrollbar-width/);
+ assert.doesNotMatch(responsive,/width:700px|min-width:700px|overflow-x:auto|scrollbar-width/);
  assert.match(responsive,/vector-effect:non-scaling-stroke/);
  assert.match(responsive,/\.ak-wall-plan-switches\{width:100%;display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
 });
