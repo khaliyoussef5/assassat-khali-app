@@ -37,9 +37,13 @@ test('Wall 5m x 2.8m, door opening, one side doublage and two-face cloison',()=>
  assert.ok(materials(c).every(r=>!r.name.includes('Rockwool')));
  assert.equal(calcWall({...d,kind:'isolated'}).kind,'cloison');
 });
-test('Wall prevents unsafe stud length and invalid openings',()=>{
+test('Wall extends short Montants for tall walls and still prevents invalid openings',()=>{
  const d={L:5,H:3.6,kind:'cloison',layers:1,spacing:.6,studLength:3};
- assert.throws(()=>calcWall(d),/طول Montant/);
+ const tall=calcWall(d);
+ assert.equal(tall.montantCuts.splicesPerLine,1);
+ assert.equal(tall.montantSleeves,tall.montants);
+ assert.ok(tall.montantStockBars>tall.montants);
+ assert.equal(tall.montantCuts.stockLength,3);
  assert.throws(()=>calcWall({...d,studLength:4,doorW:6,doorH:2}),/الباب/);
 });
 test('Only approved Armstrong calculators are live; BA13 and walls remain development-only',()=>{
