@@ -92,8 +92,7 @@ const picker=(id,label,options)=>`<div class="formfield"><label for="in-${id}">$
 if(app==='ba13-ceiling')$('fields').insertAdjacentHTML('beforeend',picker('mode','نوع السقف',[['plain','سقف BA13 عادي'],['hidden','إنارة مخفية محيطية']]));
 if(app==='walls')$('fields').insertAdjacentHTML('beforeend',[
  picker('layers','طبقات BA13 / وجه',[['1','طبقة واحدة'],['2','جوج طبقات']]),
- picker('spacing','تباعد Montants',[['0.6','60cm'],['0.4','40cm']]),
- picker('studLength','طول Montant',[['3','3m'],['4','4m']])
+ picker('spacing','تباعد Montants',[['0.6','60cm'],['0.4','40cm']])
 ].join(''));
 
 /* Wall calculator preview: same approved sequence as Armstrong.
@@ -109,9 +108,9 @@ if(app==='walls'){
  choices.querySelector('.step').textContent='03';
  drawing.querySelector('.panelheader p').remove();
  choices.querySelector('#option-title').textContent='إعدادات Cloison BA13 والفتحات';
- choices.querySelector('#option-subtitle').textContent='حائط فاصل بوجهين BA13؛ راجع الهيكل والتباعد قبل اعتماد المخطط.';
+ choices.querySelector('#option-subtitle').textContent='نستعمل Montants 3m؛ إذا كان ارتفاع الحائط أكثر من 3m، نزيدو قطع التمديد وقطعة وصل 50cm لكل وصلة مع استغلال بقايا القص.';
  const fieldGroups=[
-  ['الهيكل وطبقات BA13',['layers','spacing','studLength']]
+  ['الهيكل وطبقات BA13',['layers','spacing']]
  ];
  const fieldsContainer=document.getElementById('fields');
  for(const [title,keys] of fieldGroups){
@@ -144,7 +143,7 @@ if(app==='walls'){
  const copy=document.createElement('button');
  copy.type='button';copy.id='copy-materials';copy.className='secondary';copy.textContent='نسخ القائمة';
  results.querySelector('#result .actions').append(copy);
- results.insertAdjacentHTML('beforeend','<p class="ak-wall-preview-warning">نسخة تجريبية غير معتمدة للتنفيذ: تدعيم الفتحات، خطة تقطيع BA13 وثبات الهيكل خاصهم مراجعة تقنية قبل الشراء أو التركيب.</p>');
+ results.insertAdjacentHTML('beforeend','<p class="ak-wall-preview-warning">نسخة تجريبية غير معتمدة للتنفيذ: تدعيم الفتحات، خطة تقطيع BA13 ووصل Montants بقطعة 50cm خاصهم مراجعة تقنية حسب ارتفاع الحائط ونظام الشركة المصنّعة قبل الشراء أو التركيب.</p>');
  wallControls=initWallOpenings({fieldElement:fieldsContainer,planElement:drawing.querySelector('#plan'),onChange:()=>refresh(),fmt});
 }
 function dims(){let out={};for(const [id] of fields[app])out[id]=field(id);if(app==='armstrong-full')out.drop=field('drop');for(const id of ['mode','layers','spacing','studLength'])if($('in-'+id))out[id]=$('in-'+id).value;if(app==='walls')out.openings=wallControls.getOpenings();return out;}
@@ -171,11 +170,11 @@ function optionsUI(){
 }
 function createModel(){let d=dims();if(app==='armstrong-full'){const o=chosen===2?{nL:field('nL'),nW:field('nW')}:options[chosen]||options[0];return calcArmstrongFull({...d,...o});}
  if(app==='ba13-ceiling')return calcBA13Ceiling(d);
- return calcWall({...d,kind:'cloison'});
+ return calcWall({...d,kind:'cloison',studLength:3});
 }
 function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['شبكة 60×60',p.nL+' × '+p.nW],['عدد البلاكات',p.tiles]]:
  app==='ba13-ceiling'?[['مساحة السقف',fmt(p.area)+'m²'],['خطوط Fourrure',p.positions.length],['Fourrure 3m',p.fourrure],['وصلات (تقديرية)',p.joinCount],['علاقات',p.hangers],['ألواح BA13 النظري',p.boards]]:
- [['صافي المساحة',fmt(p.netArea)+'m²'],['ألواح BA13 النظري',p.boards],['Montants',p.montants],['Rails 3m',p.rails],['تدعيم جنبات',p.extraStuds],['طبقات / وجه',p.layers]];
+ [['صافي المساحة',fmt(p.netArea)+'m²'],['ألواح BA13 النظري',p.boards],['خطوط Montants',p.montants],['Montants 3m للشراء',p.montantStockBars],['قطع وصل 50cm',p.montantSleeves],['Rails 3m',p.rails],['طبقات / وجه',p.layers]];
  $('summary').innerHTML=parts.map(([a,b])=>metric(a,b)).join('');
 }
 const svgH=(p)=>{
