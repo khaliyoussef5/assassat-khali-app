@@ -158,6 +158,10 @@ export function calcWall(d){
  if(netArea<=.01)throw Error('صافي مساحة الحائط غير صالح.');
  const faces=kind==='doublage'?1:2,boardArea=netArea*faces*layers;
  const boards=ceil(boardArea/(1.2*2.8)),purchaseBoards=ceil(boards*1.1);
+ // Screw length follows the actual BA13 layer: 25mm for layer 1,
+ // 35mm for layer 2 only. 25 screws/m² on each exposed face per layer.
+ const screw25Count=ceil(netArea*faces*25);
+ const screw35Count=layers===2?ceil(netArea*faces*25):0;
  // PR 8 is joint compound, NOT a full-wall coating: 0.33kg/m²
  // of exposed finished face, per Placo's 03/2026 technical sheet.
  // Additional hidden-layer joint treatment needs separate specification.
@@ -171,7 +175,8 @@ export function calcWall(d){
   ...geometry,montants:geometry.studs,montantCuts,
   montantStockBars:montantCuts.stockBars,montantSplices:montantCuts.spliceCount,
   montantSleeves:montantCuts.sleeveCount,montantExtensionLength:montantCuts.extraTotalLength,
-  screwCount:ceil(boardArea*25),jointTape:ceil(netArea*faces*1.1),
+  screw25Count,screw35Count,screwCount:screw25Count+screw35Count,
+  jointTape:ceil(netArea*faces*1.1),
   note:'مواقع الأبواب والشبابيك مرسومة حسب الفتحات الموضوعة في المخطط التفاعلي، وRails مقسّمة على 3m مع استغلال القصّات نظرياً. Montants اللي طوال من البروفيل الأصلي محسوبين بالتمديد مع قطع وصل 50cm من نفس المخزون، مع استغلال قصاصات البروفيلات. الوصلات الميكانيكية والعلو المسموح ومتطلبات مقاومة الحريق ونوع الـMontants والـRails خاصهم مراجعة تقنية. ألواح BA13 محسوبة نظرياً بالمساحة وليس خطة تقطيع.'};
 }
 export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',reserve=.05,why='')=>{const buy=Number.isInteger(qty)?Math.ceil(qty*(1+reserve)):round(qty*(1+reserve),2);rows.push({name,qty,unit,buy,why});};
@@ -197,7 +202,8 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  add('ألواح BA13 (1.20×2.80m)',p.boards,'لوح',.1);
  add('Rails 3m',p.rails,'قطعة',.12);
  add(`Montants ${p.stock}m`,p.montantStockBars,'بروفيل',.1);
- add('Vis BA13',p.screwCount,'قطعة',.1);
+ add('VPT 25 MM',p.screw25Count,'قطعة',.1);
+ if(p.layers===2)add('VPT 35 MM',p.screw35Count,'قطعة',.1);
  add('Bande à joint',p.jointTape,'متر',.1);
  add('Placojoint PR 8 de Placo — sac 25 kg',p.pr8Bags,'كيس',0);
  }
