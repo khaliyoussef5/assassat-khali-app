@@ -174,7 +174,7 @@ function createModel(){let d=dims();if(app==='armstrong-full'){const o=chosen===
 }
 function sumSvg(p){const parts=app==='armstrong-full'?[['مساحة السقف',fmt(p.area)+'m²'],['شبكة 60×60',p.nL+' × '+p.nW],['عدد البلاكات',p.tiles]]:
  app==='ba13-ceiling'?[['مساحة السقف',fmt(p.area)+'m²'],['خطوط Fourrure',p.positions.length],['Fourrure 3m',p.fourrure],['وصلات (تقديرية)',p.joinCount],['علاقات',p.hangers],['ألواح BA13 النظري',p.boards]]:
- [['صافي المساحة',fmt(p.netArea)+'m²'],['ألواح BA13 النظري',p.boards],['خطوط Montants',p.montants],['Montants 3m للشراء',p.montantStockBars],['قطع وصل 50cm',p.montantSleeves],['Rails 3m',p.rails],['طبقات / وجه',p.layers]];
+ [['صافي المساحة',fmt(p.netArea)+'m²'],['ألواح BA13 النظري',p.boards],['خطوط Montants',p.montants],['Montants 3m للشراء',p.montantStockBars],['قطع وصل 50cm',p.montantSleeves],['Rails 3m',p.rails],['Cheville à frapper',p.chevilleCount],['طبقات / وجه',p.layers]];
  $('summary').innerHTML=parts.map(([a,b])=>metric(a,b)).join('');
 }
 const svgH=(p)=>{
