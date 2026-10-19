@@ -76,9 +76,10 @@ test('Cheville and Montant splice overlays are quiet by default and user-togglea
 test('Cloison plan uses no duplicate card backgrounds; mobile diagram remains draggable',()=>{
  assert.match(css,/\.ak-walls-flow #plan\.plan\{/);
  assert.match(css,/background:transparent;border:0;border-radius:0;box-shadow:none/);
- assert.match(css,/overflow-x:auto;overflow-y:hidden/);
+ assert.match(css,/padding:0;margin:0;overflow:hidden;min-width:0;max-width:100%/);
  assert.match(css,/@media\(max-width:720px\)/);
- assert.match(css,/width:700px;min-width:700px;max-width:none;height:auto/);
+ assert.doesNotMatch(css,/width:700px;min-width:700px;max-width:none;height:auto/);
+ assert.match(css,/\.ak-walls-flow #plan svg\[data-diagram="wall"\]\{\s*display:block;width:100%;max-width:100%;min-width:0;height:auto\s*\}/);
  assert.match(app,/class="ak-wall-plan-legend"/);
  assert.match(app,/class="ak-wall-plan-tools"/);
  assert.match(app,/class="ak-wall-legend-rail"/);
