@@ -17,6 +17,12 @@ export function wallPlanSvg(p){
  const ww=p.L*scale,hh=p.H*scale;
  const x=481-ww/2,y=247-hh/2;
  const X=v=>x+ww*v/p.L,Y=v=>y+hh*v/p.H;
+ // Crop unused margins responsively so the wall (not the empty page) dominates
+ // even for standard 5×2.8m partitions; retain enough clearance for dimension marks.
+ const vbWidth=Math.max(620,ww+134),vbHeight=hh+116;
+ const vbX=481-vbWidth/2,vbY=y-68;
+ A[0]=A[0].replace('viewBox="0 0 1000 500"',
+  'viewBox="'+T(vbX)+' '+T(vbY)+' '+T(vbWidth)+' '+T(vbHeight)+'"');
  A[0]=A[0].replace('data-diagram="wall"','data-diagram="wall" data-wall-x="'+T(x)+'" data-wall-y="'+T(y)+'" data-wall-w="'+T(ww)+'" data-wall-h="'+T(hh)+'"');
  A.push('<rect data-wall-surface="true" x="'+T(x)+'" y="'+T(y)+'" width="'+T(ww)+'" height="'+T(hh)+'" fill="#F7FBFA" stroke="#CCDCD8" stroke-width="1.6"/>');
  // Actual openings (kept visible for engineering snapshot and existing consumers).
