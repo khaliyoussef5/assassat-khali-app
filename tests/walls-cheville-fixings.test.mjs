@@ -86,7 +86,8 @@ test('BOM, technical SVG and two-page PDF have Cheville à frapper values',()=>{
  assert.equal(row.name,'Cheville à frapper');
  assert.equal(row.unit,'قطعة');
  assert.ok(materials(p).every(m=>m.why===''));
- assert.match(wallPlanSvg(p),/Cheville × 58/);
+ assert.equal((wallPlanSvg(p).match(/data-fastener="cheville"/g)||[]).length,p.chevilleCount);
+ assert.match(wallPlanSvg(p),/class="ak-wall-fixing-mark"/);
  drawWallPrintPage(v.c,p,3508,2480);
  assert.ok(v.t.some(s=>s.includes('Cheville à frapper 58')));
  const app=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
