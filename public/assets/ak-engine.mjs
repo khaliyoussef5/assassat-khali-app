@@ -1,4 +1,5 @@
 import {wallLayout} from './ak-wall-layout.mjs';
+import {planCloisonFixings} from './ak-wall-fixings.mjs';
 import {planWallMontantCuts} from './ak-wall-stud-cuts.mjs';
 import {planPorteurCuts} from './ak-porteur-cut.mjs';
 import {ba13Layout} from './ak-ba13-layout.mjs';
@@ -171,12 +172,14 @@ export function calcWall(d){
  const pr8Kg=round(pr8Area*.33,3);
  const pr8Bags=ceil(pr8Kg/25);
  const montantCuts=planWallMontantCuts({height:H,count:geometry.studs,stockLength:stock,sleeveLength:.5});
+ const fixings=planCloisonFixings({L,H,railSegments:geometry.railSegments,interval:.3});
  return {type:'wall',kind,L,H,area,netArea,faces,layers,spacing,stock,
   doorW,doorH,doorX,windowW,windowH,windowX,windowBottom,doorArea,windowArea,
   boardArea,boards,purchaseBoards,pr8Area,pr8Kg,pr8Bags,
   ...geometry,montants:geometry.studs,montantCuts,
   montantStockBars:montantCuts.stockBars,montantSplices:montantCuts.spliceCount,
   montantSleeves:montantCuts.sleeveCount,montantExtensionLength:montantCuts.extraTotalLength,
+  fixings,chevilleRailCount:fixings.railCount,chevilleMontantCount:fixings.montantCount,chevilleCount:fixings.count,
   screw25Count,screw35Count,screwCount:screw25Count+screw35Count,
   jointTape:ceil(netArea*faces*1.1),
   note:'مواقع الأبواب والشبابيك مرسومة حسب الفتحات الموضوعة في المخطط التفاعلي، وRails مقسّمة على 3m مع استغلال القصّات نظرياً. Montants اللي طوال من البروفيل الأصلي محسوبين بالتمديد مع قطع وصل 50cm من نفس المخزون، مع استغلال قصاصات البروفيلات. الوصلات الميكانيكية والعلو المسموح ومتطلبات مقاومة الحريق ونوع الـMontants والـRails خاصهم مراجعة تقنية. ألواح BA13 محسوبة نظرياً بالمساحة وليس خطة تقطيع.'};
@@ -210,6 +213,7 @@ export function materials(p){const rows=[];const add=(name,qty,unit='قطعة',r
  if(p.layers===2)addVpt('VPT 35 MM',p.screw35Count);
  add('Bande à joint',p.jointTape,'متر',.1);
  add('ENDUIT POUR JOINT',p.pr8Bags,'كيس',0);
+ rows.push({name:'Cheville à frapper',qty:p.chevilleCount,unit:'قطعة',buy:ceil(p.chevilleCount*1.1),why:''});
  }
  return rows;
 }
