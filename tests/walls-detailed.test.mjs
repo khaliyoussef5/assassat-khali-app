@@ -27,7 +27,9 @@ test('Door and window openings deduct areas and show actual placements',()=>{
  assert.equal(p.layers,2);assert.equal(p.faces,2);assert.equal(p.extraStuds,4);
  assert.ok(p.rails>=Math.ceil(p.railLinear/3));
  assert.ok(p.railJoins>=0);
- assert.equal(materials(p).find(r=>r.name.startsWith('Raccord Rails')).qty,p.railJoins);
+ assert.equal(materials(p).some(r=>r.name.includes('Raccord Rails')),false);
+ assert.match(materials(p).find(r=>r.name==='Rails 3m').why,/مقاطع في خطة القص/);
+ assert.doesNotMatch(materials(p).find(r=>r.name==='Rails 3m').why,/وصلات/);
  assert.ok(materials(p).every(r=>!r.name.includes('Rockwool')));
  assert.equal(p.insulated,undefined);
 });
