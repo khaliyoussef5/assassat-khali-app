@@ -45,6 +45,13 @@ export function wallPlanSvg(p){
  for(const run of p.railSegments)A.push(line(X(run.x1),Y(run.y1),X(run.x2),Y(run.y2),C.rail,4.1,'data-profile="rail"'));
  for(const pos of p.reinforcements)A.push(line(X(pos),Y(0),X(pos),Y(p.H),C.jamb,3.8,'data-profile="jamb"'));
 
+ // Fixing pins on actual upper/lower Rail runs and the two edge Montants.
+ // Door headers and window sills are deliberately excluded.
+ for(const pin of p.fixings?.points||[]){
+  A.push('<circle data-fastener="cheville" data-fastener-part="'+pin.kind+'" cx="'+T(X(pin.x))+'" cy="'+T(Y(pin.y))+'" r="2.25" fill="#A85632" stroke="#FFF" stroke-width=".55" pointer-events="none"/>');
+ }
+
+
  // Drag overlays sit above Rails/Montants, so touch and mouse can move every
  // individual door/window; the underlying engineering drawing stays authoritative.
  const byType={door:0,window:0};
@@ -65,7 +72,7 @@ export function wallPlanSvg(p){
  if(p.openings.length)A.push(text(944,483,'الأبواب: '+p.openings.filter(o=>o.type==='door').length+' | النوافذ: '+p.openings.filter(o=>o.type==='window').length+' — حرّك الفتحات مباشرة في الرسم',12,C.open,'font-weight="700" text-anchor="end"'));
  A.push('<rect x="35" y="547" width="930" height="60" rx="12" fill="#edf5f1" stroke="#dce8e2"/>');
  A.push(line(54,570,90,570,C.rail,4),text(99,575,'Rails × '+p.rails,13,C.ink,'font-weight="700"'),line(265,570,300,570,C.stud,3),text(312,575,'Montants × '+p.montants,13,C.ink,'font-weight="700"'));
- A.push(line(580,570,610,570,C.jamb,4),text(620,575,'تدعيم الفتحات',13,C.ink,'font-weight="700"'));
+ A.push(line(580,570,610,570,C.jamb,4),text(620,575,'تدعيم الفتحات',13,C.ink,'font-weight="700"'),text(942,575,'Cheville × '+p.chevilleCount,13,'#A85632','font-weight="800" text-anchor="end"'));
  A.push(text(54,594,'Montants '+p.stock+'m: '+p.montantStockBars+' بروفيل من بينها '+p.montantSleeves+' قطع وصل × 50cm  •  BA13: '+p.boards,12,C.muted,'font-weight="700"'));
  A.push('</svg>');return A.join('');
 }
