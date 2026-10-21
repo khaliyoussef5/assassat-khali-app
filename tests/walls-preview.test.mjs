@@ -18,8 +18,8 @@ test('Walls preview is unlisted and isolated from official locked walls and home
  assert.match(demo,/assets\/ak-classic\.css/);
  assert.match(demo,/assets\/ak-calculator-nav\.css/);
  assert.match(demo,/assets\/ak-app\.mjs/);
- assert.match(official,/قيد التطوير/);
- assert.doesNotMatch(official,/data-calculator=|ak-app\.mjs/);
+ assert.match(official,/data-calculator="walls"/);
+ assert.match(official,/ak-app\.mjs/);
  assert.doesNotMatch(home,/href="calculators\/walls(-preview)?\//);
 });
 
