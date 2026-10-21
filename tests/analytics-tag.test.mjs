@@ -35,6 +35,6 @@ test('All development calculators remain locked while Analytics collects page vi
   assert.doesNotMatch(html,/ak-app\.mjs/);
   assert.doesNotMatch(home,new RegExp('href="calculators/'+route+'/'));
  }
- assert.equal((home.match(/class="product live"/g)||[]).length,3);
+ assert.equal((home.match(/class="product live"/g)||[]).length,2);
  assert.equal((home.match(/class="product planned"/g)||[]).length,1);
 });

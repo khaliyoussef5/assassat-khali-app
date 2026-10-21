@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
 const home=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
 test('Homepage presents four calculator categories',()=>{
- assert.match(home,/Armstrong مع بوردور BA13/);
- assert.match(home,/Armstrong بلا بوردور/);
+ assert.match(home,/مع بوردور BA13/);
+ assert.match(home,/بلا بوردور/);
  assert.match(home,/أسقف الجبص بورد BA13/);
  assert.match(home,/Cloison BA13/);
 });
@@ -31,7 +31,7 @@ test('Only the two approved Armstrong calculator cards are publicly linked',()=>
   assert.doesNotMatch(placeholder,/data-calculator=/);
  }
  assert.equal((home.match(/class="product planned"/g)||[]).length,1);
- assert.equal((home.match(/class="product live"/g)||[]).length,3);
+ assert.equal((home.match(/class="product live"/g)||[]).length,2);
 });
 
 test('Cloison BA13 is officially published, BA13 ceilings remain locked',()=>{
@@ -40,4 +40,10 @@ test('Cloison BA13 is officially published, BA13 ceilings remain locked',()=>{
  assert.match(wall,/data-calculator="walls"/);
  assert.match(wall,/assets\/ak-app\.mjs/);
  assert.doesNotMatch(wall,/noindex,nofollow|قيد التطوير/);
+});
+
+test('Armstrong is a single expandable choice card with two existing calculator routes',()=>{
+ assert.equal((home.match(/class="arm-choices"/g)||[]).length,1);
+ assert.match(home,/<summary class="open">اختار نوع السقف/);
+ assert.ok(home.indexOf('Cloison BA13، متاحة دابا')<home.indexOf('أسقف الجبص بورد BA13، قيد التطوير'));
 });
