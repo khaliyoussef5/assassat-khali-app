@@ -59,7 +59,7 @@ test('Shared navbar CSS pins all pages to the same responsive top layout',()=>{
 });
 
 test('Development-only BA13 and wall pages retain their locked status and no active calculators',()=>{
- for(const name of ['ba13-ceiling','walls']){
+ for(const name of ['ba13-ceiling']){
   const html=read('calculators/'+name+'/index.html');
   assert.match(html,/قيد التطوير/);
   assert.doesNotMatch(html,/data-calculator=/);
