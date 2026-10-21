@@ -89,5 +89,5 @@ test('Cloison preview uses add controls rather than fixed door/window position i
  assert.match(module,/data-size-id/);
  assert.match(module,/data-drag-id/);
  assert.doesNotMatch(module,/(rockwool|woolDensity|woolThickness)/);
- assert.match(html,/قيد التطوير/);assert.doesNotMatch(html,/ak-app\.mjs/);
+ assert.match(html,/data-calculator="walls"/);assert.match(html,/ak-app\.mjs/);
 });
