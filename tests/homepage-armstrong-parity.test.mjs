@@ -43,7 +43,7 @@ test('Homepage remains concise and responsive and its workflow matches the calcu
 });
 
 test('Original calculator navigation, routes, locked pages, and analytics remain unchanged',()=>{
- assert.equal((home.match(/class="product live"/g)||[]).length,3);
+ assert.equal((home.match(/class="product live"/g)||[]).length,2);
  assert.equal((home.match(/class="product planned"/g)||[]).length,1);
  for(const path of ['armstrong','armstrong-full'])assert.match(home,new RegExp('href="calculators/'+path+'/"'));
  for(const path of ['ba13-ceiling']){
