@@ -138,6 +138,7 @@ footer .shell{border-top:1px solid #e0e7e7;padding-top:16px;display:flex;flex-wr
  .proof-pill{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.primary{transition:none}}
+.arm-choices{margin-top:auto}.arm-choices summary{list-style:none;cursor:pointer;user-select:none}.arm-choices summary::-webkit-details-marker{display:none}.arm-choices summary span{margin-inline-start:10px}.arm-options{display:grid;gap:9px;margin-top:12px}.arm-options a{display:flex;flex-direction:column;gap:3px;padding:13px;border:1px solid #d1e4df;background:#f5faf8;border-radius:12px;color:#173f3e}.arm-options a:hover,.arm-options a:focus-visible{border-color:#167767;background:#eaf8f3}.arm-options a strong{font-size:13px}.arm-options a span{font-size:11px;color:#60767a}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -170,27 +171,29 @@ footer .shell{border-top:1px solid #e0e7e7;padding-top:16px;display:flex;flex-wr
   </div>
   <div class="hero-art" aria-hidden="true"><img src="assets/logo-assassat-khali.webp" width="51" height="56" alt=""></div>
  </section>
- <div class="kicker"><strong>ثلاث حاسبات متاحات دابا</strong><span></span>حاسبة واحدة قيد التطوير</div>
+ <div class="kicker"><strong>جوج تخصصات متاحة دابا</strong><span></span>تخصص واحد قيد التطوير</div>
  <section class="section" id="tools" aria-labelledby="tools-heading">
-  <div class="headline"><div><h2 id="tools-heading">الحاسبات التقنية</h2><p class="description">اختار نوع الأشغال باش تشوف الخيارات والمخطط وحساب السلعة.</p></div><span class="meta">4 تخصصات</span></div>
+  <div class="headline"><div><h2 id="tools-heading">الحاسبات التقنية</h2><p class="description">اختار نوع الأشغال باش تشوف الخيارات والمخطط وحساب السلعة.</p></div><span class="meta">3 تخصصات</span></div>
   <div class="catalog">
-   <article class="product live">
+   <article class="product live" aria-label="حاسبة Armstrong، جوج أنواع">
     <div class="product-top"><span class="tile-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="26" height="26" rx="3"/><path d="M3 12h26M3 21h26M12 3v26M21 3v26"/></svg></span><span class="status ready">متاحة دابا</span></div>
-    <h3>Armstrong مع بوردور BA13</h3><p>اقتراحات تلقائية، تعديل يدوي، مخطط Porteur وCross، وحساب السلعة مع PDF فيه الرسم.</p>
-    <a class="open" href="calculators/armstrong/">فتح الحاسبة <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m6-6-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-   </article>
-   <article class="product live">
-    <div class="product-top"><span class="tile-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="26" height="26" rx="3"/><path d="M10 3v26M18 3v26M25 3v26M3 11h26M3 20h26"/></svg></span><span class="status ready">متاحة دابا</span></div>
-    <h3>Armstrong بلا بوردور</h3><p>توزيع بلاكات 60×60، القصّات المتوازنة، حساب الشبكة والكميات.</p><a class="open" href="calculators/armstrong-full/">فتح الحاسبة <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m6-6-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-   </article>
-   <article class="product planned" aria-label="أسقف الجبص بورد BA13، قيد التطوير">
-    <div class="product-top"><span class="tile-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9h24M4 9v16h24V9M10 9v16M22 9v16M4 17h24"/></svg></span><span class="status">قيد التطوير</span></div>
-    <h3>أسقف الجبص بورد BA13</h3><p>الأسقف العادية والإنارة المخفية، Fourrure وCornière والألواح والتثبيت.</p><span class="future" aria-label="هذه الحاسبة غير متاحة حالياً">الحاسبة مغلقة حالياً — قيد التطوير</span>
+    <h3>سقف Armstrong</h3><p>اختار طريقة تركيب السقف: مع بوردور BA13 أو بلا بوردور.</p>
+    <details class="arm-choices"><summary class="open">اختار نوع السقف <span aria-hidden="true">⌄</span></summary>
+     <div class="arm-options" aria-label="أنواع Armstrong">
+      <a href="calculators/armstrong/"><strong>مع بوردور BA13</strong><span>Armstrong محاط ببوردور جبص بورد</span></a>
+      <a href="calculators/armstrong-full/"><strong>بلا بوردور</strong><span>Armstrong على مساحة السقف كاملة</span></a>
+     </div>
+    </details>
    </article>
    <article class="product live" aria-label="Cloison BA13، متاحة دابا">
     <div class="product-top"><span class="tile-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 27V5h22v22H5ZM12 5v22M20 5v22M5 13h22M5 20h22"/></svg></span><span class="status ready">متاحة دابا</span></div>
     <h3>Cloison BA13</h3><p>حائط فاصل بوجهين BA13، مع Rails وMontants وحساب الأبواب والشبابيك.</p><a class="open" href="calculators/walls/">فتح الحاسبة</a>
    </article>
+   <article class="product planned" aria-label="أسقف الجبص بورد BA13، قيد التطوير">
+    <div class="product-top"><span class="tile-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9h24M4 9v16h24V9M10 9v16M22 9v16M4 17h24"/></svg></span><span class="status">قيد التطوير</span></div>
+    <h3>أسقف الجبص بورد BA13</h3><p>الأسقف العادية والإنارة المخفية، Fourrure وCornière والألواح والتثبيت.</p><span class="future" aria-label="هذه الحاسبة غير متاحة حالياً">الحاسبة مغلقة حالياً — قيد التطوير</span>
+   </article>
+
   </div>
  </section>
  <section class="process" id="method" aria-label="طريقة العمل">
