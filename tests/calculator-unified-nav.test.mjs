@@ -30,7 +30,7 @@ test('Every calculator page displays the exact same top navigation and one retur
   const destination=new URL('../../','https://example.pages.dev/'+file.replace(/index\.html$/,''));
   assert.equal(destination.href,'https://example.pages.dev/',file+' points to the site home');
   if(file==='calculators/armstrong-full/index.html'||file==='calculators/walls/index.html'){
-   assert.match(html,/data-calculator="armstrong-full"/);
+   assert.match(html,new RegExp('data-calculator="'+(file.includes('/walls/')?'walls':'armstrong-full')+'"'));
   }else{
    assert.ok(html.indexOf('<nav class="ak-calculator-nav"')<html.indexOf('<main'),file+' navbar stays above the main content');
   }
