@@ -31,7 +31,7 @@ test('Only the two approved Armstrong calculator cards are publicly linked',()=>
   assert.doesNotMatch(placeholder,/data-calculator=/);
  }
  assert.equal((home.match(/class="product planned"/g)||[]).length,1);
- assert.equal((home.match(/class="product live"/g)||[]).length,3);
+ assert.equal((home.match(/class="product live"/g)||[]).length,2);
 });
 
 test('Cloison BA13 is officially published, BA13 ceilings remain locked',()=>{
@@ -40,4 +40,10 @@ test('Cloison BA13 is officially published, BA13 ceilings remain locked',()=>{
  assert.match(wall,/data-calculator="walls"/);
  assert.match(wall,/assets\/ak-app\.mjs/);
  assert.doesNotMatch(wall,/noindex,nofollow|قيد التطوير/);
+});
+
+test('Armstrong is a single expandable choice card with two existing calculator routes',()=>{
+ assert.equal((home.match(/class="arm-choices"/g)||[]).length,1);
+ assert.match(home,/<summary class="open">اختار نوع السقف/);
+ assert.ok(home.indexOf('Cloison BA13، متاحة دابا')<home.indexOf('أسقف الجبص بورد BA13، قيد التطوير'));
 });
