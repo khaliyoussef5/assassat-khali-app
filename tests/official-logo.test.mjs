@@ -32,12 +32,12 @@ test('Both available calculators and both locked pages show updated brand icon',
 
 test('Development calculators stay locked after the logo-only change',()=>{
  const home=get('index.html');
- for(const route of ['ba13-ceiling','walls']){
+ for(const route of ['ba13-ceiling']){
   const html=get('calculators/'+route+'/index.html');
   assert.match(html,/قيد التطوير/);
   assert.doesNotMatch(html,/ak-app\.mjs/);
   assert.doesNotMatch(home,new RegExp('href="calculators/'+route+'/'));
  }
- assert.equal((home.match(/class="product live"/g)||[]).length,2);
- assert.equal((home.match(/class="product planned"/g)||[]).length,2);
+ assert.equal((home.match(/class="product live"/g)||[]).length,3);
+ assert.equal((home.match(/class="product planned"/g)||[]).length,1);
 });

@@ -29,12 +29,12 @@ test('Google Analytics tag appears once and inside <head> on every published HTM
 
 test('All development calculators remain locked while Analytics collects page views',()=>{
  const home=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
- for(const route of ['ba13-ceiling','walls']){
+ for(const route of ['ba13-ceiling']){
   const html=readFileSync(new URL('../public/calculators/'+route+'/index.html',import.meta.url),'utf8');
   assert.match(html,/قيد التطوير/);
   assert.doesNotMatch(html,/ak-app\.mjs/);
   assert.doesNotMatch(home,new RegExp('href="calculators/'+route+'/'));
  }
- assert.equal((home.match(/class="product live"/g)||[]).length,2);
- assert.equal((home.match(/class="product planned"/g)||[]).length,2);
+ assert.equal((home.match(/class="product live"/g)||[]).length,3);
+ assert.equal((home.match(/class="product planned"/g)||[]).length,1);
 });

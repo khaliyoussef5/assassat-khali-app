@@ -64,7 +64,7 @@ test('Borderless Armstrong stays geometrically unchanged, PDF uses same renderin
 test('Changes are scoped to borderless Armstrong; locked calculators remain isolated',()=>{
  const full=readFileSync(new URL('../public/calculators/armstrong-full/index.html',import.meta.url),'utf8');
  assert.match(full,/data-calculator="armstrong-full"/);
- for(const path of ['ba13-ceiling','walls']){
+ for(const path of ['ba13-ceiling']){
   const html=readFileSync(new URL('../public/calculators/'+path+'/index.html',import.meta.url),'utf8');
   assert.match(html,/قيد التطوير/);
   assert.doesNotMatch(html,/data-calculator=/);

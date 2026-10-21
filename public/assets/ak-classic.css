@@ -161,39 +161,188 @@ h1{font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.25;margin:7px 0}
 }
 
 
-/* Mobile plan presentation aligned with the responsive Armstrong calculator.
-   UI only: never alters plan geometry, materials or exported PDF. */
-@media(max-width:800px){
-  body[data-calculator="ba13-ceiling"] .plan:has(svg[data-diagram="ba13-ceiling"]),
-  body[data-calculator="walls"] .plan:has(svg[data-diagram="wall"]){
-    width:100%;
-    max-width:100%;
-    min-width:0;
-    padding:0;
-    overflow:hidden;
-    border-radius:12px;
-    background:#fff;
-    scrollbar-width:none;
-  }
-  body[data-calculator="ba13-ceiling"] .plan svg[data-diagram="ba13-ceiling"],
-  body[data-calculator="walls"] .plan svg[data-diagram="wall"]{
-    display:block;
-    width:100%;
-    min-width:0;
-    max-width:100%;
-    height:auto;
-    max-height:none;
-    border-radius:10px;
-  }
+/* Review-only walls flow: follows Armstrong dimensions -> diagram -> options -> materials. */
+.ak-walls-flow .inputs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ak-walls-flow .plan:has(svg[data-diagram="wall"]){overflow:hidden;padding:0}
+.ak-walls-flow .plan svg[data-diagram="wall"]{display:block;width:100%;height:auto;min-width:0;max-width:100%}
+.ak-walls-flow .ak-wall-setting-group{
+ min-width:0;border:1px solid #e0e8e7;border-radius:14px;margin:16px 0 0;padding:15px;background:#fbfdfc
 }
+.ak-walls-flow .ak-wall-setting-group legend{
+ font-size:14px;font-weight:850;color:#174951;padding-inline:10px
+}
+.ak-walls-flow .ak-wall-setting-grid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px
+}
+.ak-walls-flow .ak-wall-setting-grid .formfield{
+ display:flex;flex-direction:column;gap:5px;min-width:0
+}
+.ak-walls-flow .ak-wall-setting-grid label{font-size:12px;color:#40555e;font-weight:800}
+.ak-walls-flow .ak-wall-setting-grid input,
+.ak-walls-flow .ak-wall-setting-grid select{
+ width:100%;min-height:46px;border-radius:10px;border:1px solid #d8e2e3;
+ background:#fcfefe;padding:10px 11px;color:#14313c;font-weight:800;font-size:14px
+}
+.ak-walls-flow .ak-wall-approve{
+ display:block;margin-top:16px;width:100%;min-height:52px;border:0;border-radius:12px;
+ padding:13px 18px;background:#166e65;color:#fff;font-weight:850;font-size:14px;cursor:pointer
+}
+.ak-walls-flow .ak-wall-approve:hover{background:#09574f}
+.ak-walls-flow .ak-wall-approve:disabled{opacity:.45;cursor:not-allowed}
+.ak-walls-flow .result .actions{align-items:stretch}
+.ak-walls-flow .result .actions .ak-wall-pdf{width:auto;flex:2 1 270px;min-height:47px}
+.ak-walls-flow .result .actions .secondary{flex:1 1 170px}
+.ak-walls-flow .ak-wall-preview-warning{
+ font-size:12px;line-height:1.8;color:#856226;background:#fff9eb;
+ border:1px solid #efe0be;border-radius:11px;padding:12px;margin:16px 0 0
+}
+@media(max-width:800px){
+ .ak-walls-flow .ak-wall-setting-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ak-walls-flow .plan svg[data-diagram="wall"]{min-width:0;max-width:100%;width:100%;height:auto}
+}
+@media(max-width:420px){
+ .ak-walls-flow .ak-wall-setting-grid{grid-template-columns:1fr}
+}
+@media print{
+ .ak-walls-flow .ak-wall-preview-warning{display:none}
+ .ak-walls-flow .plan svg[data-diagram="wall"]{width:100%;min-width:0;max-width:100%}
+}
+
+/* Cloison project opening controls: hidden until the user explicitly adds one. */
+.ak-walls-flow .ak-wall-opening-toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:15px 0 0}
+.ak-walls-flow .ak-wall-opening-toolbar button{
+ display:inline-flex;align-items:center;justify-content:center;min-height:45px;
+ padding:10px 16px;background:#eaf8f3;border:1px solid #96cfc1;
+ border-radius:11px;color:#166e65;font-size:13px;font-weight:850;cursor:pointer
+}
+.ak-walls-flow .ak-wall-opening-toolbar button:hover{background:#d9f1e8}
+.ak-walls-flow .ak-wall-opening-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.ak-walls-flow .ak-wall-opening-fields:empty{display:none}
+.ak-walls-flow .ak-wall-opening-card{padding:14px;border:1px solid #cde4dc;border-radius:13px;background:#fafdfb;min-width:0}
+.ak-walls-flow .ak-wall-opening-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.ak-walls-flow .ak-wall-opening-card-head strong{color:#174951;font-size:14px}
+.ak-walls-flow .ak-wall-opening-card-head button{border:1px solid #e7c9c5;background:#fff4f3;color:#9c3d38;padding:5px 11px;border-radius:8px;min-height:34px}
+.ak-walls-flow .ak-wall-opening-dimensions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ak-walls-flow .ak-wall-opening-dimensions label{font-weight:800;font-size:11px;color:#40555e}
+.ak-walls-flow .ak-wall-opening-dimensions input{display:block;margin-top:5px;min-height:44px;width:100%;background:#fff;border:1px solid #d8e2e3;border-radius:9px;color:#142c35;padding:9px 10px;text-align:center;font-size:15px;font-weight:800;direction:ltr}
+.ak-walls-flow .ak-wall-opening-position{font-size:11px;color:#587078;margin:9px 0 0}
+.ak-walls-flow .ak-wall-drag-help{font-size:12px;color:#52696f;margin:9px 0;line-height:1.8}
+.ak-walls-flow .ak-wall-opening-message{font-size:12px;color:#974c2f;background:#fff4eb;border:1px solid #efd7c7;padding:10px 12px;border-radius:9px}
+.ak-walls-flow .ak-wall-opening-message[hidden]{display:none}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]{cursor:grab;touch-action:none;outline:none}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]:active{cursor:grabbing}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]:focus-visible rect{stroke:#146f60;stroke-width:4}
 @media(max-width:600px){
-  body[data-calculator="ba13-ceiling"] .plan,
-  body[data-calculator="walls"] .plan{
-    margin-inline:0;
-    box-shadow:none;
-  }
-  body[data-calculator="ba13-ceiling"] .panel:has(.plan),
-  body[data-calculator="walls"] .panel:has(.plan){
-    min-width:0;
-  }
+ .ak-walls-flow .ak-wall-opening-fields{grid-template-columns:1fr}
+ .ak-walls-flow .ak-wall-opening-toolbar button{flex:1 1 120px}
+}
+@media print{.ak-walls-flow .ak-wall-opening-toolbar,.ak-walls-flow .ak-wall-drag-help{display:none}}
+
+
+/* Cloison drawing V3 — fit the entire plan on mobile, like Armstrong.
+ * Scoped to the review-only Cloison calculator; no Armstrong style changes.
+ */
+.ak-walls-flow #plan.plan{
+ display:block;background:transparent;border:0;border-radius:0;box-shadow:none;
+ padding:0;margin:0;overflow:hidden;min-width:0;max-width:100%;
+ line-height:0;
+}
+.ak-walls-flow #plan svg[data-diagram="wall"]{
+ display:block;width:100%;max-width:100%;min-width:0;height:auto;
+ border-radius:0;background:transparent;
+}
+.ak-walls-flow .ak-wall-plan-tools{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+ gap:10px;padding:0 0 10px;margin-top:0;
+}
+.ak-walls-flow .ak-wall-plan-kicker{
+ color:#597278;font-size:12px;font-weight:750;letter-spacing:.1px;
+}
+.ak-walls-flow .ak-wall-plan-switches{
+ display:flex;gap:7px;align-items:center;flex-wrap:wrap;
+}
+.ak-walls-flow .ak-wall-plan-switches button{
+ min-height:35px;padding:7px 12px;background:#f8fbfa;
+ border:1px solid #dde9e6;border-radius:18px;color:#536d74;
+ font:750 11px system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
+ cursor:pointer;transition:background .16s,border-color .16s,color .16s;
+}
+.ak-walls-flow .ak-wall-plan-switches button:hover{background:#eaf6f1;border-color:#9dcbbf}
+.ak-walls-flow .ak-wall-plan-switches button[aria-pressed="true"]{
+ color:#0e6a5f;background:#e3f5ee;border-color:#92cbb8;
+}
+.ak-walls-flow .ak-wall-plan-legend{
+ display:flex;align-items:center;justify-content:flex-start;gap:14px;
+ flex-wrap:wrap;padding:9px 0 0;border-top:1px solid #eff3f2;
+ color:#536e76;font-size:11px;font-weight:700;line-height:1.7;
+}
+.ak-walls-flow .ak-wall-plan-legend span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.ak-walls-flow .ak-wall-plan-legend i{display:inline-block;width:17px;height:4px;border-radius:3px;flex:none}
+.ak-walls-flow .ak-wall-legend-rail{background:#234B53}
+.ak-walls-flow .ak-wall-legend-stud{background:#91B1BB}
+.ak-walls-flow .ak-wall-legend-jamb{background:#168779}
+.ak-walls-flow .ak-wall-plan-legend .ak-wall-legend-door{
+ background:#fff6e9;border:1.5px solid #a86938;border-radius:2px;height:11px;width:14px;
+}
+.ak-walls-flow .ak-wall-plan-legend .ak-wall-legend-window{
+ background:#dff4f0;border:1.5px solid #117c72;border-radius:2px;height:11px;width:14px;
+}
+.ak-walls-flow svg[data-diagram="wall"] .ak-wall-fixing-mark,
+.ak-walls-flow svg[data-diagram="wall"] .ak-wall-splice-mark{
+ opacity:0;pointer-events:none;transition:opacity .16s;
+}
+.ak-walls-flow svg[data-diagram="wall"].ak-wall-show-fixings .ak-wall-fixing-mark{opacity:1}
+.ak-walls-flow svg[data-diagram="wall"].ak-wall-show-splices .ak-wall-splice-mark{opacity:1}
+.ak-walls-flow .summary{
+ display:flex;flex-wrap:wrap;gap:0;border-top:1px solid #e8efee;
+ margin:10px 0 4px;padding-top:11px;
+}
+.ak-walls-flow .summary .metric{
+ flex:1 1 146px;min-width:100px;max-width:none;
+ background:transparent;border:0;border-inline-end:1px solid #e9eeee;
+ border-radius:0;padding:8px 11px;text-align:center;
+}
+.ak-walls-flow .summary .metric small{font-size:10px;color:#73868b}
+.ak-walls-flow .summary .metric strong{font-size:16px;color:#214b53}
+.ak-walls-flow .ak-wall-drag-help{
+ margin:0 0 10px;padding:1px 0;
+ color:#6b8388;font-size:11px;line-height:1.7;
+}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]{cursor:grab;touch-action:none}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]:active{cursor:grabbing}
+.ak-walls-flow svg[data-diagram="wall"] [data-drag-id]:focus-visible [data-drag-opening]{
+ stroke:#074f48;stroke-width:4;stroke-dasharray:4 2;
+}
+@media(max-width:720px){
+ /* Match the approved Armstrong mobile rule: fit the WHOLE SVG, no sideways scrolling. */
+ .ak-walls-flow #plan.plan{overflow:hidden;max-width:100%}
+ .ak-walls-flow #plan svg[data-diagram="wall"]{
+  display:block;width:100%;max-width:100%;min-width:0;height:auto
+ }
+ /* SVG viewBox units shrink on phones; keep profile strokes crisp in CSS pixels. */
+ .ak-walls-flow svg[data-diagram="wall"] [data-profile="rail"]{
+  vector-effect:non-scaling-stroke;stroke-width:2.5px
+ }
+ .ak-walls-flow svg[data-diagram="wall"] [data-profile="montant"]{
+  vector-effect:non-scaling-stroke;stroke-width:1.5px
+ }
+ .ak-walls-flow svg[data-diagram="wall"] [data-profile="jamb"]{
+  vector-effect:non-scaling-stroke;stroke-width:2px
+ }
+ .ak-walls-flow svg[data-diagram="wall"] [data-drag-opening]{
+  vector-effect:non-scaling-stroke;stroke-width:2px
+ }
+ .ak-walls-flow .ak-wall-plan-tools{align-items:center;gap:7px}
+ .ak-walls-flow .ak-wall-plan-kicker{flex:1 1 100%;font-size:12px}
+ .ak-walls-flow .ak-wall-plan-switches{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .ak-walls-flow .ak-wall-plan-switches button{min-width:0;min-height:42px;padding:9px 5px;font-size:11px}
+ .ak-walls-flow .ak-wall-plan-legend{gap:9px 14px}
+ .ak-walls-flow .summary .metric{flex-basis:105px;min-width:95px}
+}
+@media(max-width:380px){
+ .ak-walls-flow .ak-wall-plan-switches button{font-size:10px}
+}
+@media print{
+ .ak-walls-flow #plan svg[data-diagram="wall"]{width:100%;max-width:100%;min-width:0}
+ .ak-walls-flow .ak-wall-plan-tools{display:none}
 }

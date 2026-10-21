@@ -10,7 +10,7 @@ function mock(){const painted={texts:[],lines:[]};let v=null;const ctx={save(){}
 test('Door opening uses user-defined offset and actual rail segments',()=>{
  const a=make();
  assert.equal(a.openings.length,1);
- assert.deepEqual(a.openings[0],{type:'door',x:.2,top:.7,w:.9,h:2.1,right:1.1,bottom:2.8});
+ assert.deepEqual(a.openings[0],{id:'door-legacy',type:'door',x:.2,top:.7,w:.9,h:2.1,right:1.1,bottom:2.8,sill:0});
  assert.equal(a.railSegments.length,4);
  assert.ok(Math.abs(a.railLinear-10)<1e-6);
  assert.equal(a.extraStuds,2);
@@ -20,15 +20,18 @@ test('Door opening uses user-defined offset and actual rail segments',()=>{
  assert.equal(materials(a).find(r=>r.name==='Rails 3m').qty,a.rails);
 });
 test('Door and window openings deduct areas and show actual placements',()=>{
- const p=make({windowW:1,windowH:1.2,windowX:3.2,windowBottom:.9,kind:'isolated',woolDensity:70,woolThickness:50,layers:2});
+ const p=make({windowW:1,windowH:1.2,windowX:3.2,windowBottom:.9,kind:'cloison',layers:2});
  assert.equal(p.openings.length,2);
  assert.ok(Math.abs(p.netArea-(14-1.89-1.2))<1e-7);
  assert.equal(p.openings[1].x,3.2);assert.equal(p.openings[1].top,.7);
  assert.equal(p.layers,2);assert.equal(p.faces,2);assert.equal(p.extraStuds,4);
  assert.ok(p.rails>=Math.ceil(p.railLinear/3));
  assert.ok(p.railJoins>=0);
- assert.equal(materials(p).find(r=>r.name.startsWith('Raccord Rails')).qty,p.railJoins);
- assert.ok(materials(p).some(r=>r.name.includes('Rockwool 70kg/m³')));
+ assert.equal(materials(p).some(r=>r.name.includes('Raccord Rails')),false);
+ assert.equal(materials(p).find(r=>r.name==='Rails 3m').why,'');
+ assert.ok(materials(p).every(r=>r.why===''));
+ assert.ok(materials(p).every(r=>!r.name.includes('Rockwool')));
+ assert.equal(p.insulated,undefined);
 });
 test('Rejects windows beyond wall, overlapping openings and negative positions',()=>{
  assert.throws(()=>make({doorX:4.5}),/الباب/);
@@ -55,8 +58,9 @@ test('Wall SVG draws only actual openings, reinforcement and rail segments',()=>
  assert.equal((svg.match(/data-opening="window"/g)||[]).length,1);
  assert.equal((svg.match(/data-profile="jamb"/g)||[]).length,p.extraStuds);
  assert.equal((svg.match(/data-profile="rail"/g)||[]).length,p.railSegments.length);
- assert.match(svg,/Montants × /);
- assert.match(svg,/Rails × /);
+ assert.match(svg,/data-wall-surface="true"/);
+ assert.doesNotMatch(svg,/PLAN TECHNIQUE|<rect x="35" y="155"/);
+ assert.match(svg,/data-wall-w=/);
  assert.match(svg,/data-profile="montant"/);
 });
 test('Wall PDF page 2 is a separate direct landscape drawing and retains positions',()=>{
@@ -72,13 +76,18 @@ test('Wall PDF page 2 is a separate direct landscape drawing and retains positio
  assert.match(app,/drawWallPrintPage\(z,p,planCanvas.width,planCanvas.height\)/);
  assert.match(app,/isLandscapePrint=isArmPrint\|\|isBA13Print\|\|isWallPrint/);
 });
-test('Wall UI exposes the placement and Rockwool controls in Classic calculator',()=>{
+test('Cloison preview uses add controls rather than fixed door/window position inputs',()=>{
  const app=readFileSync(new URL('../public/assets/ak-app.mjs',import.meta.url),'utf8');
+ const module=readFileSync(new URL('../public/assets/ak-wall-interactions.mjs',import.meta.url),'utf8');
  const html=readFileSync(new URL('../public/calculators/walls/index.html',import.meta.url),'utf8');
- assert.match(app,/\['doorX','بداية الباب/);
- assert.match(app,/\['windowX','بداية الشباك/);
- assert.match(app,/\['windowBottom','علو أسفل الشباك/);
- assert.match(app,/picker\('woolDensity'/);
- assert.match(app,/picker\('woolThickness'/);
- assert.match(html,/قيد التطوير/);assert.doesNotMatch(html,/ak-app\.mjs/);
+ assert.match(app,/initWallOpenings/);
+ assert.match(app,/wallControls\.getOpenings\(\)/);
+ assert.match(app,/wallControls\.bindSvg\(plan\)/);
+ assert.doesNotMatch(app,/(\['doorX'|\['windowX'|\['windowBottom')/);
+ assert.match(module,/wall-add-door/);
+ assert.match(module,/wall-add-window/);
+ assert.match(module,/data-size-id/);
+ assert.match(module,/data-drag-id/);
+ assert.doesNotMatch(module,/(rockwool|woolDensity|woolThickness)/);
+ assert.match(html,/data-calculator="walls"/);assert.match(html,/ak-app\.mjs/);
 });
