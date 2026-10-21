@@ -180,7 +180,7 @@ if(app==='walls'){
  const copy=document.createElement('button');
  copy.type='button';copy.id='copy-materials';copy.className='secondary';copy.textContent='نسخ القائمة';
  results.querySelector('#result .actions').append(copy);
- results.insertAdjacentHTML('beforeend','<p class="ak-wall-preview-warning">نسخة تجريبية غير معتمدة للتنفيذ: تدعيم الفتحات، خطة تقطيع BA13 ووصل Montants بقطعة 50cm خاصهم مراجعة تقنية حسب ارتفاع الحائط ونظام الشركة المصنّعة قبل الشراء أو التركيب.</p>');
+ results.insertAdjacentHTML('beforeend','<p class="ak-wall-preview-warning">تنبيه تقني قبل التنفيذ: تدعيم الفتحات، خطة تقطيع BA13 ووصل Montants بقطعة 50cm خاصهم مراجعة تقنية حسب ارتفاع الحائط ونظام الشركة المصنّعة قبل الشراء أو التركيب.</p>');
  wallControls=initWallOpenings({fieldElement:fieldsContainer,planElement:drawing.querySelector('#plan'),onChange:()=>refresh(),fmt});
 }
 function dims(){let out={};for(const [id] of fields[app])out[id]=field(id);if(app==='armstrong-full')out.drop=field('drop');for(const id of ['mode','layers','spacing','studLength'])if($('in-'+id))out[id]=$('in-'+id).value;if(app==='walls')out.openings=wallControls.getOpenings();return out;}
