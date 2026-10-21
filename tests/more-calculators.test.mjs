@@ -51,7 +51,7 @@ test('Only approved Armstrong calculators are live; BA13 and walls remain develo
   const html=readFileSync(root+'calculators/'+p+'/index.html','utf8');
   assert.ok(html.includes(p==='armstrong-full'?'data-calculator="armstrong-full"':'id="ak-calculator"'));
  }
- for(const p of ['ba13-ceiling','walls']){
+ for(const p of ['ba13-ceiling']){
   const html=readFileSync(root+'calculators/'+p+'/index.html','utf8');
   assert.match(html,/قيد التطوير/);
   assert.doesNotMatch(html,/data-calculator=/);
@@ -192,3 +192,5 @@ test('Armstrong plan is pure rendering and integrated into calculator/PDF flow',
  assert.match(js,/if\(p\.type==='armstrong-full'\)return armstrongFullPlanSvg\(p,\{showHangers\}\)/);
  assert.match(js,/const svg=svgH\(p\)/);
 });
+
+test('Published Cloison remains independent of BA13 ceiling',()=>{const html=readFileSync(root+'calculators/walls/index.html','utf8');assert.match(html,/data-calculator="walls"/);assert.doesNotMatch(html,/noindex,nofollow/);});
