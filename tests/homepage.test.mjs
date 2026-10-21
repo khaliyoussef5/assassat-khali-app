@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
 const home=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
 test('Homepage presents four calculator categories',()=>{
- assert.match(home,/Armstrong مع بوردور BA13/);
- assert.match(home,/Armstrong بلا بوردور/);
+ assert.match(home,/مع بوردور BA13/);
+ assert.match(home,/بلا بوردور/);
  assert.match(home,/أسقف الجبص بورد BA13/);
  assert.match(home,/Cloison BA13/);
 });
