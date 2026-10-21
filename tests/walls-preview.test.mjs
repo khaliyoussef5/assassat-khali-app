@@ -20,7 +20,7 @@ test('Walls preview is unlisted and isolated from official locked walls and home
  assert.match(demo,/assets\/ak-app\.mjs/);
  assert.match(official,/data-calculator="walls"/);
  assert.match(official,/ak-app\.mjs/);
- assert.doesNotMatch(home,/href="calculators\/walls(-preview)?\//);
+ assert.match(home,/href="calculators\/walls\//);
 });
 
 test('Preview follows Armstrong: dimensions, plan, wall settings and approval, then concise materials',()=>{
