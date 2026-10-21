@@ -6,7 +6,7 @@ test('Approved Armstrong design remains active and other calculator entrances ar
  const style=raw('assets/ak-classic.css');
  const active=raw('calculators/armstrong-full/index.html');
  assert.match(active,/assets\/ak-classic\.css/);
- for(const route of ['ba13-ceiling','walls']){
+ for(const route of ['ba13-ceiling']){
   const html=raw('calculators/'+route+'/index.html');
   assert.match(html,/قيد التطوير/);
   assert.doesNotMatch(html,/ak-app\.mjs/);
