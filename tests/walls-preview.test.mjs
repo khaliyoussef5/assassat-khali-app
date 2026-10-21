@@ -48,7 +48,7 @@ test('Preview follows Armstrong: dimensions, plan, wall settings and approval, t
  assert.match(section,/results\.querySelector\('#note'\)\.remove\(\)/);
  assert.match(section,/copy\.id='copy-materials'/);
  assert.match(section,/تحميل لائحة المواد \+ المخطط PDF/);
- assert.match(section,/نسخة تجريبية غير معتمدة للتنفيذ/);
+ assert.match(section,/تنبيه تقني قبل التنفيذ/);
  assert.match(app,/if\(app==='walls'\)\{\s*\$\('copy-materials'\)\.addEventListener/);
  assert.match(app,/drawWallPrintPage\(z,p,planCanvas.width,planCanvas.height\)/);
 });
